@@ -25,6 +25,7 @@ import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.model.values.BConnector;
 import org.ballerinalang.model.values.BMap;
 import org.ballerinalang.model.values.BString;
+import org.ballerinalang.model.values.BStruct;
 import org.ballerinalang.natives.annotations.Argument;
 import org.ballerinalang.natives.annotations.BallerinaAction;
 
@@ -44,11 +45,11 @@ public class Init extends AbstractMongoDBAction {
         BConnector bConnector = (BConnector) getRefArgument(context, 0);
         String host = bConnector.getStringField(0);
         String dbName = bConnector.getStringField(1);
-        BMap connectorOptions = (BMap) bConnector.getRefField(0);
+        BStruct optionStruct = (BStruct) bConnector.getRefField(0);
         BMap sharedMap = (BMap) bConnector.getRefField(1);
         if (sharedMap.get(new BString(Constants.DATASOURCE_KEY)) == null) {
             MongoDBDataSource datasource = new MongoDBDataSource();
-            datasource.init(host, dbName, connectorOptions);
+            datasource.init(host, dbName, optionStruct);
             sharedMap.put(new BString(Constants.DATASOURCE_KEY), datasource);
         }
         return getConnectorFuture();

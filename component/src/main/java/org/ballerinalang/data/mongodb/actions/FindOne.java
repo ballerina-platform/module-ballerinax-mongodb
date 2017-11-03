@@ -29,6 +29,8 @@ import org.ballerinalang.natives.annotations.BallerinaAction;
 import org.ballerinalang.natives.annotations.ReturnType;
 /**
  * {@code FindOne} action selects the first document that satisfies the given query criteria.
+ *
+ * @since 0.95.0
  */
 @BallerinaAction(
             packageName = "ballerina.data.mongodb",

@@ -19,16 +19,10 @@ package org.ballerinalang.data.mongodb;
 
 /**
  * Constants for MongoDB Connector.
+ *
+ * @since 0.95.0
  */
 public final class Constants {
     public static final String CONNECTOR_NAME = "ClientConnector";
     public static final String DATASOURCE_KEY = "datasource_key";
-
-    public static final String SSL_ENABLED = "sslEnabled";
-    public static final String READ_CONCERN = "readConcern";
-    public static final String WRITE_CONCERN = "writeConcern";
-    public static final String READ_PREFERENCE = "readPreference";
-    public static final String SOCKET_TIMEOUT = "socketTimeout";
-    public static final String CONNECTION_TIMEOUT = "connectionTimeout";
-    public static final String CONNECTIONS_PER_HOST = "connectionsPerHost";
 }

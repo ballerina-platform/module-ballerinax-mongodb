@@ -19,17 +19,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-    <parent>
-        <groupId>org.ballerinalang</groupId>
-        <artifactId>ballerinalang</artifactId>
-        <version>0.93.1-SNAPSHOT</version>
-    </parent>
-
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.ballerinalang</groupId>
     <artifactId>connector-mongodb-parent</artifactId>
+    <version>0.94.0-SNAPSHOT</version>
     <packaging>pom</packaging>
-    <version>0.93.1-SNAPSHOT</version>
     <name>Ballerina - MongoDB Parent</name>
 
     <repositories>
@@ -57,6 +51,41 @@
         </repository>
     </repositories>
 
+    <pluginRepositories>
+        <pluginRepository>
+            <id>wso2.releases</id>
+            <name>WSO2 Releases Repository</name>
+            <url>http://maven.wso2.org/nexus/content/repositories/releases/</url>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>daily</updatePolicy>
+                <checksumPolicy>ignore</checksumPolicy>
+            </releases>
+        </pluginRepository>
+        <pluginRepository>
+            <id>wso2.snapshots</id>
+            <name>WSO2 Snapshot Repository</name>
+            <url>http://maven.wso2.org/nexus/content/repositories/snapshots/</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>daily</updatePolicy>
+            </snapshots>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+        </pluginRepository>
+        <pluginRepository>
+            <id>wso2-nexus</id>
+            <name>WSO2 internal Repository</name>
+            <url>http://maven.wso2.org/nexus/content/groups/wso2-public/</url>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>daily</updatePolicy>
+                <checksumPolicy>ignore</checksumPolicy>
+            </releases>
+        </pluginRepository>
+    </pluginRepositories>
+
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -78,10 +107,14 @@
     </dependencyManagement>
 
     <properties>
-        <ballerina.version>0.93.1-SNAPSHOT</ballerina.version>
-        <mongodb.version>3.4.1</mongodb.version>
+        <ballerina.version>0.94.0-SNAPSHOT</ballerina.version>
+        <mongodb.version>3.5.0</mongodb.version>
         <mvn.processor.plugin.version>2.2.4</mvn.processor.plugin.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.checkstyle.plugin.version>2.17</maven.checkstyle.plugin.version>
+        <maven.dependency.plugin.version>2.10</maven.dependency.plugin.version>
+        <docerina.maven.plugin.version>${project.version}</docerina.maven.plugin.version>
+        <connectors.source.temp.dir>${basedir}/target/classes/META-INF/natives</connectors.source.temp.dir>
     </properties>
 
     <modules>

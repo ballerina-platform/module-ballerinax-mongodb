@@ -32,8 +32,7 @@ import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import org.ballerinalang.model.types.BType;
 import org.ballerinalang.model.values.BJSON;
-import org.ballerinalang.model.values.BMap;
-import org.ballerinalang.model.values.BString;
+import org.ballerinalang.model.values.BStruct;
 import org.ballerinalang.model.values.BValue;
 import org.ballerinalang.util.exceptions.BallerinaException;
 import org.bson.Document;
@@ -44,6 +43,8 @@ import java.util.List;
 
 /**
  * {@code MongoDBDataSource} util class for MongoDB connector initialization.
+ *
+ * @since 0.95.0
  */
 public class MongoDBDataSource implements BValue {
     private MongoDatabase db;
@@ -60,9 +61,9 @@ public class MongoDBDataSource implements BValue {
     }
 
 
-    public boolean init(String host, String dbName, BMap mapProperties) {
-        if (!mapProperties.isEmpty()) {
-            this.client = new MongoClient(this.createServerAddresses(host), this.createOptions(mapProperties));
+    public boolean init(String host, String dbName, BStruct options) {
+        if (options != null) {
+            this.client = new MongoClient(this.createServerAddresses(host), this.createOptions(options));
         } else {
             this.client = new MongoClient(this.createServerAddresses(host));
         }
@@ -70,56 +71,41 @@ public class MongoDBDataSource implements BValue {
         return true;
     }
 
-    private MongoClientOptions createOptions(BMap<BString, BValue> options) {
+    private MongoClientOptions createOptions(BStruct options) {
         MongoClientOptions.Builder builder = MongoClientOptions.builder();
-        BValue value = options.get(new BString(Constants.SSL_ENABLED));
-        if (value != null) {
-            builder = builder.sslEnabled(Boolean.parseBoolean(value.stringValue()));
+        boolean sslEnabled = options.getBooleanField(0) != 0;
+        if (sslEnabled) {
+            builder = builder.sslEnabled(true);
         }
-        value = options.get(new BString(Constants.READ_CONCERN));
-        if (value != null) {
-            builder = builder.readConcern(new ReadConcern(ReadConcernLevel.valueOf(value.stringValue())));
+        String readConsern = options.getStringField(0);
+        if (!readConsern.isEmpty()) {
+            builder = builder.readConcern(new ReadConcern(ReadConcernLevel.valueOf(readConsern)));
         }
-        value = options.get(new BString(Constants.WRITE_CONCERN));
-        if (value != null) {
-            builder = builder.writeConcern(WriteConcern.valueOf(value.stringValue()));
+        String writeConsern = options.getStringField(1);
+        if (!writeConsern.isEmpty()) {
+            builder = builder.writeConcern(WriteConcern.valueOf(writeConsern));
         }
-        value = options.get(new BString(Constants.READ_PREFERENCE));
-        if (value != null) {
-            builder = builder.readPreference((ReadPreference.valueOf(value.stringValue())));
+        String readPreference = options.getStringField(2);
+        if (!readPreference.isEmpty()) {
+            builder = builder.readPreference((ReadPreference.valueOf(readPreference)));
         }
-        value = options.get(new BString(Constants.SOCKET_TIMEOUT));
-        if (value != null) {
-            try {
-                builder = builder.socketTimeout(Integer.parseInt(value.stringValue()));
-            } catch (NumberFormatException e) {
-                throw new BallerinaException("the socket timeout must be an integer value: " +
-                        value.stringValue(), e);
-            }
+        int socketTimeout = (int) options.getIntField(0);
+        if (socketTimeout != -1) {
+            builder = builder.socketTimeout(socketTimeout);
         }
-        value = options.get(new BString(Constants.CONNECTION_TIMEOUT));
-        if (value != null) {
-            try {
-                builder = builder.connectTimeout(Integer.parseInt(value.stringValue()));
-            } catch (NumberFormatException e) {
-                throw new BallerinaException("the connection timeout must be an integer value: " +
-                        value.stringValue(), e);
-            }
+        int connectionTimeout = (int) options.getIntField(1);
+        if (connectionTimeout != -1) {
+            builder = builder.connectTimeout(connectionTimeout);
         }
-        value = options.get(new BString(Constants.CONNECTIONS_PER_HOST));
-        if (value != null) {
-            try {
-                builder = builder.connectionsPerHost(Integer.parseInt(value.stringValue()));
-            } catch (NumberFormatException e) {
-                throw new BallerinaException("connections per host must be an integer value: " +
-                        value.stringValue(), e);
-            }
+        int connectionsPerHost = (int) options.getIntField(2);
+        if (connectionTimeout != -1) {
+            builder = builder.connectionsPerHost(connectionsPerHost);
         }
         return builder.build();
     }
 
     private List<ServerAddress> createServerAddresses(String hostStr) {
-        List<ServerAddress> result = new ArrayList<>();
+        List<ServerAddress> result = new ArrayList<ServerAddress>();
         String[] hosts = hostStr.split(",");
         for (String host : hosts) {
             result.add(this.createServerAddress(host));

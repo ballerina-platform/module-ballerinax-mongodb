@@ -28,6 +28,8 @@ import org.ballerinalang.natives.annotations.BallerinaAction;
 
 /**
  * {@code Close} action is used to close the MongoDB connection pool.
+ *
+ * @since 0.95.0
  */
 @BallerinaAction(
             packageName = "ballerina.data.mongodb",

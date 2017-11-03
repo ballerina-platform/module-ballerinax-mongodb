@@ -30,6 +30,8 @@ import org.ballerinalang.natives.annotations.ReturnType;
 
 /**
  * {@code BatchInsert} action to insert multiple documents into a collection.
+ *
+ * @since 0.95.0
  */
 @BallerinaAction(
             packageName = "ballerina.data.mongodb",
@@ -47,7 +49,7 @@ public class BatchInsert extends AbstractMongoDBAction {
     public ConnectorFuture execute(Context context) {
         BConnector bConnector = (BConnector) getRefArgument(context, 0);
         String collectionName = getStringArgument(context, 0);
-        BRefValueArray documents = (BRefValueArray) getRefArgument(context, 0);
+        BRefValueArray documents = (BRefValueArray) getRefArgument(context, 1);
         MongoDBDataSource datasource = getDataSource(bConnector);
         batchInsert(datasource, collectionName, documents);
         return getConnectorFuture();

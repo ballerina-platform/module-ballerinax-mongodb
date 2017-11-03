@@ -31,6 +31,8 @@ import org.ballerinalang.natives.annotations.ReturnType;
 
 /**
  * {@code Find} action select documents in a collection.
+ *
+ * @since 0.95.0
  */
 @BallerinaAction(
             packageName = "ballerina.data.mongodb",

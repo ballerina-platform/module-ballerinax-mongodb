@@ -31,6 +31,8 @@ import org.ballerinalang.natives.annotations.ReturnType;
 
 /**
  * {@code Delete} action to delete documents in a collection.
+ *
+ * @since 0.95.0
  */
 @BallerinaAction(
             packageName = "ballerina.data.mongodb",
