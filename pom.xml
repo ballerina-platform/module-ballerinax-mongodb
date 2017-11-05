@@ -26,6 +26,13 @@
     <packaging>pom</packaging>
     <name>Ballerina - MongoDB Parent</name>
 
+    <scm>
+        <url>https://github.com/ballerinalang/connector-mongodb.git</url>
+        <developerConnection>scm:git:https://github.com/ballerinalang/connector-mongodb.git</developerConnection>
+        <connection>scm:git:https://github.com/ballerinalang/connector-mongodb.git</connection>
+        <tag>HEAD</tag>
+    </scm>
+
     <repositories>
         <repository>
             <id>wso2.releases</id>
