@@ -98,8 +98,12 @@ public class MongoDBDataSource implements BValue {
             builder = builder.connectTimeout(connectionTimeout);
         }
         int connectionsPerHost = (int) options.getIntField(2);
-        if (connectionTimeout != -1) {
+        if (connectionsPerHost != -1) {
             builder = builder.connectionsPerHost(connectionsPerHost);
+        }
+        int serverSelectionTimeout = (int) options.getIntField(3);
+        if (serverSelectionTimeout != -1) {
+            builder = builder.serverSelectionTimeout(serverSelectionTimeout);
         }
         return builder.build();
     }

@@ -16,7 +16,7 @@ Steps to Configure
 
 Extract ballerina-mongodb-connector-<version>.zip and copy containing jars in to <BRE_HOME>/bre/lib/
 
-Building from the source
+Building From the Source
 ==================================
 If you want to build Ballerina MongoDB connector from the source code:
 
@@ -31,39 +31,39 @@ If you want to build Ballerina MongoDB connector from the source code:
 Sample
 ==================================
 
+```ballerina
+import ballerina.data.mongodb;
 
-    import ballerina.data.mongodb;
-    
-    function main (string[] args) {
-        endpoint<mongodb:ClientConnector> conn {
-                create mongodb:ClientConnector("localhost", "testballerina", {sslEnabled:false});
-        }
-    
-        json doc1 = {"name":"ballerina", "type":"src"};
-        json doc2 = {"name":"connectors", "type":"artifacts"};
-        json doc3 = {"name":"docerina", "type":"src"};
-        conn.insert("projects", doc1);
-        conn.insert("projects", doc2);
-        conn.insert("projects", doc3);
-    
-        json j0 = conn.find("projects", null);
-        println("initial data:");
-        println(j0);
-        
-        json query = {"name":"ballerina"};
-        json j1 = conn.find("projects", query);
-        println("query result:");
-        println(j1);
-    
-        json j2 = conn.findOne("projects", query);
-        println("findOne query result:");
-        println(j2);
-        
-        json filter = {"type":"src"};
-        int deleted = conn.delete("projects", filter,true);
-        println(deleted);     
-           
-        conn.close();
+function main (string[] args) {
+    endpoint<mongodb:ClientConnector> conn {
+            create mongodb:ClientConnector("localhost", "testballerina", {sslEnabled:false, serverSelectionTimeout:500});
     }
+
+    json doc1 = {"name":"ballerina", "type":"src"};
+    json doc2 = {"name":"connectors", "type":"artifacts"};
+    json doc3 = {"name":"docerina", "type":"src"};
+    conn.insert("projects", doc1);
+    conn.insert("projects", doc2);
+    conn.insert("projects", doc3);
+
+    json j0 = conn.find("projects", null);
+    println("initial data:");
+    println(j0);
     
+    json query = {"name":"ballerina"};
+    json j1 = conn.find("projects", query);
+    println("query result:");
+    println(j1);
+
+    json j2 = conn.findOne("projects", query);
+    println("findOne query result:");
+    println(j2);
+    
+    json filter = {"type":"src"};
+    int deleted = conn.delete("projects", filter,true);
+    println(deleted);     
+       
+    conn.close();
+}
+```   
     

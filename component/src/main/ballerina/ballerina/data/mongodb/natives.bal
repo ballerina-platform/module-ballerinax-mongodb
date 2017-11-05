@@ -8,6 +8,7 @@ public struct ConnectionProperties {
     int socketTimeout = -1;
     int connectionTimeout = -1;
     int connectionsPerHost = -1;
+    int serverSelectionTimeout = -1;
 }
 
 @Description { value:"MongoDB client connector."}
