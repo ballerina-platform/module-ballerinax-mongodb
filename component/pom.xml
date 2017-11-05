@@ -29,14 +29,6 @@
     <name>Ballerina - mongodb Component</name>
     <url>http://ballerinalang.org</url>
 
-    <scm>
-        <url>https://github.com/ballerinalang/connector-mongodb.git</url>
-        <developerConnection>scm:git:https://github.com/ballerinalang/connector-mongodb.git</developerConnection>
-        <connection>scm:git:https://github.com/ballerinalang/connector-mongodb.git</connection>
-        <tag>HEAD</tag>
-    </scm>
-
-
     <dependencies>
         <dependency>
             <groupId>org.ballerinalang</groupId>
