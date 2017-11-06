@@ -120,7 +120,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.checkstyle.plugin.version>2.17</maven.checkstyle.plugin.version>
         <maven.dependency.plugin.version>2.10</maven.dependency.plugin.version>
-        <docerina.maven.plugin.version>0.94.0-SNAPSHOT</docerina.maven.plugin.version>
+        <docerina.maven.plugin.version>0.95.0</docerina.maven.plugin.version>
         <connectors.source.temp.dir>${basedir}/target/classes/META-INF/natives</connectors.source.temp.dir>
     </properties>
 
