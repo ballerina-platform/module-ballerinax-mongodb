@@ -55,7 +55,7 @@ public class Delete extends AbstractMongoDBAction {
         Boolean isMultiple = getBooleanArgument(context, 0);
         MongoDBDataSource datasource = getDataSource(bConnector);
         long deletedCount = delete(datasource, collectionName, filter, isMultiple);
-        context.getControlStackNew().getCurrentFrame().returnValues[0] = new BInteger(deletedCount);
+        context.getControlStack().getCurrentFrame().returnValues[0] = new BInteger(deletedCount);
         return getConnectorFuture();
     }
 }

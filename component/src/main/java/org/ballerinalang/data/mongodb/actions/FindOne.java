@@ -51,7 +51,7 @@ public class FindOne extends AbstractMongoDBAction {
         BJSON query = (BJSON) getRefArgument(context, 1);
         MongoDBDataSource datasource = getDataSource(bConnector);
         BJSON result = findOne(datasource, collectionName, query);
-        context.getControlStackNew().getCurrentFrame().returnValues[0] = result;
+        context.getControlStack().getCurrentFrame().returnValues[0] = result;
         return getConnectorFuture();
     }
 }

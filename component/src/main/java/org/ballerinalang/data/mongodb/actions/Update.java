@@ -59,7 +59,7 @@ public class Update extends AbstractMongoDBAction {
         Boolean upsert = getBooleanArgument(context, 1);
         MongoDBDataSource datasource = getDataSource(bConnector);
         long updatedCount = update(datasource, collectionName, filter, document, isMultiple, upsert);
-        context.getControlStackNew().getCurrentFrame().returnValues[0] = new BInteger(updatedCount);
+        context.getControlStack().getCurrentFrame().returnValues[0] = new BInteger(updatedCount);
         return getConnectorFuture();
     }
 }
