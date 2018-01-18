@@ -114,7 +114,7 @@
     </dependencyManagement>
 
     <properties>
-        <ballerina.version>0.95.0</ballerina.version>
+        <ballerina.version>0.95.8-SNAPSHOT</ballerina.version>
         <mongodb.version>3.5.0</mongodb.version>
         <mvn.processor.plugin.version>2.2.4</mvn.processor.plugin.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
