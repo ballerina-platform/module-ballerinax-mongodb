@@ -178,7 +178,6 @@
 
     <properties>
         <project.scm.id>my-scm-server</project.scm.id>
-
         <ballerina.version>0.95.8</ballerina.version>
         <mongodb.version>3.5.0</mongodb.version>
         <mvn.processor.plugin.version>2.2.4</mvn.processor.plugin.version>
