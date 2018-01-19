@@ -19,6 +19,7 @@ package org.ballerinalang.data.mongodb;
 
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
+import com.mongodb.MongoCredential;
 import com.mongodb.ReadConcern;
 import com.mongodb.ReadConcernLevel;
 import com.mongodb.ReadPreference;
@@ -61,7 +62,18 @@ public class MongoDBDataSource implements BValue {
 
     public boolean init(String host, String dbName, BStruct options) {
         if (options != null) {
-            this.client = new MongoClient(this.createServerAddresses(host), this.createOptions(options));
+            String username = options.getStringField(3);
+            String password = options.getStringField(4);
+            List<MongoCredential> credentials = new ArrayList<>();
+            if (!username.isEmpty() && !password.isEmpty()) {
+                credentials.add(MongoCredential.createCredential(username, dbName, password.toCharArray()));
+                this.client = new MongoClient(
+                        this.createServerAddresses(host),
+                        credentials, this.createOptions(options)
+                );
+            } else {
+                this.client = new MongoClient(this.createServerAddresses(host), this.createOptions(options));
+            }
         } else {
             this.client = new MongoClient(this.createServerAddresses(host));
         }
