@@ -178,6 +178,10 @@
 
     <properties>
         <project.scm.id>my-scm-server</project.scm.id>
+<<<<<<< c18a5ff17ad0e9cdba31c522984debb7b72f1c95
+=======
+
+>>>>>>> resolved conflict in pom.xml file
         <ballerina.version>0.95.8</ballerina.version>
         <mongodb.version>3.5.0</mongodb.version>
         <mvn.processor.plugin.version>2.2.4</mvn.processor.plugin.version>
