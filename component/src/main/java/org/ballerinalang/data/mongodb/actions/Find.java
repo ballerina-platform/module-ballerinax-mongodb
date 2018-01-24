@@ -53,7 +53,7 @@ public class Find extends AbstractMongoDBAction {
         BJSON query = (BJSON) getRefArgument(context, 1);
         MongoDBDataSource datasource = getDataSource(bConnector);
         BJSON result = find(datasource, collectionName, query);
-        context.getControlStackNew().getCurrentFrame().returnValues[0] = result;
+        context.getControlStack().getCurrentFrame().returnValues[0] = result;
         return getConnectorFuture();
     }
 }

@@ -17,10 +17,6 @@
  */
 package org.ballerinalang.data.mongodb;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.node.BaseJsonNode;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
 import com.mongodb.ReadConcern;
@@ -31,6 +27,8 @@ import com.mongodb.WriteConcern;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import org.ballerinalang.model.types.BType;
+import org.ballerinalang.model.util.JsonGenerator;
+import org.ballerinalang.model.util.JsonParser;
 import org.ballerinalang.model.values.BJSON;
 import org.ballerinalang.model.values.BStruct;
 import org.ballerinalang.model.values.BValue;
@@ -160,11 +158,10 @@ public class MongoDBDataSource implements BValue {
         }
 
         @Override
-        public void serialize(JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
+        public void serialize(JsonGenerator jsonGenerator) throws IOException {
             jsonGenerator.writeStartArray();
-            ObjectMapper mapper = new ObjectMapper();
             while (this.mc.hasNext()) {
-                ((BaseJsonNode) mapper.readTree(this.mc.next().toJson())).serialize(jsonGenerator, serializerProvider);
+                JsonParser.parse(this.mc.next().toJson()).serialize(jsonGenerator);
             }
             jsonGenerator.writeEndArray();
         }
