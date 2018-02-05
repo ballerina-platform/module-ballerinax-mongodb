@@ -23,7 +23,7 @@ import org.ballerinalang.data.mongodb.Constants;
 import org.ballerinalang.data.mongodb.MongoDBDataSource;
 import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.model.values.BConnector;
-import org.ballerinalang.model.values.BRefValueArray;
+import org.ballerinalang.model.values.BJSON;
 import org.ballerinalang.natives.annotations.Argument;
 import org.ballerinalang.natives.annotations.BallerinaAction;
 import org.ballerinalang.natives.annotations.ReturnType;
@@ -49,7 +49,7 @@ public class BatchInsert extends AbstractMongoDBAction {
     public ConnectorFuture execute(Context context) {
         BConnector bConnector = (BConnector) getRefArgument(context, 0);
         String collectionName = getStringArgument(context, 0);
-        BRefValueArray documents = (BRefValueArray) getRefArgument(context, 1);
+        BJSON documents = (BJSON) getRefArgument(context, 1);
         MongoDBDataSource datasource = getDataSource(bConnector);
         batchInsert(datasource, collectionName, documents);
         return getConnectorFuture();

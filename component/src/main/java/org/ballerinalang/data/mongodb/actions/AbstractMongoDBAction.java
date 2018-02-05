@@ -30,7 +30,6 @@ import org.ballerinalang.data.mongodb.MongoDBDataSource;
 import org.ballerinalang.model.values.BConnector;
 import org.ballerinalang.model.values.BJSON;
 import org.ballerinalang.model.values.BMap;
-import org.ballerinalang.model.values.BRefValueArray;
 import org.ballerinalang.model.values.BString;
 import org.ballerinalang.model.values.BValue;
 import org.ballerinalang.nativeimpl.actions.ClientConnectorFuture;
@@ -111,12 +110,12 @@ public abstract class AbstractMongoDBAction extends AbstractNativeAction {
         return res.getModifiedCount();
     }
 
-    protected void batchInsert(MongoDBDataSource dbDataSource, String collectionName, BRefValueArray documents) {
+    protected void batchInsert(MongoDBDataSource dbDataSource, String collectionName, BJSON documents) {
         MongoCollection<Document> collection = getCollection(dbDataSource, collectionName);
-        int count = (int) documents.size();
-        List<Document> docList = new ArrayList<Document>(count);
+        int count =  documents.value().size();
+        List<Document> docList = new ArrayList<>(count);
         for (int i = 0; i < count; i++) {
-            docList.add(Document.parse(documents.get(i).stringValue()));
+            docList.add(Document.parse(documents.value().get(i).toString()));
         }
         collection.insertMany(docList);
     }

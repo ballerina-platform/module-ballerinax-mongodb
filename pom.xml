@@ -138,6 +138,22 @@
                 <artifactId>mongo-java-driver</artifactId>
                 <version>${mongodb.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.testng</groupId>
+                <artifactId>testng</artifactId>
+                <version>${testng.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.ballerinalang</groupId>
+                <artifactId>ballerina-launcher</artifactId>
+                <version>${ballerina.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>de.flapdoodle.embed</groupId>
+                <artifactId>de.flapdoodle.embed.mongo</artifactId>
+                <version>${embedmongo.version}</version>
+                <scope>test</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -174,12 +190,51 @@
                 <version>${maven.deploy.plugin.version}</version>
             </plugin>
         </plugins>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-dependency-plugin</artifactId>
+                    <version>${maven.dependency.plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-checkstyle-plugin</artifactId>
+                    <version>${maven.checkstyle.plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.bsc.maven</groupId>
+                    <artifactId>maven-processor-plugin</artifactId>
+                    <version>${mvn.processor.plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.ballerinalang</groupId>
+                    <artifactId>docerina-maven-plugin</artifactId>
+                    <version>${docerina.maven.plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>${maven.surefire.plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>findbugs-maven-plugin</artifactId>
+                    <version>${maven.findbugsplugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.jacoco</groupId>
+                    <artifactId>jacoco-maven-plugin</artifactId>
+                    <version>${maven.jacoco.plugin.version}</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
     </build>
 
     <properties>
         <project.scm.id>my-scm-server</project.scm.id>
-        <ballerina.version>0.95.8</ballerina.version>
-        <mongodb.version>3.5.0</mongodb.version>
+        <ballerina.version>0.96.0</ballerina.version>
+        <mongodb.version>3.6.1</mongodb.version>
         <mvn.processor.plugin.version>2.2.4</mvn.processor.plugin.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.checkstyle.plugin.version>2.17</maven.checkstyle.plugin.version>
@@ -189,10 +244,17 @@
         <maven.compiler.plugin.version>3.5.1</maven.compiler.plugin.version>
         <wso2.maven.compiler.source>1.8</wso2.maven.compiler.source>
         <wso2.maven.compiler.target>1.8</wso2.maven.compiler.target>
+        <testng.version>6.9.10</testng.version>
+        <embedmongo.version>2.0.1</embedmongo.version>
 
         <maven.wagon.ssh.version>2.1</maven.wagon.ssh.version>
         <maven.release.plugin.version>2.5.3</maven.release.plugin.version>
         <maven.deploy.plugin.version>2.8.2</maven.deploy.plugin.version>
+        <maven.docker.plugin.version>0.22.1</maven.docker.plugin.version>
+        <maven.surefire.plugin.version>2.12</maven.surefire.plugin.version>
+        <maven.jacoco.plugin.version>0.7.8</maven.jacoco.plugin.version>
+        <maven.jacoco.plugin.version>0.7.9</maven.jacoco.plugin.version>
+        <maven.findbugsplugin.version>3.0.5</maven.findbugsplugin.version>
     </properties>
 
     <modules>
