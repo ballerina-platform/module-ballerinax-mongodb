@@ -45,11 +45,13 @@ public class Init extends AbstractMongoDBAction {
         BConnector bConnector = (BConnector) getRefArgument(context, 0);
         String host = bConnector.getStringField(0);
         String dbName = bConnector.getStringField(1);
+        String username = bConnector.getStringField(2);
+        String password = bConnector.getStringField(3);
         BStruct optionStruct = (BStruct) bConnector.getRefField(0);
         BMap sharedMap = (BMap) bConnector.getRefField(1);
         if (sharedMap.get(new BString(Constants.DATASOURCE_KEY)) == null) {
             MongoDBDataSource datasource = new MongoDBDataSource();
-            datasource.init(host, dbName, optionStruct);
+            datasource.init(host, dbName, username, password, optionStruct);
             sharedMap.put(new BString(Constants.DATASOURCE_KEY), datasource);
         }
         return getConnectorFuture();
