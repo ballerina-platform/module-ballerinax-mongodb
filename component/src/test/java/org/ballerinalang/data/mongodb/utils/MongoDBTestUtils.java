@@ -31,7 +31,10 @@ import java.io.IOException;
 public class MongoDBTestUtils {
 
     public static final int MONGODB_PORT = 27017;
-    public static final String MONGODB_HOST = "localhost";
+    // Cannot use "localhost" here due to
+    // https://github.com/flapdoodle-oss/de.flapdoodle.embed.mongo/issues/230
+    // This issue be fixed once mondodb.version is upgraded to 3.6.2
+    public static final String MONGODB_HOST = "127.0.0.1";
 
     /**
      * This method sets up a MongoDB on localhost without authentication.
@@ -55,8 +58,12 @@ public class MongoDBTestUtils {
      * @param mongoClient
      */
     public static void releaseResources(MongodExecutable mongodExecutable, MongoClient mongoClient) {
-        mongodExecutable.stop();
-        mongoClient.close();
+        if (mongodExecutable != null) {
+            mongodExecutable.stop();
+        }
+        if (mongoClient != null) {
+            mongoClient.close();
+        }
     }
 
 }
