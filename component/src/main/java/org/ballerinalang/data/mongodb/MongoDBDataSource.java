@@ -66,13 +66,13 @@ public class MongoDBDataSource implements BValue {
         return client;
     }
 
-    public boolean init(String host, String dbName, BStruct options) {
+    public boolean init(String host, String dbName, String username, String password, BStruct options) {
         if (options != null) {
             String directURL = options.getStringField(ConnectionParam.URL.getIndex());
             if (!directURL.isEmpty()) {
                 client = createMongoClient(directURL);
             } else {
-                MongoCredential mongoCredential = createCredentials(options);
+                MongoCredential mongoCredential = createCredentials(username, password, options);
                 if (mongoCredential != null) {
                     this.client = createMongoClient(host, options, mongoCredential);
                 } else {
@@ -143,9 +143,7 @@ public class MongoDBDataSource implements BValue {
      * @param options BStruct containing options for MongoCredential creation
      * @return MongoCredential
      */
-    private MongoCredential createCredentials(BStruct options) {
-        String username = options.getStringField(ConnectionParam.URL.getIndex());
-        String password = options.getStringField(ConnectionParam.PASSWORD.getIndex());
+    private MongoCredential createCredentials(String username, String password, BStruct options) {
         String authSource = options.getStringField(ConnectionParam.AUTHSOURCE.getIndex());
         if (authSource.isEmpty()) {
             authSource = DEFAULT_USER_DB;
@@ -341,14 +339,12 @@ public class MongoDBDataSource implements BValue {
     private enum ConnectionParam {
         // String Params
         URL(0),
-        USERNAME(1),
-        PASSWORD(2),
-        READ_CONCERN(3),
-        WRITE_CONCERN(4),
-        READ_PREFERENCE(5),
-        AUTHSOURCE(6),
-        AUTHMECHANISM(7),
-        GSSAPI_SERVICE_NAME(8),
+        READ_CONCERN(1),
+        WRITE_CONCERN(2),
+        READ_PREFERENCE(3),
+        AUTHSOURCE(4),
+        AUTHMECHANISM(5),
+        GSSAPI_SERVICE_NAME(6),
 
         // boolean params
         SSL_ENABLED(0),

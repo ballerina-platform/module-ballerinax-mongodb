@@ -2,8 +2,6 @@ package ballerina.data.mongodb;
 
 public struct ConnectionProperties {
     string url;
-    string username;
-    string password;
     string readConcern;
     string writeConcern;
     string readPreference;
@@ -29,7 +27,8 @@ public struct ConnectionProperties {
 @Param { value:"host:Host addresses of MongoDB" }
 @Param { value:"dbName:The name of the database" }
 @Param { value:"options: Optional properties for MongoDB connection" }
-public connector ClientConnector (string host, string dbName, ConnectionProperties options) {
+public connector ClientConnector (string host, string dbName, string username, string password, ConnectionProperties
+options) {
 
     map sharedMap = {};
 

@@ -2,7 +2,7 @@ import ballerina.data.mongodb;
 
 function insert() {
     endpoint<mongodb:ClientConnector> conn {
-                create mongodb:ClientConnector("localhost", "studentdb", {sslEnabled:false,
+                create mongodb:ClientConnector("localhost", "studentdb", "", "", {sslEnabled:false,
 serverSelectionTimeout:500});
     }
     json document = {"name":"Tom", "age":"20"};
@@ -12,7 +12,7 @@ serverSelectionTimeout:500});
 
 function find() (json) {
     endpoint<mongodb:ClientConnector> conn {
-                    create mongodb:ClientConnector("localhost", "studentdb", {sslEnabled:false,
+                    create mongodb:ClientConnector("localhost", "studentdb", "", "", {sslEnabled:false,
     serverSelectionTimeout:500});
     }
     json query = {"age":"21"};
@@ -23,7 +23,7 @@ function find() (json) {
 
 function findWithNullQuery() (json) {
     endpoint<mongodb:ClientConnector> conn {
-                    create mongodb:ClientConnector("localhost", "studentdb", {sslEnabled:false,
+                    create mongodb:ClientConnector("localhost", "studentdb", "", "", {sslEnabled:false,
     serverSelectionTimeout:500});
     }
     json query = null;
@@ -34,7 +34,7 @@ function findWithNullQuery() (json) {
 
 function findOne() (json) {
     endpoint<mongodb:ClientConnector> conn {
-                    create mongodb:ClientConnector("localhost", "studentdb", {sslEnabled:false,
+                    create mongodb:ClientConnector("localhost", "studentdb", "", "", {sslEnabled:false,
     serverSelectionTimeout:500});
     }
     json query = {"name":"Jim", "age":"21"};
@@ -45,7 +45,7 @@ function findOne() (json) {
 
 function findOneWithNullQuery() (json) {
     endpoint<mongodb:ClientConnector> conn {
-                    create mongodb:ClientConnector("localhost", "studentdb", {sslEnabled:false,
+                    create mongodb:ClientConnector("localhost", "studentdb", "", "", {sslEnabled:false,
     serverSelectionTimeout:500});
     }
     json query = null;
@@ -56,7 +56,7 @@ function findOneWithNullQuery() (json) {
 
 function deleteMultipleRecords() (json) {
     endpoint<mongodb:ClientConnector> conn {
-                        create mongodb:ClientConnector("localhost", "studentdb", {sslEnabled:false,
+                        create mongodb:ClientConnector("localhost", "studentdb", "", "",  {sslEnabled:false,
         serverSelectionTimeout:500});
     }
     json filter = {"age":"25"};
@@ -67,7 +67,7 @@ function deleteMultipleRecords() (json) {
 
 function deleteSingleRecord() (json) {
     endpoint<mongodb:ClientConnector> conn {
-                        create mongodb:ClientConnector("localhost", "studentdb", {sslEnabled:false,
+                        create mongodb:ClientConnector("localhost", "studentdb", "", "",  {sslEnabled:false,
         serverSelectionTimeout:500});
     }
     json filter = {"age":"13"};
@@ -78,7 +78,7 @@ function deleteSingleRecord() (json) {
 
 function updateMultipleRecords() (json) {
     endpoint<mongodb:ClientConnector> conn {
-                            create mongodb:ClientConnector("localhost", "studentdb", {sslEnabled:false,
+                            create mongodb:ClientConnector("localhost", "studentdb", "", "",  {sslEnabled:false,
             serverSelectionTimeout:500});
     }
     json filter = {"age":"28"};
@@ -90,7 +90,7 @@ function updateMultipleRecords() (json) {
 
 function updateSingleRecord() (json) {
     endpoint<mongodb:ClientConnector> conn {
-                            create mongodb:ClientConnector("localhost", "studentdb", {sslEnabled:false,
+                            create mongodb:ClientConnector("localhost", "studentdb",  "", "", {sslEnabled:false,
             serverSelectionTimeout:500});
     }
     json filter = {"age":"30"};
@@ -102,7 +102,7 @@ function updateSingleRecord() (json) {
 
 function batchInsert() {
     endpoint<mongodb:ClientConnector> conn {
-                                create mongodb:ClientConnector("localhost", "studentdb", {sslEnabled:false,
+                                create mongodb:ClientConnector("localhost", "studentdb",  "", "", {sslEnabled:false,
                 serverSelectionTimeout:500});
     }
     json docs = [{name:"Jessie",age:"18"}, {name:"Rose",age:"17"}, {name:"Anne",age:"15"}];
