@@ -36,7 +36,7 @@ import ballerina.data.mongodb;
 
 function main (string[] args) {
     endpoint<mongodb:ClientConnector> conn {
-            create mongodb:ClientConnector("localhost", "testballerina", {sslEnabled:false, serverSelectionTimeout:500});
+            create mongodb:ClientConnector("localhost", "testballerina", "", "", {sslEnabled:false, serverSelectionTimeout:500});
     }
 
     json doc1 = {"name":"ballerina", "type":"src"};
