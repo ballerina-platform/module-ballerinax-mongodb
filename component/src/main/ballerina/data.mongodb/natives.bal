@@ -10,17 +10,41 @@ public struct ConnectionProperties {
     string gssapiServiceName;
     boolean sslEnabled;
     boolean sslInvalidHostNameAllowed;
-    int socketTimeout = -1;
-    int connectionTimeout = -1;
-    int maxPoolSize = -1;
-    int serverSelectionTimeout = -1;
-    int maxIdleTime = -1;
-    int maxLifeTime = -1;
-    int minPoolSize = -1;
-    int waitQueueMultiple = -1;
-    int waitQueueTimeout = -1;
-    int localThreshold = -1;
-    int heartbeatFrequency = -1;
+    int socketTimeout;
+    int connectionTimeout;
+    int maxPoolSize;
+    int serverSelectionTimeout;
+    int maxIdleTime;
+    int maxLifeTime;
+    int minPoolSize;
+    int waitQueueMultiple;
+    int waitQueueTimeout;
+    int localThreshold;
+    int heartbeatFrequency;
+}
+
+@Description {value:"Initialize the ConnectionProperties with default values"}
+public function <ConnectionProperties cp> ConnectionProperties () {
+    cp.url = "";
+    cp.readConcern = "";
+    cp.writeConcern = "";
+    cp.readPreference = "";
+    cp.authSource = "";
+    cp.authMechanism = "";
+    cp.gssapiServiceName = "";
+    cp.sslEnabled = false;
+    cp.sslInvalidHostNameAllowed = false;
+    cp.socketTimeout = -1;
+    cp.connectionTimeout = -1;
+    cp.maxPoolSize = -1;
+    cp.serverSelectionTimeout = -1;
+    cp.maxIdleTime = -1;
+    cp.maxLifeTime = -1;
+    cp.minPoolSize = -1;
+    cp.waitQueueMultiple = -1;
+    cp.waitQueueTimeout = -1;
+    cp.localThreshold = -1;
+    cp.heartbeatFrequency = -1;
 }
 
 @Description { value:"MongoDB client connector."}
@@ -33,6 +57,15 @@ public struct ClientConnector {
     string username = "";
     string password = "";
     ConnectionProperties options;
+}
+
+@Description {value:"Initialize the ClientConnector with default values"}
+public function <ClientConnector c> ClientConnector () {
+    c.host = "";
+    c.dbName = "";
+    c.username = "";
+    c.password = "";
+    c.options = {};
 }
 
 @Description {value:"The find action implementation which selects a document in a given collection."}
