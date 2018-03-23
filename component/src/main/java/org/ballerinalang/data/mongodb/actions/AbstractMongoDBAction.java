@@ -22,18 +22,9 @@ import com.mongodb.client.MongoCursor;
 import com.mongodb.client.model.UpdateOptions;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
-import org.ballerinalang.bre.Context;
-import org.ballerinalang.connector.api.AbstractNativeAction;
-import org.ballerinalang.connector.api.ConnectorFuture;
-import org.ballerinalang.data.mongodb.Constants;
+import org.ballerinalang.bre.bvm.BlockingNativeCallableUnit;
 import org.ballerinalang.data.mongodb.MongoDBDataSource;
-import org.ballerinalang.model.values.BConnector;
 import org.ballerinalang.model.values.BJSON;
-import org.ballerinalang.model.values.BMap;
-import org.ballerinalang.model.values.BString;
-import org.ballerinalang.model.values.BValue;
-import org.ballerinalang.nativeimpl.actions.ClientConnectorFuture;
-import org.ballerinalang.natives.exceptions.ArgumentOutOfRangeException;
 import org.ballerinalang.util.exceptions.BallerinaException;
 import org.bson.Document;
 
@@ -44,15 +35,7 @@ import java.util.List;
  * {@code AbstractMongoDBAction} is the base class for all MongoDB actions.
  *
  */
-public abstract class AbstractMongoDBAction extends AbstractNativeAction {
-
-    @Override
-    public BValue getRefArgument(Context context, int index) {
-        if (index > -1) {
-            return context.getControlStack().getCurrentFrame().getRefRegs()[index];
-        }
-        throw new ArgumentOutOfRangeException(index);
-    }
+public abstract class AbstractMongoDBAction extends BlockingNativeCallableUnit {
 
     protected BJSON find(MongoDBDataSource dbDataSource, String collectionName, BJSON query) {
         MongoCollection<Document> collection = getCollection(dbDataSource, collectionName);
@@ -124,25 +107,6 @@ public abstract class AbstractMongoDBAction extends AbstractNativeAction {
         dbDataSource.getMongoClient().close();
     }
 
-    protected MongoDBDataSource getDataSource(BConnector bConnector) {
-        MongoDBDataSource datasource = null;
-        BMap sharedMap = (BMap) bConnector.getRefField(1);
-        if (sharedMap.get(new BString(Constants.DATASOURCE_KEY)) != null) {
-            BValue value = sharedMap.get(new BString(Constants.DATASOURCE_KEY));
-            if (value instanceof MongoDBDataSource) {
-                datasource = (MongoDBDataSource) value;
-            }
-        } else {
-            throw new BallerinaException("datasource not initialized properly");
-        }
-        return datasource;
-    }
-
-    protected ConnectorFuture getConnectorFuture() {
-        ClientConnectorFuture future = new ClientConnectorFuture();
-        future.notifySuccess();
-        return future;
-    }
 
     private Document jsonToDoc(BJSON json) {
         return Document.parse(json.stringValue());

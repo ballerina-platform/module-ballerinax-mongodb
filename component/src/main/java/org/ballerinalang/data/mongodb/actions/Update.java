@@ -18,28 +18,28 @@
 package org.ballerinalang.data.mongodb.actions;
 
 import org.ballerinalang.bre.Context;
-import org.ballerinalang.connector.api.ConnectorFuture;
 import org.ballerinalang.data.mongodb.Constants;
 import org.ballerinalang.data.mongodb.MongoDBDataSource;
 import org.ballerinalang.model.types.TypeKind;
-import org.ballerinalang.model.values.BConnector;
 import org.ballerinalang.model.values.BInteger;
 import org.ballerinalang.model.values.BJSON;
+import org.ballerinalang.model.values.BStruct;
 import org.ballerinalang.natives.annotations.Argument;
-import org.ballerinalang.natives.annotations.BallerinaAction;
+import org.ballerinalang.natives.annotations.BallerinaFunction;
+import org.ballerinalang.natives.annotations.Receiver;
 import org.ballerinalang.natives.annotations.ReturnType;
 
 /**
  * {@code Update} modifies existing document or documents in a collection.
  *
- * @since 0.95.0
+ * @since 0.5.4
  */
-@BallerinaAction(
-            packageName = "ballerina.data.mongodb",
-            actionName = "update",
-            connectorName = Constants.CONNECTOR_NAME,
-            args = {@Argument(name = "c", type = TypeKind.CONNECTOR),
-                    @Argument(name = "collectionName", type = TypeKind.STRING),
+@BallerinaFunction(
+            orgName = "ballerina",
+            packageName = "data.mongodb",
+            functionName = "update",
+            receiver = @Receiver(type = TypeKind.STRUCT, structType = "ClientConnector"),
+            args = {@Argument(name = "collectionName", type = TypeKind.STRING),
                     @Argument(name = "filter", type = TypeKind.JSON),
                     @Argument(name = "document", type = TypeKind.JSON),
                     @Argument(name = "multiple", type = TypeKind.BOOLEAN),
@@ -50,16 +50,15 @@ import org.ballerinalang.natives.annotations.ReturnType;
 public class Update extends AbstractMongoDBAction {
 
     @Override
-    public ConnectorFuture execute(Context context) {
-        BConnector bConnector = (BConnector) getRefArgument(context, 0);
-        String collectionName = getStringArgument(context, 0);
-        BJSON filter = (BJSON) getRefArgument(context, 1);
-        BJSON document = (BJSON) getRefArgument(context, 2);
-        Boolean isMultiple = getBooleanArgument(context, 0);
-        Boolean upsert = getBooleanArgument(context, 1);
-        MongoDBDataSource datasource = getDataSource(bConnector);
+    public void execute(Context context) {
+        BStruct bConnector = (BStruct) context.getRefArgument(0);
+        String collectionName = context.getStringArgument(0);
+        BJSON filter = (BJSON) context.getRefArgument(1);
+        BJSON document = (BJSON) context.getRefArgument(2);
+        Boolean isMultiple = context.getBooleanArgument(0);
+        Boolean upsert = context.getBooleanArgument(1);
+        MongoDBDataSource datasource = (MongoDBDataSource) bConnector.getNativeData(Constants.CLIENT_CONNECTOR);
         long updatedCount = update(datasource, collectionName, filter, document, isMultiple, upsert);
-        context.getControlStack().getCurrentFrame().returnValues[0] = new BInteger(updatedCount);
-        return getConnectorFuture();
+        context.setReturnValues(new BInteger(updatedCount));
     }
 }

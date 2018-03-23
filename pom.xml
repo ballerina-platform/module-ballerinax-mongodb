@@ -210,7 +210,7 @@
                 <plugin>
                     <groupId>org.ballerinalang</groupId>
                     <artifactId>docerina-maven-plugin</artifactId>
-                    <version>${docerina.maven.plugin.version}</version>
+                    <version>${ballerina.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -233,14 +233,13 @@
 
     <properties>
         <project.scm.id>my-scm-server</project.scm.id>
-        <ballerina.version>0.961.0</ballerina.version>
+        <ballerina.version>0.964.1-SNAPSHOT</ballerina.version>
         <mongodb.version>3.6.1</mongodb.version>
         <mvn.processor.plugin.version>2.2.4</mvn.processor.plugin.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.checkstyle.plugin.version>2.17</maven.checkstyle.plugin.version>
         <maven.dependency.plugin.version>2.10</maven.dependency.plugin.version>
-        <docerina.maven.plugin.version>0.95.0</docerina.maven.plugin.version>
-        <connectors.source.temp.dir>${basedir}/target/classes/META-INF/natives</connectors.source.temp.dir>
+        <connectors.source.temp.dir>${basedir}/target/classes/META-INF/ballerina</connectors.source.temp.dir>
         <maven.compiler.plugin.version>3.5.1</maven.compiler.plugin.version>
         <wso2.maven.compiler.source>1.8</wso2.maven.compiler.source>
         <wso2.maven.compiler.target>1.8</wso2.maven.compiler.target>
