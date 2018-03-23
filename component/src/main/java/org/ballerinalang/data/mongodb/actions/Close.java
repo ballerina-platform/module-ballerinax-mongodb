@@ -20,6 +20,7 @@ package org.ballerinalang.data.mongodb.actions;
 import org.ballerinalang.bre.Context;
 import org.ballerinalang.data.mongodb.Constants;
 import org.ballerinalang.data.mongodb.MongoDBDataSource;
+import org.ballerinalang.data.mongodb.MongoDBDataSourceUtils;
 import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.model.values.BStruct;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
@@ -42,6 +43,10 @@ public class Close extends AbstractMongoDBAction {
     public void execute(Context context) {
         BStruct bConnector = (BStruct) context.getRefArgument(0);
         MongoDBDataSource datasource = (MongoDBDataSource) bConnector.getNativeData(Constants.CLIENT_CONNECTOR);
-        close(datasource);
+        try {
+            close(datasource);
+        } catch (Throwable e) {
+            context.setReturnValues(MongoDBDataSourceUtils.getMongoDBConnectorError(context, e));
+        }
     }
 }

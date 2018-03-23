@@ -20,6 +20,7 @@ package org.ballerinalang.data.mongodb.actions;
 import org.ballerinalang.bre.Context;
 import org.ballerinalang.data.mongodb.Constants;
 import org.ballerinalang.data.mongodb.MongoDBDataSource;
+import org.ballerinalang.data.mongodb.MongoDBDataSourceUtils;
 import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.model.values.BJSON;
 import org.ballerinalang.model.values.BStruct;
@@ -52,7 +53,11 @@ public class Find extends AbstractMongoDBAction {
         String collectionName = context.getStringArgument(0);
         BJSON query = (BJSON) context.getNullableRefArgument(1);
         MongoDBDataSource datasource = (MongoDBDataSource) bConnector.getNativeData(Constants.CLIENT_CONNECTOR);
-        BJSON result = find(datasource, collectionName, query);
-        context.setReturnValues(result);
+        try {
+            BJSON result = find(datasource, collectionName, query);
+            context.setReturnValues(result);
+        } catch (Throwable e) {
+            context.setReturnValues(MongoDBDataSourceUtils.getMongoDBConnectorError(context, e));
+        }
     }
 }

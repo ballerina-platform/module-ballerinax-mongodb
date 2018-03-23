@@ -13,8 +13,8 @@ function insert() {
     };
 
     json document = {"name":"Tom", "age":"20"};
-    conn -> insert("students", document);
-    conn -> close();
+    _ = conn -> insert("students", document);
+    _ = conn -> close();
 }
 
 function find() returns (json) {
@@ -27,8 +27,8 @@ function find() returns (json) {
                     serverSelectionTimeout:500}
     };
     json queryString = {"age":"21"};
-    json result = conn -> find("students", queryString);
-    conn -> close();
+    json result =? conn -> find("students", queryString);
+    _ = conn -> close();
     return result;
 }
 
@@ -42,8 +42,8 @@ function findWithNullQuery() returns (json) {
                     serverSelectionTimeout:500}
     };
     json queryString = null;
-    json result = conn -> find("students", queryString);
-    conn -> close();
+    json result =? conn -> find("students", queryString);
+    _ = conn -> close();
     return result;
 }
 
@@ -57,8 +57,8 @@ function findOne() returns (json) {
                     serverSelectionTimeout:500}
     };
     json queryString = {"name":"Jim", "age":"21"};
-    json result = conn -> findOne("students", queryString);
-    conn -> close();
+    json result =? conn -> findOne("students", queryString);
+    _ = conn -> close();
     return result;
 }
 
@@ -73,12 +73,12 @@ function findOneWithNullQuery() returns (json) {
     };
 
     json queryString = null;
-    json result = conn -> findOne("students", queryString);
-    conn -> close();
+    json result =? conn -> findOne("students", queryString);
+    _ = conn -> close();
     return result;
 }
 
-function deleteMultipleRecords() returns (json) {
+function deleteMultipleRecords() returns (int) {
     endpoint mongodb:Client conn {
         host:cassandraHost,
         dbName:"studentdb",
@@ -89,12 +89,12 @@ function deleteMultipleRecords() returns (json) {
     };
 
     json filter = {"age":"25"};
-    json result = conn -> delete("students", filter, true);
-    conn -> close();
+    int result =? conn -> delete("students", filter, true);
+    _ = conn -> close();
     return result;
 }
 
-function deleteSingleRecord() returns (json) {
+function deleteSingleRecord() returns (int) {
     endpoint mongodb:Client conn {
         host:cassandraHost,
         dbName:"studentdb",
@@ -105,12 +105,12 @@ function deleteSingleRecord() returns (json) {
     };
 
     json filter = {"age":"13"};
-    json result = conn -> delete("students", filter, false);
-    conn -> close();
+    int result =? conn -> delete("students", filter, false);
+    _ = conn -> close();
     return result;
 }
 
-function updateMultipleRecords() returns (json) {
+function updateMultipleRecords() returns (int) {
     endpoint mongodb:Client conn {
         host:cassandraHost,
         dbName:"studentdb",
@@ -122,12 +122,12 @@ function updateMultipleRecords() returns (json) {
 
     json filter = {"age":"28"};
     json document = {"$set": {"age":"27"}};
-    json result = conn -> update("students", filter, document, true, false);
-    conn -> close();
+    int result =? conn -> update("students", filter, document, true, false);
+    _ = conn -> close();
     return result;
 }
 
-function updateSingleRecord() returns (json) {
+function updateSingleRecord() returns (int) {
     endpoint mongodb:Client conn {
         host:cassandraHost,
         dbName:"studentdb",
@@ -139,8 +139,8 @@ function updateSingleRecord() returns (json) {
 
     json filter = {"age":"30"};
     json document = {"$set": {"age":"32"}};
-    json result = conn -> update("students", filter, document, false, false);
-    conn -> close();
+    int result =? conn -> update("students", filter, document, false, false);
+    _ = conn -> close();
     return result;
 }
 
@@ -155,6 +155,6 @@ function batchInsert() {
     };
 
     json docs = [{name:"Jessie",age:"18"}, {name:"Rose",age:"17"}, {name:"Anne",age:"15"}];
-    conn -> batchInsert("students", docs);
-    conn -> close();
+    _ = conn -> batchInsert("students", docs);
+    _ = conn -> close();
 }

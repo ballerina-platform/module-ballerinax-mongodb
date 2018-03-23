@@ -20,6 +20,7 @@ package org.ballerinalang.data.mongodb.actions;
 import org.ballerinalang.bre.Context;
 import org.ballerinalang.data.mongodb.Constants;
 import org.ballerinalang.data.mongodb.MongoDBDataSource;
+import org.ballerinalang.data.mongodb.MongoDBDataSourceUtils;
 import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.model.values.BInteger;
 import org.ballerinalang.model.values.BJSON;
@@ -54,7 +55,11 @@ public class Delete extends AbstractMongoDBAction {
         BJSON filter = (BJSON) context.getRefArgument(1);
         Boolean isMultiple = context.getBooleanArgument(0);
         MongoDBDataSource datasource = (MongoDBDataSource) bConnector.getNativeData(Constants.CLIENT_CONNECTOR);
-        long deletedCount = delete(datasource, collectionName, filter, isMultiple);
-        context.setReturnValues(new BInteger(deletedCount));
+        try {
+            long deletedCount = delete(datasource, collectionName, filter, isMultiple);
+            context.setReturnValues(new BInteger(deletedCount));
+        } catch (Throwable e) {
+            context.setReturnValues(MongoDBDataSourceUtils.getMongoDBConnectorError(context, e));
+        }
     }
 }

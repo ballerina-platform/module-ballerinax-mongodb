@@ -12,8 +12,8 @@ function testConnectorInitWithDirectUrl() returns (json) {
     };
 
     json queryString = {"name":"Jim", "age":"21"};
-    json result = conn -> find("students", queryString);
-    conn -> close();
+    json result =? conn -> find("students", queryString);
+    _ = conn -> close();
     return result;
 }
 
@@ -28,8 +28,8 @@ function testConnectorInitWithConnectionPoolProperties() returns (json) {
                     minPoolSize:1, waitQueueMultiple:1, waitQueueTimeout:150}
     };
     json queryString = {"name":"Jim", "age":"21"};
-    json result = conn -> find("students", queryString);
-    conn -> close();
+    json result =? conn -> find("students", queryString);
+    _ = conn -> close();
     return result;
 }
 

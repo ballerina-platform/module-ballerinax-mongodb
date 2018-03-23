@@ -1,4 +1,4 @@
-//package ballerina.data.mongodb;
+package ballerina.data.mongodb;
 
 public struct ConnectionProperties {
     string url;
@@ -39,18 +39,21 @@ public struct ClientConnector {
 @Param {value:"collectionName: The name of the collection to be queried"}
 @Param {value:"queryString: Query to use to select data"}
 @Return {value:"Result returned from the findOne action" }
-public native function <ClientConnector client> find (string collectionName, json queryString) returns (json);
+public native function <ClientConnector client> find (string collectionName, json queryString)
+returns (json|MongoDBConnectorError);
 
 @Description {value:"The findOne action implementation which selects the first document match with the query."}
 @Param {value:"collectionName: The name of the collection to be queried"}
 @Param {value:"queryString: Query to use to select data"}
 @Return {value:"Result returned from the findOne action" }
-public native function <ClientConnector client> findOne (string collectionName, json queryString) returns (json);
+public native function <ClientConnector client> findOne (string collectionName, json queryString)
+returns (json | MongoDBConnectorError );
 
 @Description {value:"The insert action implementation which insert document to a collection."}
 @Param {value:"collectionName: The name of the collection"}
 @Param {value:"document: The document to be inserted"}
-public native function <ClientConnector client> insert (string collectionName, json document);
+public native function <ClientConnector client> insert (string collectionName, json document)
+returns (MongoDBConnectorError| null);
 
 @Description {value:"The delete action implementation which deletes documents that matches the given filter."}
 @Param {value:"collectionName: The name of the collection"}
@@ -58,7 +61,7 @@ public native function <ClientConnector client> insert (string collectionName, j
 @Param {value:"multi: Specifies whether to delete multiple documents or not"}
 @Return {value:"Updated count during the update action" }
 public native function <ClientConnector client> delete (string collectionName, json filter, boolean multi) returns
-(int);
+(int | MongoDBConnectorError);
 
 @Description {value:"The update action implementation which update documents that matches to given filter."}
 @Param {value:"collectionName: The name of the collection"}
@@ -67,15 +70,16 @@ public native function <ClientConnector client> delete (string collectionName, j
 @Param {value:"upsert: Specifies whether to create a new document when no document matches the filter"}
 @Return {value:"Updated count during the update action" }
 public native function <ClientConnector client> update (string collectionName, json filter, json document, boolean
-multi, boolean upsert) returns (int);
+multi, boolean upsert) returns (int | MongoDBConnectorError);
 
 @Description {value:"The insert action implementation which inserts an array of documents to a collection."}
 @Param {value:"collectionName: The name of the collection"}
 @Param {value:"documents: The document array to be inserted"}
-public native function <ClientConnector client> batchInsert (string collectionName, json documents);
+public native function <ClientConnector client> batchInsert (string collectionName, json documents)
+returns (MongoDBConnectorError| null);
 
 @Description {value:"The close action implementation which closes the MongoDB connection pool."}
-public native function <ClientConnector client> close ();
+public native function <ClientConnector client> close () returns (MongoDBConnectorError| null);
 
 @Description {value:"MongoDBConnectorError struct represents an error occured during the MongoDB client invocation"}
 @Field {value:"message:  An error message explaining about the error"}

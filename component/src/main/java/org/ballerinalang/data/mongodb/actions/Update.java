@@ -20,6 +20,7 @@ package org.ballerinalang.data.mongodb.actions;
 import org.ballerinalang.bre.Context;
 import org.ballerinalang.data.mongodb.Constants;
 import org.ballerinalang.data.mongodb.MongoDBDataSource;
+import org.ballerinalang.data.mongodb.MongoDBDataSourceUtils;
 import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.model.values.BInteger;
 import org.ballerinalang.model.values.BJSON;
@@ -58,7 +59,11 @@ public class Update extends AbstractMongoDBAction {
         Boolean isMultiple = context.getBooleanArgument(0);
         Boolean upsert = context.getBooleanArgument(1);
         MongoDBDataSource datasource = (MongoDBDataSource) bConnector.getNativeData(Constants.CLIENT_CONNECTOR);
-        long updatedCount = update(datasource, collectionName, filter, document, isMultiple, upsert);
-        context.setReturnValues(new BInteger(updatedCount));
+        try {
+            long updatedCount = update(datasource, collectionName, filter, document, isMultiple, upsert);
+            context.setReturnValues(new BInteger(updatedCount));
+        } catch (Throwable e) {
+            context.setReturnValues(MongoDBDataSourceUtils.getMongoDBConnectorError(context, e));
+        }
     }
 }
