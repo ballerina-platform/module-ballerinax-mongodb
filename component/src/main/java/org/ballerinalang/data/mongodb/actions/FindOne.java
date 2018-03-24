@@ -18,40 +18,44 @@
 package org.ballerinalang.data.mongodb.actions;
 
 import org.ballerinalang.bre.Context;
-import org.ballerinalang.connector.api.ConnectorFuture;
 import org.ballerinalang.data.mongodb.Constants;
 import org.ballerinalang.data.mongodb.MongoDBDataSource;
+import org.ballerinalang.data.mongodb.MongoDBDataSourceUtils;
 import org.ballerinalang.model.types.TypeKind;
-import org.ballerinalang.model.values.BConnector;
 import org.ballerinalang.model.values.BJSON;
+import org.ballerinalang.model.values.BStruct;
 import org.ballerinalang.natives.annotations.Argument;
-import org.ballerinalang.natives.annotations.BallerinaAction;
+import org.ballerinalang.natives.annotations.BallerinaFunction;
+import org.ballerinalang.natives.annotations.Receiver;
 import org.ballerinalang.natives.annotations.ReturnType;
 /**
  * {@code FindOne} action selects the first document that satisfies the given query criteria.
  *
- * @since 0.95.0
+ * @since 0.5.5
  */
-@BallerinaAction(
-            packageName = "ballerina.data.mongodb",
-            actionName = "findOne",
-            connectorName = Constants.CONNECTOR_NAME,
-            args = {@Argument(name = "c", type = TypeKind.CONNECTOR),
-                    @Argument(name = "collectionName", type = TypeKind.STRING),
-                    @Argument(name = "query", type = TypeKind.JSON)
+@BallerinaFunction(
+            orgName = "ballerina",
+            packageName = "data.mongodb",
+            functionName = "findOne",
+            receiver = @Receiver(type = TypeKind.STRUCT, structType = "ClientConnector"),
+            args = {@Argument(name = "collectionName", type = TypeKind.STRING),
+                    @Argument(name = "queryString", type = TypeKind.JSON)
             },
             returnType = { @ReturnType(type = TypeKind.JSON) }
         )
 public class FindOne extends AbstractMongoDBAction {
 
     @Override
-    public ConnectorFuture execute(Context context) {
-        BConnector bConnector = (BConnector) getRefArgument(context, 0);
-        String collectionName = getStringArgument(context, 0);
-        BJSON query = (BJSON) getRefArgument(context, 1);
-        MongoDBDataSource datasource = getDataSource(bConnector);
-        BJSON result = findOne(datasource, collectionName, query);
-        context.getControlStack().getCurrentFrame().returnValues[0] = result;
-        return getConnectorFuture();
+    public void execute(Context context) {
+        BStruct bConnector = (BStruct) context.getRefArgument(0);
+        String collectionName = context.getStringArgument(0);
+        BJSON query = (BJSON) context.getNullableRefArgument(1);
+        MongoDBDataSource datasource = (MongoDBDataSource) bConnector.getNativeData(Constants.CLIENT_CONNECTOR);
+        try {
+            BJSON result = findOne(datasource, collectionName, query);
+            context.setReturnValues(result);
+        } catch (Throwable e) {
+            context.setReturnValues(MongoDBDataSourceUtils.getMongoDBConnectorError(context, e));
+        }
     }
 }

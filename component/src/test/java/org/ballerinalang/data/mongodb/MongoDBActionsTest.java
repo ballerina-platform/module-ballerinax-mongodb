@@ -26,6 +26,7 @@ import org.ballerinalang.launcher.util.BCompileUtil;
 import org.ballerinalang.launcher.util.BRunUtil;
 import org.ballerinalang.launcher.util.CompileResult;
 import org.ballerinalang.model.util.JsonNode;
+import org.ballerinalang.model.values.BInteger;
 import org.ballerinalang.model.values.BJSON;
 import org.ballerinalang.model.values.BValue;
 import org.bson.Document;
@@ -125,7 +126,7 @@ public class MongoDBActionsTest {
           dependsOnMethods = "testFindWithNullQery")
     public void testDeleteMultipleRecords() throws Exception {
         BValue[] results = BRunUtil.invoke(result, "deleteMultipleRecords");
-        Assert.assertEquals(((BJSON) results[0]).value().longValue(), 2, "Exactly 2 records should have been deleted");
+        Assert.assertEquals(((BInteger) results[0]).intValue(), 2, "Exactly 2 records should have been deleted");
         FindIterable iterable = mongoCollection.find(Document.parse("{\"age\":\"25\"}"));
         int size = 0;
         for (Object value : iterable) {
@@ -138,7 +139,7 @@ public class MongoDBActionsTest {
           dependsOnMethods = "testFindWithNullQery")
     public void testDeleteSingleRecord() throws Exception {
         BValue[] results = BRunUtil.invoke(result, "deleteSingleRecord");
-        Assert.assertEquals(((BJSON) results[0]).value().longValue(), 1,
+        Assert.assertEquals(((BInteger) results[0]).intValue(), 1,
                 "Exactly 1 records should have been " + "deleted");
         FindIterable iterable = mongoCollection.find(Document.parse("{\"age\":\"13\"}"));
         int size = 0;
@@ -155,7 +156,7 @@ public class MongoDBActionsTest {
     @Test(description = "Tests MongoDB update action for multiple records")
     public void testUpdateMultipleRecords() throws Exception {
         BValue[] results = BRunUtil.invoke(result, "updateMultipleRecords");
-        Assert.assertEquals(((BJSON) results[0]).value().longValue(), 2,
+        Assert.assertEquals(((BInteger) results[0]).intValue(), 2,
                 "Exactly 2 records " + "should have been updated");
         Document[] documentsArray = new Document[2];
         documentsArray[0] = (Document) mongoCollection.find(Document.parse("{\"name\":\"Thomas\"}")).first();
@@ -168,7 +169,8 @@ public class MongoDBActionsTest {
     @Test(description = "Tests MongoDB update action for single record")
     public void testUpdateSingleRecord() throws Exception {
         BValue[] results = BRunUtil.invoke(result, "updateSingleRecord");
-        Assert.assertEquals(((BJSON) results[0]).value().longValue(), 1, "Only 1 record should have been updated");
+        //Assert.assertEquals(((BJSON) results[0]).value().longValue(), 1, "Only 1 record should have been updated");
+        Assert.assertEquals(((BInteger) results[0]).intValue(), 1, "Only 1 record should have been updated");
         Document document1 = (Document) mongoCollection.find(Document.parse("{\"name\":\"Philips\"}")).first();
         Document document2 = (Document) mongoCollection.find(Document.parse("{\"name\":\"James\"}")).first();
 

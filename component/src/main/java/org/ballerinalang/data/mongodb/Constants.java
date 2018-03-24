@@ -23,6 +23,21 @@ package org.ballerinalang.data.mongodb;
  * @since 0.95.0
  */
 public final class Constants {
-    public static final String CONNECTOR_NAME = "ClientConnector";
-    public static final String DATASOURCE_KEY = "datasource_key";
+    public static final String B_CONNECTOR = "BConnector";
+    public static final String CLIENT_ENDPOINT_CONFIG = "clientEndpointConfig";
+    public static final String MONGODB_PACKAGE_PATH = "ballerina.data.mongodb";
+    public static final String CLIENT_CONNECTOR = "ClientConnector";
+    public static final String MONGODB_CONNECTOR_ERROR = "MongoDBConnectorError";
+    public static final String MONGODB_EXCEPTION_OCCURED = "Exception Occurred while executing Mongo database";
+
+    /**
+     * Constants for EndpointConfiguration.
+     */
+    public static final class EndpointConfig {
+        public static final String HOST = "host";
+        public static final String DBNAME = "dbName";
+        public static final String USERNAME = "username";
+        public static final String PASSWORD = "password";
+        public static final String OPTIONS = "options";
+    }
 }

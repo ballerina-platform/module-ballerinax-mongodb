@@ -18,32 +18,35 @@
 package org.ballerinalang.data.mongodb.actions;
 
 import org.ballerinalang.bre.Context;
-import org.ballerinalang.connector.api.ConnectorFuture;
 import org.ballerinalang.data.mongodb.Constants;
 import org.ballerinalang.data.mongodb.MongoDBDataSource;
+import org.ballerinalang.data.mongodb.MongoDBDataSourceUtils;
 import org.ballerinalang.model.types.TypeKind;
-import org.ballerinalang.model.values.BConnector;
-import org.ballerinalang.natives.annotations.Argument;
-import org.ballerinalang.natives.annotations.BallerinaAction;
+import org.ballerinalang.model.values.BStruct;
+import org.ballerinalang.natives.annotations.BallerinaFunction;
+import org.ballerinalang.natives.annotations.Receiver;
 
 /**
  * {@code Close} action is used to close the MongoDB connection pool.
  *
  * @since 0.95.0
  */
-@BallerinaAction(
-            packageName = "ballerina.data.mongodb",
-            actionName = "close",
-            connectorName = Constants.CONNECTOR_NAME,
-            args = { @Argument(name = "c", type = TypeKind.CONNECTOR) }
+@BallerinaFunction(
+            orgName = "ballerina",
+            packageName = "data.mongodb",
+            functionName = "close",
+            receiver = @Receiver(type = TypeKind.STRUCT, structType = "ClientConnector")
         )
 public class Close extends AbstractMongoDBAction {
 
     @Override
-    public ConnectorFuture execute(Context context) {
-        BConnector bConnector = (BConnector) getRefArgument(context, 0);
-        MongoDBDataSource datasource = getDataSource(bConnector);
-        close(datasource);
-        return getConnectorFuture();
+    public void execute(Context context) {
+        BStruct bConnector = (BStruct) context.getRefArgument(0);
+        MongoDBDataSource datasource = (MongoDBDataSource) bConnector.getNativeData(Constants.CLIENT_CONNECTOR);
+        try {
+            close(datasource);
+        } catch (Throwable e) {
+            context.setReturnValues(MongoDBDataSourceUtils.getMongoDBConnectorError(context, e));
+        }
     }
 }

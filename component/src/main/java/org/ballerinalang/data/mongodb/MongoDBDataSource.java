@@ -29,11 +29,11 @@ import com.mongodb.ServerAddress;
 import com.mongodb.WriteConcern;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
+import org.ballerinalang.connector.api.Struct;
 import org.ballerinalang.model.types.BType;
 import org.ballerinalang.model.util.JsonGenerator;
 import org.ballerinalang.model.util.JsonParser;
 import org.ballerinalang.model.values.BJSON;
-import org.ballerinalang.model.values.BStruct;
 import org.ballerinalang.model.values.BValue;
 import org.ballerinalang.util.exceptions.BallerinaException;
 import org.bson.Document;
@@ -66,9 +66,9 @@ public class MongoDBDataSource implements BValue {
         return client;
     }
 
-    public boolean init(String host, String dbName, String username, String password, BStruct options) {
+    public boolean init(String host, String dbName, String username, String password, Struct options) {
         if (options != null) {
-            String directURL = options.getStringField(ConnectionParam.URL.getIndex());
+            String directURL = options.getStringField(ConnectionParam.URL.getKey());
             if (!directURL.isEmpty()) {
                 client = createMongoClient(directURL);
             } else {
@@ -95,7 +95,7 @@ public class MongoDBDataSource implements BValue {
      * @param options BStruct containing options for MongoClient creation
      * @return MongoClient
      */
-    private MongoClient createMongoClient(String host, BStruct options) {
+    private MongoClient createMongoClient(String host, Struct options) {
         return new MongoClient(this.createServerAddresses(host), this.createOptions(options));
     }
 
@@ -107,7 +107,7 @@ public class MongoDBDataSource implements BValue {
      * @param mongoCredential MongoCredential object created with desired auth-mechanism
      * @return MongoClient
      */
-    private MongoClient createMongoClient(String host, BStruct options, MongoCredential mongoCredential) {
+    private MongoClient createMongoClient(String host, Struct options, MongoCredential mongoCredential) {
         List<MongoCredential> credentials = new ArrayList<>();
         credentials.add(mongoCredential);
         return new MongoClient(this.createServerAddresses(host), credentials, this.createOptions(options));
@@ -143,12 +143,12 @@ public class MongoDBDataSource implements BValue {
      * @param options BStruct containing options for MongoCredential creation
      * @return MongoCredential
      */
-    private MongoCredential createCredentials(String username, String password, BStruct options) {
-        String authSource = options.getStringField(ConnectionParam.AUTHSOURCE.getIndex());
+    private MongoCredential createCredentials(String username, String password, Struct options) {
+        String authSource = options.getStringField(ConnectionParam.AUTHSOURCE.getKey());
         if (authSource.isEmpty()) {
             authSource = DEFAULT_USER_DB;
         }
-        String authMechanismString = options.getStringField(ConnectionParam.AUTHMECHANISM.getIndex());
+        String authMechanismString = options.getStringField(ConnectionParam.AUTHMECHANISM.getKey());
         MongoCredential mongoCredential = null;
         if (!authMechanismString.isEmpty()) {
             AuthenticationMechanism authMechanism = retrieveAuthMechanism(authMechanismString);
@@ -171,7 +171,7 @@ public class MongoDBDataSource implements BValue {
                 }
                 break;
             case GSSAPI:
-                String gssApiServiceName = options.getStringField(ConnectionParam.GSSAPI_SERVICE_NAME.getIndex());
+                String gssApiServiceName = options.getStringField(ConnectionParam.GSSAPI_SERVICE_NAME.getKey());
                 mongoCredential = MongoCredential.createGSSAPICredential(username);
                 if (!gssApiServiceName.isEmpty()) {
                     mongoCredential = mongoCredential.withMechanismProperty("SERVICE_NAME", gssApiServiceName);
@@ -202,70 +202,70 @@ public class MongoDBDataSource implements BValue {
         }
     }
 
-    private MongoClientOptions createOptions(BStruct options) {
+    private MongoClientOptions createOptions(Struct options) {
         MongoClientOptions.Builder builder = MongoClientOptions.builder();
-        boolean sslEnabled = options.getBooleanField(ConnectionParam.SSL_ENABLED.getIndex()) != 0;
+        boolean sslEnabled = options.getBooleanField(ConnectionParam.SSL_ENABLED.getKey());
         if (sslEnabled) {
             builder = builder.sslEnabled(true);
         }
         boolean sslInvalidHostNameAllowed = options.getBooleanField(ConnectionParam
-                .SSL_INVALID_HOSTNAME_ALLOWED.getIndex()) != 0;
+                .SSL_INVALID_HOSTNAME_ALLOWED.getKey());
         if (sslInvalidHostNameAllowed) {
             builder.sslInvalidHostNameAllowed(true);
         }
-        String readConcern = options.getStringField(ConnectionParam.READ_CONCERN.getIndex());
+        String readConcern = options.getStringField(ConnectionParam.READ_CONCERN.getKey());
         if (!readConcern.isEmpty()) {
             builder = builder.readConcern(new ReadConcern(ReadConcernLevel.valueOf(readConcern)));
         }
-        String writeConsern = options.getStringField(ConnectionParam.WRITE_CONCERN.getIndex());
+        String writeConsern = options.getStringField(ConnectionParam.WRITE_CONCERN.getKey());
         if (!writeConsern.isEmpty()) {
             builder = builder.writeConcern(WriteConcern.valueOf(writeConsern));
         }
-        String readPreference = options.getStringField(ConnectionParam.READ_PREFERENCE.getIndex());
+        String readPreference = options.getStringField(ConnectionParam.READ_PREFERENCE.getKey());
         if (!readPreference.isEmpty()) {
             builder = builder.readPreference((ReadPreference.valueOf(readPreference)));
         }
-        int socketTimeout = (int) options.getIntField(ConnectionParam.SOCKET_TIMEOUT.getIndex());
+        int socketTimeout = (int) options.getIntField(ConnectionParam.SOCKET_TIMEOUT.getKey());
         if (socketTimeout != -1) {
             builder = builder.socketTimeout(socketTimeout);
         }
-        int connectionTimeout = (int) options.getIntField(ConnectionParam.CONNECTION_TIMEOUT.getIndex());
+        int connectionTimeout = (int) options.getIntField(ConnectionParam.CONNECTION_TIMEOUT.getKey());
         if (connectionTimeout != -1) {
             builder = builder.connectTimeout(connectionTimeout);
         }
-        int maxPoolSize = (int) options.getIntField(ConnectionParam.MAX_POOL_SIZE.getIndex());
+        int maxPoolSize = (int) options.getIntField(ConnectionParam.MAX_POOL_SIZE.getKey());
         if (maxPoolSize != -1) {
             builder = builder.connectionsPerHost(maxPoolSize);
         }
-        int serverSelectionTimeout = (int) options.getIntField(ConnectionParam.SERVER_SELECTION_TIMEOUT.getIndex());
+        int serverSelectionTimeout = (int) options.getIntField(ConnectionParam.SERVER_SELECTION_TIMEOUT.getKey());
         if (serverSelectionTimeout != -1) {
             builder = builder.serverSelectionTimeout(serverSelectionTimeout);
         }
-        int maxIdleTime = (int) options.getIntField(ConnectionParam.MAX_IDLE_TIME.getIndex());
+        int maxIdleTime = (int) options.getIntField(ConnectionParam.MAX_IDLE_TIME.getKey());
         if (maxIdleTime != -1) {
             builder = builder.maxConnectionIdleTime(maxIdleTime);
         }
-        int maxLifeTime = (int) options.getIntField(ConnectionParam.MAX_LIFE_TIME.getIndex());
+        int maxLifeTime = (int) options.getIntField(ConnectionParam.MAX_LIFE_TIME.getKey());
         if (maxLifeTime != -1) {
             builder = builder.maxConnectionLifeTime(maxLifeTime);
         }
-        int minPoolSize = (int) options.getIntField(ConnectionParam.MIN_POOL_SIZE.getIndex());
+        int minPoolSize = (int) options.getIntField(ConnectionParam.MIN_POOL_SIZE.getKey());
         if (maxPoolSize != -1) {
             builder = builder.minConnectionsPerHost(minPoolSize);
         }
-        int waitQueueMultiple = (int) options.getIntField(ConnectionParam.WAIT_QUEUE_MULTIPLE.getIndex());
+        int waitQueueMultiple = (int) options.getIntField(ConnectionParam.WAIT_QUEUE_MULTIPLE.getKey());
         if (waitQueueMultiple != -1) {
             builder = builder.threadsAllowedToBlockForConnectionMultiplier(waitQueueMultiple);
         }
-        int waitQueueTimeout = (int) options.getIntField(ConnectionParam.WAIT_QUEUE_TIMEOUT.getIndex());
+        int waitQueueTimeout = (int) options.getIntField(ConnectionParam.WAIT_QUEUE_TIMEOUT.getKey());
         if (waitQueueTimeout != -1) {
             builder = builder.maxWaitTime(waitQueueTimeout);
         }
-        int localThreshold = (int) options.getIntField(ConnectionParam.LOCAL_THRESHOLD.getIndex());
+        int localThreshold = (int) options.getIntField(ConnectionParam.LOCAL_THRESHOLD.getKey());
         if (localThreshold != -1) {
             builder = builder.localThreshold(localThreshold);
         }
-        int heartbeatFrequency = (int) options.getIntField(ConnectionParam.HEART_BEAT_FREQUENCY.getIndex());
+        int heartbeatFrequency = (int) options.getIntField(ConnectionParam.HEART_BEAT_FREQUENCY.getKey());
         if (heartbeatFrequency != -1) {
             builder = builder.heartbeatFrequency(heartbeatFrequency);
         }
@@ -338,39 +338,39 @@ public class MongoDBDataSource implements BValue {
      */
     private enum ConnectionParam {
         // String Params
-        URL(0),
-        READ_CONCERN(1),
-        WRITE_CONCERN(2),
-        READ_PREFERENCE(3),
-        AUTHSOURCE(4),
-        AUTHMECHANISM(5),
-        GSSAPI_SERVICE_NAME(6),
+        URL("url"),
+        READ_CONCERN("readConcern"),
+        WRITE_CONCERN("writeConcern"),
+        READ_PREFERENCE("readPreference"),
+        AUTHSOURCE("authSource"),
+        AUTHMECHANISM("authMechanism"),
+        GSSAPI_SERVICE_NAME("gssapiServiceName"),
 
         // boolean params
-        SSL_ENABLED(0),
-        SSL_INVALID_HOSTNAME_ALLOWED(1),
+        SSL_ENABLED("sslEnabled"),
+        SSL_INVALID_HOSTNAME_ALLOWED("sslInvalidHostNameAllowed"),
 
         // int params
-        SOCKET_TIMEOUT(0),
-        CONNECTION_TIMEOUT(1),
-        MAX_POOL_SIZE(2),
-        SERVER_SELECTION_TIMEOUT(3),
-        MAX_IDLE_TIME(4),
-        MAX_LIFE_TIME(5),
-        MIN_POOL_SIZE(6),
-        WAIT_QUEUE_MULTIPLE(7),
-        WAIT_QUEUE_TIMEOUT(8),
-        LOCAL_THRESHOLD(9),
-        HEART_BEAT_FREQUENCY(10);
+        SOCKET_TIMEOUT("socketTimeout"),
+        CONNECTION_TIMEOUT("connectionTimeout"),
+        MAX_POOL_SIZE("maxPoolSize"),
+        SERVER_SELECTION_TIMEOUT("serverSelectionTimeout"),
+        MAX_IDLE_TIME("maxIdleTime"),
+        MAX_LIFE_TIME("maxLifeTime"),
+        MIN_POOL_SIZE("minPoolSize"),
+        WAIT_QUEUE_MULTIPLE("waitQueueMultiple"),
+        WAIT_QUEUE_TIMEOUT("waitQueueTimeout"),
+        LOCAL_THRESHOLD("localThreshold"),
+        HEART_BEAT_FREQUENCY("heartbeatFrequency");
 
-        private int index;
+        private String key;
 
-        ConnectionParam(int index) {
-            this.index = index;
+        ConnectionParam(String key) {
+            this.key = key;
         }
 
-        private int getIndex() {
-            return index;
+        private String getKey() {
+            return key;
         }
     }
 }
