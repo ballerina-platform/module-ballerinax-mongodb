@@ -32,38 +32,44 @@ Sample
 ==================================
 
 ```ballerina
-import ballerina.data.mongodb;
+import ballerina/data.mongodb;
+import ballerina/io;
 
 function main (string[] args) {
-    endpoint<mongodb:ClientConnector> conn {
-            create mongodb:ClientConnector("localhost", "testballerina", "", "", {sslEnabled:false, serverSelectionTimeout:500});
-    }
+    endpoint mongodb:Client conn {
+        host:"localhost",
+        dbName:"testballerina",
+        username:"",
+        password:"",
+        options:{sslEnabled:false,
+                    serverSelectionTimeout:500}
+    };
 
     json doc1 = {"name":"ballerina", "type":"src"};
     json doc2 = {"name":"connectors", "type":"artifacts"};
     json doc3 = {"name":"docerina", "type":"src"};
-    conn.insert("projects", doc1);
-    conn.insert("projects", doc2);
-    conn.insert("projects", doc3);
+    _ = conn -> insert("projects", doc1);
+    _ = conn -> insert("projects", doc2);
+    _ = conn -> insert("projects", doc3);
 
-    json j0 = conn.find("projects", null);
-    println("initial data:");
-    println(j0);
+    json j0 =? conn -> find("projects", null);
+    io:println("initial data:");
+    io:println(j0);
     
-    json query = {"name":"ballerina"};
-    json j1 = conn.find("projects", query);
-    println("query result:");
-    println(j1);
+    json queryString = {"name":"ballerina"};
+    json j1 =? conn -> find("projects", queryString);
+    io:println("query result:");
+    io:println(j1);
 
-    json j2 = conn.findOne("projects", query);
-    println("findOne query result:");
-    println(j2);
+    json j2 =? conn -> findOne("projects", queryString);
+    io:println("findOne query result:");
+    io:println(j2);
     
     json filter = {"type":"src"};
-    int deleted = conn.delete("projects", filter,true);
-    println(deleted);     
+    int deleted =? conn -> delete("projects", filter,true);
+    io:println(deleted);     
        
-    conn.close();
+    _ = conn -> close();
 }
 ```   
     
