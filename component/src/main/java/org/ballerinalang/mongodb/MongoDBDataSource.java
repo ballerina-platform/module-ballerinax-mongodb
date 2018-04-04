@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.ballerinalang.data.mongodb;
+package org.ballerinalang.mongodb;
 
 import com.mongodb.AuthenticationMechanism;
 import com.mongodb.MongoClient;

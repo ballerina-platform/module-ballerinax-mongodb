@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.ballerinalang.data.mongodb;
+package org.ballerinalang.mongodb;
 
 import org.ballerinalang.bre.Context;
 import org.ballerinalang.model.values.BStruct;

@@ -15,53 +15,49 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.ballerinalang.data.mongodb.actions;
+package org.ballerinalang.mongodb.actions;
 
 import org.ballerinalang.bre.Context;
-import org.ballerinalang.data.mongodb.Constants;
-import org.ballerinalang.data.mongodb.MongoDBDataSource;
-import org.ballerinalang.data.mongodb.MongoDBDataSourceUtils;
 import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.model.values.BInteger;
 import org.ballerinalang.model.values.BJSON;
 import org.ballerinalang.model.values.BStruct;
+import org.ballerinalang.mongodb.Constants;
+import org.ballerinalang.mongodb.MongoDBDataSource;
+import org.ballerinalang.mongodb.MongoDBDataSourceUtils;
 import org.ballerinalang.natives.annotations.Argument;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
 import org.ballerinalang.natives.annotations.ReturnType;
 
 /**
- * {@code Update} modifies existing document or documents in a collection.
+ * {@code Delete} action to delete documents in a collection.
  *
  * @since 0.5.4
  */
 @BallerinaFunction(
             orgName = "ballerina",
-            packageName = "data.mongodb",
-            functionName = "update",
+            packageName = "mongodb",
+            functionName = "delete",
             receiver = @Receiver(type = TypeKind.STRUCT, structType = "ClientConnector"),
             args = {@Argument(name = "collectionName", type = TypeKind.STRING),
                     @Argument(name = "filter", type = TypeKind.JSON),
-                    @Argument(name = "document", type = TypeKind.JSON),
-                    @Argument(name = "multiple", type = TypeKind.BOOLEAN),
-                    @Argument(name = "upsert", type = TypeKind.BOOLEAN)
+                    @Argument(name = "multiple", type = TypeKind.BOOLEAN)
             },
             returnType = { @ReturnType(type = TypeKind.INT) }
         )
-public class Update extends AbstractMongoDBAction {
+public class Delete extends AbstractMongoDBAction {
 
     @Override
     public void execute(Context context) {
         BStruct bConnector = (BStruct) context.getRefArgument(0);
         String collectionName = context.getStringArgument(0);
         BJSON filter = (BJSON) context.getRefArgument(1);
-        BJSON document = (BJSON) context.getRefArgument(2);
         Boolean isMultiple = context.getBooleanArgument(0);
-        Boolean upsert = context.getBooleanArgument(1);
         MongoDBDataSource datasource = (MongoDBDataSource) bConnector.getNativeData(Constants.CLIENT_CONNECTOR);
         try {
-            long updatedCount = update(datasource, collectionName, filter, document, isMultiple, upsert);
-            context.setReturnValues(new BInteger(updatedCount));
+            long deletedCount = delete(datasource, collectionName, filter, isMultiple);
+            context.setReturnValues(new BInteger(deletedCount));
         } catch (Throwable e) {
             context.setReturnValues(MongoDBDataSourceUtils.getMongoDBConnectorError(context, e));
         }

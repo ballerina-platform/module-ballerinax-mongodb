@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.ballerinalang.data.mongodb.actions;
+package org.ballerinalang.mongodb.actions;
 
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
@@ -23,8 +23,8 @@ import com.mongodb.client.model.UpdateOptions;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
 import org.ballerinalang.bre.bvm.BlockingNativeCallableUnit;
-import org.ballerinalang.data.mongodb.MongoDBDataSource;
 import org.ballerinalang.model.values.BJSON;
+import org.ballerinalang.mongodb.MongoDBDataSource;
 import org.ballerinalang.util.exceptions.BallerinaException;
 import org.bson.Document;
 

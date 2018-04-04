@@ -32,7 +32,7 @@ Sample
 ==================================
 
 ```ballerina
-import ballerina/data.mongodb;
+import ballerina/mongodb;
 import ballerina/io;
 
 function main (string[] args) {

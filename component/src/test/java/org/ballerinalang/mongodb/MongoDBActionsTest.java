@@ -15,13 +15,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.ballerinalang.data.mongodb;
+package org.ballerinalang.mongodb;
 
 import com.mongodb.MongoClient;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import de.flapdoodle.embed.mongo.MongodExecutable;
-import org.ballerinalang.data.mongodb.utils.MongoDBTestUtils;
 import org.ballerinalang.launcher.util.BCompileUtil;
 import org.ballerinalang.launcher.util.BRunUtil;
 import org.ballerinalang.launcher.util.CompileResult;
@@ -29,6 +28,7 @@ import org.ballerinalang.model.util.JsonNode;
 import org.ballerinalang.model.values.BInteger;
 import org.ballerinalang.model.values.BJSON;
 import org.ballerinalang.model.values.BValue;
+import org.ballerinalang.mongodb.utils.MongoDBTestUtils;
 import org.bson.Document;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
