@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.ballerinalang.data.mongodb.utils;
+package org.ballerinalang.mongodb.utils;
 
 import com.mongodb.MongoClient;
 import de.flapdoodle.embed.mongo.MongodExecutable;

@@ -1,4 +1,4 @@
-package ballerina.data.mongodb;
+package ballerina.mongodb;
 
 public struct ConnectionProperties {
     string url;

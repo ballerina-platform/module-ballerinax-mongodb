@@ -15,15 +15,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.ballerinalang.data.mongodb.actions;
+package org.ballerinalang.mongodb.actions;
 
 import org.ballerinalang.bre.Context;
-import org.ballerinalang.data.mongodb.Constants;
-import org.ballerinalang.data.mongodb.MongoDBDataSource;
-import org.ballerinalang.data.mongodb.MongoDBDataSourceUtils;
 import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.model.values.BJSON;
 import org.ballerinalang.model.values.BStruct;
+import org.ballerinalang.mongodb.Constants;
+import org.ballerinalang.mongodb.MongoDBDataSource;
+import org.ballerinalang.mongodb.MongoDBDataSourceUtils;
 import org.ballerinalang.natives.annotations.Argument;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
@@ -37,7 +37,7 @@ import org.ballerinalang.natives.annotations.ReturnType;
  */
 @BallerinaFunction(
             orgName = "ballerina",
-            packageName = "data.mongodb",
+            packageName = "mongodb",
             functionName = "find",
             receiver = @Receiver(type = TypeKind.STRUCT, structType = "ClientConnector"),
             args = { @Argument(name = "collectionName", type = TypeKind.STRING),

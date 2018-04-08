@@ -1,4 +1,4 @@
-import ballerina/data.mongodb;
+import ballerina/mongodb;
 
 const string cassandraHost = "127.0.0.1";
 

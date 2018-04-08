@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.ballerinalang.data.mongodb;
+package org.ballerinalang.mongodb;
 
 /**
  * Constants for MongoDB Connector.
@@ -25,7 +25,7 @@ package org.ballerinalang.data.mongodb;
 public final class Constants {
     public static final String B_CONNECTOR = "BConnector";
     public static final String CLIENT_ENDPOINT_CONFIG = "clientEndpointConfig";
-    public static final String MONGODB_PACKAGE_PATH = "ballerina.data.mongodb";
+    public static final String MONGODB_PACKAGE_PATH = "ballerina.mongodb";
     public static final String CLIENT_CONNECTOR = "ClientConnector";
     public static final String MONGODB_CONNECTOR_ERROR = "MongoDBConnectorError";
     public static final String MONGODB_EXCEPTION_OCCURED = "Exception Occurred while executing Mongo database";

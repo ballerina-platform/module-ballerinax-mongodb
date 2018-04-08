@@ -15,13 +15,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.ballerinalang.data.mongodb.endpoint;
+package org.ballerinalang.mongodb.endpoint;
 
 import org.ballerinalang.bre.Context;
 import org.ballerinalang.bre.bvm.BlockingNativeCallableUnit;
-import org.ballerinalang.data.mongodb.Constants;
 import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.model.values.BStruct;
+import org.ballerinalang.mongodb.Constants;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
 import org.ballerinalang.natives.annotations.ReturnType;
@@ -32,11 +32,11 @@ import org.ballerinalang.natives.annotations.ReturnType;
  * @since 0.5.4
  */
 
-@BallerinaFunction(orgName = "ballerina", packageName = "data.mongodb",
+@BallerinaFunction(orgName = "ballerina", packageName = "mongodb",
                    functionName = "getClient",
                    receiver = @Receiver(type = TypeKind.STRUCT,
                                         structType = "Client",
-                                        structPackage = "ballerina.data.mongodb"),
+                                        structPackage = "ballerina.mongodb"),
                    returnType = { @ReturnType(type = TypeKind.STRUCT) },
                    isPublic = true)
 public class GetClient extends BlockingNativeCallableUnit {

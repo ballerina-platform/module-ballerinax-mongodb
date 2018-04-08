@@ -15,45 +15,45 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.ballerinalang.data.mongodb.actions;
+package org.ballerinalang.mongodb.actions;
 
 import org.ballerinalang.bre.Context;
-import org.ballerinalang.data.mongodb.Constants;
-import org.ballerinalang.data.mongodb.MongoDBDataSource;
-import org.ballerinalang.data.mongodb.MongoDBDataSourceUtils;
 import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.model.values.BJSON;
 import org.ballerinalang.model.values.BStruct;
+import org.ballerinalang.mongodb.Constants;
+import org.ballerinalang.mongodb.MongoDBDataSource;
+import org.ballerinalang.mongodb.MongoDBDataSourceUtils;
 import org.ballerinalang.natives.annotations.Argument;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
 import org.ballerinalang.natives.annotations.ReturnType;
-
 /**
- * {@code Insert} action insert a document or documents into a collection.
+ * {@code FindOne} action selects the first document that satisfies the given query criteria.
  *
- * @since 0.5.4
+ * @since 0.5.5
  */
 @BallerinaFunction(
             orgName = "ballerina",
-            packageName = "data.mongodb",
-            functionName = "insert",
+            packageName = "mongodb",
+            functionName = "findOne",
             receiver = @Receiver(type = TypeKind.STRUCT, structType = "ClientConnector"),
             args = {@Argument(name = "collectionName", type = TypeKind.STRING),
-                    @Argument(name = "document", type = TypeKind.JSON)
+                    @Argument(name = "queryString", type = TypeKind.JSON)
             },
             returnType = { @ReturnType(type = TypeKind.JSON) }
         )
-public class Insert extends AbstractMongoDBAction {
+public class FindOne extends AbstractMongoDBAction {
 
     @Override
     public void execute(Context context) {
         BStruct bConnector = (BStruct) context.getRefArgument(0);
         String collectionName = context.getStringArgument(0);
-        BJSON document = (BJSON) context.getRefArgument(1);
+        BJSON query = (BJSON) context.getNullableRefArgument(1);
         MongoDBDataSource datasource = (MongoDBDataSource) bConnector.getNativeData(Constants.CLIENT_CONNECTOR);
         try {
-            insert(datasource, collectionName, document);
+            BJSON result = findOne(datasource, collectionName, query);
+            context.setReturnValues(result);
         } catch (Throwable e) {
             context.setReturnValues(MongoDBDataSourceUtils.getMongoDBConnectorError(context, e));
         }

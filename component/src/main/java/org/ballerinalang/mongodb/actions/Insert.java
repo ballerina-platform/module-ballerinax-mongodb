@@ -15,45 +15,45 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.ballerinalang.data.mongodb.actions;
+package org.ballerinalang.mongodb.actions;
 
 import org.ballerinalang.bre.Context;
-import org.ballerinalang.data.mongodb.Constants;
-import org.ballerinalang.data.mongodb.MongoDBDataSource;
-import org.ballerinalang.data.mongodb.MongoDBDataSourceUtils;
 import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.model.values.BJSON;
 import org.ballerinalang.model.values.BStruct;
+import org.ballerinalang.mongodb.Constants;
+import org.ballerinalang.mongodb.MongoDBDataSource;
+import org.ballerinalang.mongodb.MongoDBDataSourceUtils;
 import org.ballerinalang.natives.annotations.Argument;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
 import org.ballerinalang.natives.annotations.ReturnType;
 
 /**
- * {@code BatchInsert} action to insert multiple documents into a collection.
+ * {@code Insert} action insert a document or documents into a collection.
  *
  * @since 0.5.4
  */
 @BallerinaFunction(
             orgName = "ballerina",
-            packageName = "data.mongodb",
-            functionName = "batchInsert",
+            packageName = "mongodb",
+            functionName = "insert",
             receiver = @Receiver(type = TypeKind.STRUCT, structType = "ClientConnector"),
             args = {@Argument(name = "collectionName", type = TypeKind.STRING),
-                    @Argument(name = "documents", type = TypeKind.ARRAY, elementType = TypeKind.JSON)
+                    @Argument(name = "document", type = TypeKind.JSON)
             },
-            returnType = { @ReturnType(type = TypeKind.INT) }
+            returnType = { @ReturnType(type = TypeKind.JSON) }
         )
-public class BatchInsert extends AbstractMongoDBAction {
+public class Insert extends AbstractMongoDBAction {
 
     @Override
     public void execute(Context context) {
         BStruct bConnector = (BStruct) context.getRefArgument(0);
         String collectionName = context.getStringArgument(0);
-        BJSON documents = (BJSON) context.getRefArgument(1);
+        BJSON document = (BJSON) context.getRefArgument(1);
         MongoDBDataSource datasource = (MongoDBDataSource) bConnector.getNativeData(Constants.CLIENT_CONNECTOR);
         try {
-            batchInsert(datasource, collectionName, documents);
+            insert(datasource, collectionName, document);
         } catch (Throwable e) {
             context.setReturnValues(MongoDBDataSourceUtils.getMongoDBConnectorError(context, e));
         }

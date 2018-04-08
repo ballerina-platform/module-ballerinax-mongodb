@@ -20,8 +20,8 @@ under the License.
 <suite name="MongoDBConnector_IntegrationTest_Suite" verbose="1">
     <test name="MongoDB-Connector-Tests" preserve-order="true" parallel="false">
         <classes>
-            <class name="org.ballerinalang.data.mongodb.MongoDBActionsTest"/>
-            <class name="org.ballerinalang.data.mongodb.MongoDBConnectionInitTest"/>
+            <class name="org.ballerinalang.mongodb.MongoDBActionsTest"/>
+            <class name="org.ballerinalang.mongodb.MongoDBConnectionInitTest"/>
         </classes>
     </test>
 </suite>
