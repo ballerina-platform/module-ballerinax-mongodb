@@ -39,7 +39,7 @@ import org.ballerinalang.natives.annotations.ReturnType;
             orgName = "ballerina",
             packageName = "mongodb",
             functionName = "update",
-            receiver = @Receiver(type = TypeKind.STRUCT, structType = "ClientConnector"),
+            receiver = @Receiver(type = TypeKind.STRUCT, structType = Constants.MONGODB_CLIENT),
             args = {@Argument(name = "collectionName", type = TypeKind.STRING),
                     @Argument(name = "filter", type = TypeKind.JSON),
                     @Argument(name = "document", type = TypeKind.JSON),
@@ -58,7 +58,7 @@ public class Update extends AbstractMongoDBAction {
         BJSON document = (BJSON) context.getRefArgument(2);
         Boolean isMultiple = context.getBooleanArgument(0);
         Boolean upsert = context.getBooleanArgument(1);
-        MongoDBDataSource datasource = (MongoDBDataSource) bConnector.getNativeData(Constants.CLIENT_CONNECTOR);
+        MongoDBDataSource datasource = (MongoDBDataSource) bConnector.getNativeData(Constants.MONGODB_CLIENT);
         try {
             long updatedCount = update(datasource, collectionName, filter, document, isMultiple, upsert);
             context.setReturnValues(new BInteger(updatedCount));

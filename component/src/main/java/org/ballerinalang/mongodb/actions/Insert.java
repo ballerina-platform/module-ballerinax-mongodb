@@ -38,7 +38,7 @@ import org.ballerinalang.natives.annotations.ReturnType;
             orgName = "ballerina",
             packageName = "mongodb",
             functionName = "insert",
-            receiver = @Receiver(type = TypeKind.STRUCT, structType = "ClientConnector"),
+            receiver = @Receiver(type = TypeKind.STRUCT, structType = Constants.MONGODB_CLIENT),
             args = {@Argument(name = "collectionName", type = TypeKind.STRING),
                     @Argument(name = "document", type = TypeKind.JSON)
             },
@@ -51,7 +51,7 @@ public class Insert extends AbstractMongoDBAction {
         BStruct bConnector = (BStruct) context.getRefArgument(0);
         String collectionName = context.getStringArgument(0);
         BJSON document = (BJSON) context.getRefArgument(1);
-        MongoDBDataSource datasource = (MongoDBDataSource) bConnector.getNativeData(Constants.CLIENT_CONNECTOR);
+        MongoDBDataSource datasource = (MongoDBDataSource) bConnector.getNativeData(Constants.MONGODB_CLIENT);
         try {
             insert(datasource, collectionName, document);
         } catch (Throwable e) {

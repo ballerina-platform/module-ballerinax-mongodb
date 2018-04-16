@@ -1,10 +1,10 @@
 import ballerina/mongodb;
 
-const string cassandraHost = "127.0.0.1";
+@final string mongodbHost = "127.0.0.1";
 
 function insert() {
     endpoint mongodb:Client conn {
-        host:cassandraHost,
+        host:mongodbHost,
         dbName:"studentdb",
         username:"",
         password:"",
@@ -19,7 +19,7 @@ function insert() {
 
 function find() returns (json) {
     endpoint mongodb:Client conn {
-        host:cassandraHost,
+        host:mongodbHost,
         dbName:"studentdb",
         username:"",
         password:"",
@@ -27,29 +27,28 @@ function find() returns (json) {
                     serverSelectionTimeout:500}
     };
     json queryString = {"age":"21"};
-    json result =? conn -> find("students", queryString);
+    json result  = check conn -> find("students", queryString);
     _ = conn -> close();
     return result;
 }
 
-function findWithNullQuery() returns (json) {
+function findWithNilQuery() returns (json) {
     endpoint mongodb:Client conn {
-        host:cassandraHost,
+        host:mongodbHost,
         dbName:"studentdb",
         username:"",
         password:"",
         options:{sslEnabled:false,
                     serverSelectionTimeout:500}
     };
-    json queryString = null;
-    json result =? conn -> find("students", queryString);
+    json result  = check conn -> find("students", ());
     _ = conn -> close();
     return result;
 }
 
 function findOne() returns (json) {
     endpoint mongodb:Client conn {
-        host:cassandraHost,
+        host:mongodbHost,
         dbName:"studentdb",
         username:"",
         password:"",
@@ -57,14 +56,14 @@ function findOne() returns (json) {
                     serverSelectionTimeout:500}
     };
     json queryString = {"name":"Jim", "age":"21"};
-    json result =? conn -> findOne("students", queryString);
+    json result  = check conn -> findOne("students", queryString);
     _ = conn -> close();
     return result;
 }
 
-function findOneWithNullQuery() returns (json) {
+function findOneWithNilQuery() returns (json) {
     endpoint mongodb:Client conn {
-        host:cassandraHost,
+        host:mongodbHost,
         dbName:"studentdb",
         username:"",
         password:"",
@@ -72,15 +71,14 @@ function findOneWithNullQuery() returns (json) {
                     serverSelectionTimeout:500}
     };
 
-    json queryString = null;
-    json result =? conn -> findOne("students", queryString);
+    json result  = check conn -> findOne("students", ());
     _ = conn -> close();
     return result;
 }
 
 function deleteMultipleRecords() returns (int) {
     endpoint mongodb:Client conn {
-        host:cassandraHost,
+        host:mongodbHost,
         dbName:"studentdb",
         username:"",
         password:"",
@@ -89,14 +87,14 @@ function deleteMultipleRecords() returns (int) {
     };
 
     json filter = {"age":"25"};
-    int result =? conn -> delete("students", filter, true);
+    int result  = check conn -> delete("students", filter, true);
     _ = conn -> close();
     return result;
 }
 
 function deleteSingleRecord() returns (int) {
     endpoint mongodb:Client conn {
-        host:cassandraHost,
+        host:mongodbHost,
         dbName:"studentdb",
         username:"",
         password:"",
@@ -105,14 +103,14 @@ function deleteSingleRecord() returns (int) {
     };
 
     json filter = {"age":"13"};
-    int result =? conn -> delete("students", filter, false);
+    int result  = check conn -> delete("students", filter, false);
     _ = conn -> close();
     return result;
 }
 
 function updateMultipleRecords() returns (int) {
     endpoint mongodb:Client conn {
-        host:cassandraHost,
+        host:mongodbHost,
         dbName:"studentdb",
         username:"",
         password:"",
@@ -122,14 +120,14 @@ function updateMultipleRecords() returns (int) {
 
     json filter = {"age":"28"};
     json document = {"$set": {"age":"27"}};
-    int result =? conn -> update("students", filter, document, true, false);
+    int result  = check conn -> update("students", filter, document, true, false);
     _ = conn -> close();
     return result;
 }
 
 function updateSingleRecord() returns (int) {
     endpoint mongodb:Client conn {
-        host:cassandraHost,
+        host:mongodbHost,
         dbName:"studentdb",
         username:"",
         password:"",
@@ -139,14 +137,14 @@ function updateSingleRecord() returns (int) {
 
     json filter = {"age":"30"};
     json document = {"$set": {"age":"32"}};
-    int result =? conn -> update("students", filter, document, false, false);
+    int result  = check conn -> update("students", filter, document, false, false);
     _ = conn -> close();
     return result;
 }
 
 function batchInsert() {
     endpoint mongodb:Client conn {
-        host:cassandraHost,
+        host:mongodbHost,
         dbName:"studentdb",
         username:"",
         password:"",

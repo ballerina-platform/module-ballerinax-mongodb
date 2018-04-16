@@ -27,31 +27,28 @@ import org.ballerinalang.mongodb.Constants;
 import org.ballerinalang.mongodb.MongoDBDataSource;
 import org.ballerinalang.natives.annotations.Argument;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
-import org.ballerinalang.natives.annotations.Receiver;
 
 /**
- * Initiates the data source.
+ * Creates MongoDB Client.
  *
- * @since 0.5.4
+ * @since 0.5.3
  */
-
-@BallerinaFunction(
-        orgName = "ballerina", packageName = "mongodb",
-        functionName = "initEndpoint",
-        receiver = @Receiver(type = TypeKind.STRUCT, structType = "Client",
-                             structPackage = "ballerina.mongodb"),
-        args = {@Argument(name = "epName", type = TypeKind.STRING),
-                @Argument(name = "config", type = TypeKind.STRUCT, structType = "ClientEndpointConfiguration")},
-        isPublic = true
-)
-public class InitEndpoint extends BlockingNativeCallableUnit {
+@BallerinaFunction(orgName = "ballerina",
+                   packageName = "mongodb",
+                   functionName = "createMongoDBClient",
+                   args = {
+                           @Argument(name = "clientEndpointConfig",
+                                     type = TypeKind.STRUCT,
+                                     structType = "ClientEndpointConfiguration")
+                   },
+                   isPublic = true)
+public class CreateMongoDBClient extends BlockingNativeCallableUnit {
 
     @Override
     public void execute(Context context) {
-        Struct clientEndpoint = BLangConnectorSPIUtil.getConnectorEndpointStruct(context);
-        Struct clientEndpointConfig = clientEndpoint.getStructField(Constants.CLIENT_ENDPOINT_CONFIG);
+        BStruct configBStruct = (BStruct) context.getRefArgument(0);
+        Struct clientEndpointConfig = BLangConnectorSPIUtil.toStruct(configBStruct);
 
-        //Extract parameters from the endpoint config
         String host = clientEndpointConfig.getStringField(Constants.EndpointConfig.HOST);
         String dbName = clientEndpointConfig.getStringField(Constants.EndpointConfig.DBNAME);
         String username = clientEndpointConfig.getStringField(Constants.EndpointConfig.USERNAME);
@@ -61,17 +58,9 @@ public class InitEndpoint extends BlockingNativeCallableUnit {
         MongoDBDataSource dataSource = new MongoDBDataSource();
         dataSource.init(host, dbName, username, password, options);
 
-        BStruct ballerinaClientConnector;
-        if (clientEndpoint.getNativeData(Constants.B_CONNECTOR) != null) {
-            ballerinaClientConnector = (BStruct) clientEndpoint.getNativeData(Constants.B_CONNECTOR);
-        } else {
-            ballerinaClientConnector = BLangConnectorSPIUtil
-                    .createBStruct(context.getProgramFile(), Constants.MONGODB_PACKAGE_PATH, Constants.CLIENT_CONNECTOR,
-                            host, dbName, username, password, options, clientEndpointConfig);
-            clientEndpoint.addNativeData(Constants.B_CONNECTOR, ballerinaClientConnector);
-        }
-
-        ballerinaClientConnector.addNativeData(Constants.CLIENT_CONNECTOR, dataSource);
-        context.setReturnValues();
+        BStruct mongoDBClient = BLangConnectorSPIUtil
+                .createBStruct(context.getProgramFile(), Constants.MONGODB_PACKAGE_PATH, Constants.MONGODB_CLIENT);
+        mongoDBClient.addNativeData(Constants.MONGODB_CLIENT, dataSource);
+        context.setReturnValues(mongoDBClient);
     }
 }

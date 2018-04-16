@@ -38,7 +38,7 @@ import org.ballerinalang.natives.annotations.ReturnType;
             orgName = "ballerina",
             packageName = "mongodb",
             functionName = "batchInsert",
-            receiver = @Receiver(type = TypeKind.STRUCT, structType = "ClientConnector"),
+            receiver = @Receiver(type = TypeKind.STRUCT, structType = Constants.MONGODB_CLIENT),
             args = {@Argument(name = "collectionName", type = TypeKind.STRING),
                     @Argument(name = "documents", type = TypeKind.ARRAY, elementType = TypeKind.JSON)
             },
@@ -51,7 +51,7 @@ public class BatchInsert extends AbstractMongoDBAction {
         BStruct bConnector = (BStruct) context.getRefArgument(0);
         String collectionName = context.getStringArgument(0);
         BJSON documents = (BJSON) context.getRefArgument(1);
-        MongoDBDataSource datasource = (MongoDBDataSource) bConnector.getNativeData(Constants.CLIENT_CONNECTOR);
+        MongoDBDataSource datasource = (MongoDBDataSource) bConnector.getNativeData(Constants.MONGODB_CLIENT);
         try {
             batchInsert(datasource, collectionName, documents);
         } catch (Throwable e) {

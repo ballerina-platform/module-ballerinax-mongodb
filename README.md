@@ -52,21 +52,21 @@ function main (string[] args) {
     _ = conn -> insert("projects", doc2);
     _ = conn -> insert("projects", doc3);
 
-    json j0 =? conn -> find("projects", null);
+    json j0 = check conn -> find("projects", ());
     io:println("initial data:");
     io:println(j0);
     
     json queryString = {"name":"ballerina"};
-    json j1 =? conn -> find("projects", queryString);
+    json j1 = check conn -> find("projects", queryString);
     io:println("query result:");
     io:println(j1);
 
-    json j2 =? conn -> findOne("projects", queryString);
+    json j2 = check conn -> findOne("projects", queryString);
     io:println("findOne query result:");
     io:println(j2);
     
     json filter = {"type":"src"};
-    int deleted =? conn -> delete("projects", filter,true);
+    int deleted = check conn -> delete("projects", filter,true);
     io:println(deleted);     
        
     _ = conn -> close();
