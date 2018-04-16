@@ -76,7 +76,7 @@ public class MongoDBActionsTest {
     }
 
     @Test(description = "Tests MongoDB insert action",
-          dependsOnMethods = "testFindWithNullQery")
+          dependsOnMethods = "testFindWithNilQuery")
     public void testInsert() throws Exception {
         BRunUtil.invoke(result, "insert");
         Document document = (Document) mongoCollection.find(Document.parse("{\"name\":\"Tom\", \"age\":\"20\"}"))
@@ -105,25 +105,25 @@ public class MongoDBActionsTest {
         Assert.assertEquals(((BJSON) results[0]).value().get("age").stringValue(), "21", "Retrieved data is incorrect");
     }
 
-    @Test(description = "Tests MongoDB find-one action with null query")
-    public void testFindOneWithNullQuery() throws Exception {
-        BValue[] results = BRunUtil.invoke(result, "findOneWithNullQuery");
+    @Test(description = "Tests MongoDB find-one action with nill query")
+    public void testFindOneWithNilQuery() throws Exception {
+        BValue[] results = BRunUtil.invoke(result, "findOneWithNilQuery");
         Assert.assertEquals(results.length, 1, "Exactly one result should have been received");
         Assert.assertEquals(((BJSON) results[0]).value().get("name").stringValue(), "Jim",
                 "Retrieved data is incorrect");
         Assert.assertEquals(((BJSON) results[0]).value().get("age").stringValue(), "21", "Retrieved data is incorrect");
     }
 
-    @Test(description = "Tests MongoDB find action with null query",
-          dependsOnMethods = "testFindOneWithNullQuery")
-    public void testFindWithNullQery() throws Exception {
-        BValue[] results = BRunUtil.invoke(result, "findWithNullQuery");
+    @Test(description = "Tests MongoDB find action with nil query",
+          dependsOnMethods = "testFindOneWithNilQuery")
+    public void testFindWithNilQuery() throws Exception {
+        BValue[] results = BRunUtil.invoke(result, "findWithNilQuery");
         JsonNode jsonNodes = ((BJSON) results[0]).value();
         Assert.assertEquals(jsonNodes.size(), 10, "10 records should have been received");
     }
 
     @Test(description = "Tests MongoDB delete action for multiple records",
-          dependsOnMethods = "testFindWithNullQery")
+          dependsOnMethods = "testFindWithNilQuery")
     public void testDeleteMultipleRecords() throws Exception {
         BValue[] results = BRunUtil.invoke(result, "deleteMultipleRecords");
         Assert.assertEquals(((BInteger) results[0]).intValue(), 2, "Exactly 2 records should have been deleted");
@@ -136,7 +136,7 @@ public class MongoDBActionsTest {
     }
 
     @Test(description = "Tests MongoDB delete action for single record",
-          dependsOnMethods = "testFindWithNullQery")
+          dependsOnMethods = "testFindWithNilQuery")
     public void testDeleteSingleRecord() throws Exception {
         BValue[] results = BRunUtil.invoke(result, "deleteSingleRecord");
         Assert.assertEquals(((BInteger) results[0]).intValue(), 1,
@@ -179,7 +179,7 @@ public class MongoDBActionsTest {
     }
 
     @Test(description = "Tests MongoDB batch insert action",
-          dependsOnMethods = "testFindWithNullQery")
+          dependsOnMethods = "testFindWithNilQuery")
     public void testBatchInsert() throws Exception {
         BRunUtil.invoke(result, "batchInsert");
         Document[] documentsArray = new Document[3];

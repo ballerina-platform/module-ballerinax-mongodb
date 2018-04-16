@@ -1,6 +1,6 @@
 import ballerina/mongodb;
 
-const string cassandraHost = "127.0.0.1";
+@final string mongodbHost = "127.0.0.1";
 
 function testConnectorInitWithDirectUrl() returns (json) {
     endpoint mongodb:Client conn {
@@ -8,18 +8,18 @@ function testConnectorInitWithDirectUrl() returns (json) {
         dbName: "studentdb",
         username: "",
         password: "",
-        options: {url: "mongodb://" + cassandraHost + ":27017/?sslEnabled=false&serverSelectionTimeout=500"}
+        options: {url: "mongodb://" + mongodbHost + ":27017/?sslEnabled=false&serverSelectionTimeout=500"}
     };
 
     json queryString = {"name":"Jim", "age":"21"};
-    json result =? conn -> find("students", queryString);
+    json result  = check conn -> find("students", queryString);
     _ = conn -> close();
     return result;
 }
 
 function testConnectorInitWithConnectionPoolProperties() returns (json) {
     endpoint mongodb:Client conn {
-        host:cassandraHost,
+        host:mongodbHost,
         dbName:"studentdb",
         username:"",
         password:"",
@@ -28,14 +28,14 @@ function testConnectorInitWithConnectionPoolProperties() returns (json) {
                     minPoolSize:1, waitQueueMultiple:1, waitQueueTimeout:150}
     };
     json queryString = {"name":"Jim", "age":"21"};
-    json result =? conn -> find("students", queryString);
+    json result  = check conn -> find("students", queryString);
     _ = conn -> close();
     return result;
 }
 
 function testConnectorInitWithInvalidAuthMechanism() {
     endpoint mongodb:Client conn {
-        host:cassandraHost,
+        host:mongodbHost,
         dbName:"studentdb",
         username:"",
         password:"",

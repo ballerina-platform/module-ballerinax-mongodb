@@ -35,14 +35,14 @@ import org.ballerinalang.natives.annotations.Receiver;
             orgName = "ballerina",
             packageName = "mongodb",
             functionName = "close",
-            receiver = @Receiver(type = TypeKind.STRUCT, structType = "ClientConnector")
+            receiver = @Receiver(type = TypeKind.STRUCT, structType = Constants.MONGODB_CLIENT)
         )
 public class Close extends AbstractMongoDBAction {
 
     @Override
     public void execute(Context context) {
         BStruct bConnector = (BStruct) context.getRefArgument(0);
-        MongoDBDataSource datasource = (MongoDBDataSource) bConnector.getNativeData(Constants.CLIENT_CONNECTOR);
+        MongoDBDataSource datasource = (MongoDBDataSource) bConnector.getNativeData(Constants.MONGODB_CLIENT);
         try {
             close(datasource);
         } catch (Throwable e) {
