@@ -233,7 +233,7 @@
 
     <properties>
         <project.scm.id>my-scm-server</project.scm.id>
-        <ballerina.version>0.970.0-beta0</ballerina.version>
+        <ballerina.version>0.970.0-beta18-SNAPSHOT</ballerina.version>
         <mongodb.version>3.6.1</mongodb.version>
         <mvn.processor.plugin.version>2.2.4</mvn.processor.plugin.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

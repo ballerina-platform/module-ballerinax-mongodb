@@ -23,8 +23,8 @@ import org.ballerinalang.model.values.BStruct;
 import org.ballerinalang.mongodb.Constants;
 import org.ballerinalang.mongodb.MongoDBDataSource;
 import org.ballerinalang.mongodb.MongoDBDataSourceUtils;
+import org.ballerinalang.natives.annotations.Argument;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
-import org.ballerinalang.natives.annotations.Receiver;
 
 /**
  * {@code Close} action is used to close the MongoDB connection pool.
@@ -35,14 +35,16 @@ import org.ballerinalang.natives.annotations.Receiver;
             orgName = "ballerina",
             packageName = "mongodb",
             functionName = "close",
-            receiver = @Receiver(type = TypeKind.STRUCT, structType = Constants.MONGODB_CLIENT)
+            args = {
+                    @Argument(name = "parameters", type = TypeKind.STRUCT, structType = Constants.CALLER_ACTIONS,
+                              structPackage = "ballerina.mongodb")}
         )
 public class Close extends AbstractMongoDBAction {
 
     @Override
     public void execute(Context context) {
         BStruct bConnector = (BStruct) context.getRefArgument(0);
-        MongoDBDataSource datasource = (MongoDBDataSource) bConnector.getNativeData(Constants.MONGODB_CLIENT);
+        MongoDBDataSource datasource = (MongoDBDataSource) bConnector.getNativeData(Constants.CALLER_ACTIONS);
         try {
             close(datasource);
         } catch (Throwable e) {

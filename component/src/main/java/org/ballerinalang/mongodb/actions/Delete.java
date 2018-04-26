@@ -39,7 +39,7 @@ import org.ballerinalang.natives.annotations.ReturnType;
             orgName = "ballerina",
             packageName = "mongodb",
             functionName = "delete",
-            receiver = @Receiver(type = TypeKind.STRUCT, structType = Constants.MONGODB_CLIENT),
+            receiver = @Receiver(type = TypeKind.STRUCT, structType = Constants.CALLER_ACTIONS),
             args = {@Argument(name = "collectionName", type = TypeKind.STRING),
                     @Argument(name = "filter", type = TypeKind.JSON),
                     @Argument(name = "multiple", type = TypeKind.BOOLEAN)
@@ -54,7 +54,7 @@ public class Delete extends AbstractMongoDBAction {
         String collectionName = context.getStringArgument(0);
         BJSON filter = (BJSON) context.getRefArgument(1);
         Boolean isMultiple = context.getBooleanArgument(0);
-        MongoDBDataSource datasource = (MongoDBDataSource) bConnector.getNativeData(Constants.MONGODB_CLIENT);
+        MongoDBDataSource datasource = (MongoDBDataSource) bConnector.getNativeData(Constants.CALLER_ACTIONS);
         try {
             long deletedCount = delete(datasource, collectionName, filter, isMultiple);
             context.setReturnValues(new BInteger(deletedCount));

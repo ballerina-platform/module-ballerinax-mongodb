@@ -39,7 +39,7 @@ import org.ballerinalang.natives.annotations.ReturnType;
             orgName = "ballerina",
             packageName = "mongodb",
             functionName = "find",
-            receiver = @Receiver(type = TypeKind.STRUCT, structType = Constants.MONGODB_CLIENT),
+            receiver = @Receiver(type = TypeKind.STRUCT, structType = Constants.CALLER_ACTIONS),
             args = { @Argument(name = "collectionName", type = TypeKind.STRING),
                     @Argument(name = "queryString", type = TypeKind.JSON)
             },
@@ -52,7 +52,7 @@ public class Find extends AbstractMongoDBAction {
         BStruct bConnector = (BStruct) context.getRefArgument(0);
         String collectionName = context.getStringArgument(0);
         BJSON query = (BJSON) context.getNullableRefArgument(1);
-        MongoDBDataSource datasource = (MongoDBDataSource) bConnector.getNativeData(Constants.MONGODB_CLIENT);
+        MongoDBDataSource datasource = (MongoDBDataSource) bConnector.getNativeData(Constants.CALLER_ACTIONS);
         try {
             BJSON result = find(datasource, collectionName, query);
             context.setReturnValues(result);
