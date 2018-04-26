@@ -13,48 +13,45 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
-package ballerina.mongodb;
 
 ///////////////////////////////
 // MongoDB Client Endpoint
 ///////////////////////////////
 
-@Description {value:"Represents MongoDB client endpoint"}
-@Field {value:"epName: The name of the endpoint"}
-@Field {value:"config: The configurations associated with the endpoint"}
+documentation {
+    Represents MongoDB client endpoint.
+}
 public type Client object {
-    public {
-        string epName;
+    private {
         ClientEndpointConfiguration clientEndpointConfig;
-        MongoDBClient mongodbClient;
+        CallerActions callerActions;
     }
 
-    @Description {value:"Gets called when the endpoint is being initialized during the package initialization."}
-    public function init(ClientEndpointConfiguration clientEndpointConfig);
-
-    public function register(typedesc serviceType) {
+    documentation {
+        Gets called when the endpoint is being initialized during the package initialization.
+    }
+    public function init(ClientEndpointConfiguration clientEndpointConfig) {
+        self.callerActions = createClient(clientEndpointConfig);
     }
 
-    public function start() {
+    documentation {
+        Returns the CallerActions that client code uses.
+
+        R{{}} The CallerActions that client code uses
+    }
+    public function getCallerActions() returns CallerActions {
+        return self.callerActions;
     }
 
-    @Description {value:"Returns the connector that client code uses"}
-    @Return {value:"The connector that client code uses"}
-    public function getClient() returns MongoDBClient {
-        return self.mongodbClient;
+    documentation {
+        Stops the registered service.
     }
-
-    @Description {value:"Stops the registered service"}
-    @Return {value:"Error occured during registration"}
     public function stop() {
+        close(self.callerActions);
     }
 };
 
-public native function createMongoDBClient(ClientEndpointConfiguration clientEndpointConfig) returns MongoDBClient;
-
-public function Client::init(ClientEndpointConfiguration clientEndpointConfig) {
-    self.mongodbClient = createMongoDBClient(clientEndpointConfig);
-}
+public native function createClient(ClientEndpointConfiguration clientEndpointConfig) returns CallerActions;
 
 public type ClientEndpointConfiguration {
     string host,

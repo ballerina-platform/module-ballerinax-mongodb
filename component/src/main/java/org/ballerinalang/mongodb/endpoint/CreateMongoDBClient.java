@@ -35,7 +35,7 @@ import org.ballerinalang.natives.annotations.BallerinaFunction;
  */
 @BallerinaFunction(orgName = "ballerina",
                    packageName = "mongodb",
-                   functionName = "createMongoDBClient",
+                   functionName = "createClient",
                    args = {
                            @Argument(name = "clientEndpointConfig",
                                      type = TypeKind.STRUCT,
@@ -59,8 +59,8 @@ public class CreateMongoDBClient extends BlockingNativeCallableUnit {
         dataSource.init(host, dbName, username, password, options);
 
         BStruct mongoDBClient = BLangConnectorSPIUtil
-                .createBStruct(context.getProgramFile(), Constants.MONGODB_PACKAGE_PATH, Constants.MONGODB_CLIENT);
-        mongoDBClient.addNativeData(Constants.MONGODB_CLIENT, dataSource);
+                .createBStruct(context.getProgramFile(), Constants.MONGODB_PACKAGE_PATH, Constants.CALLER_ACTIONS);
+        mongoDBClient.addNativeData(Constants.CALLER_ACTIONS, dataSource);
         context.setReturnValues(mongoDBClient);
     }
 }
