@@ -27,7 +27,7 @@ import org.ballerinalang.util.codegen.StructInfo;
  */
 public class MongoDBDataSourceUtils {
     public static BStruct getMongoDBConnectorError(Context context, Throwable throwable) {
-        PackageInfo mongoDBPackageInfo = context.getProgramFile().getPackageInfo(Constants.MONGODB_PACKAGE_PATH);
+        PackageInfo mongoDBPackageInfo = context.getProgramFile().getPackageInfo(Constants.BUILTIN_PACKAGE_PATH);
         StructInfo errorStructInfo = mongoDBPackageInfo.getStructInfo(Constants.MONGODB_CONNECTOR_ERROR);
         BStruct mongoDBConnectorError = new BStruct(errorStructInfo.getType());
         if (throwable.getMessage() == null) {

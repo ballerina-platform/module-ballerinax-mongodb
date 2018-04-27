@@ -19,25 +19,25 @@ documentation {
 }
 public type CallerActions object {
     documentation {
-        The find action implementation which selects a document in a given collection.
+        The find operation implementation which selects a document in a given collection.
 
         P{{collectionName}} The name of the collection to be queried
         P{{queryString}} Query to use to select data
-        R{{}} `json` result from the find action or `error` if an error occurs
+        R{{}} `json` result from the find operation or `error` if an error occurs
     }
     public native function find(string collectionName, json? queryString) returns (json|error);
 
     documentation {
-        The findOne action implementation which selects the first document match with the query.
+        The findOne operation implementation which selects the first document match with the query.
 
         P{{collectionName}} The name of the collection to be queried
         P{{queryString}} Query to use to select data
-        R{{}} `json` result from the findOne action or `error` if an error occurs
+        R{{}} `json` The result from the findOne operation or `error` if an error occurs
     }
     public native function findOne(string collectionName, json? queryString) returns (json|error);
 
     documentation {
-        The insert action implementation which inserts a document to a collection.
+        The insert operation implementation which inserts a document to a collection.
 
         P{{collectionName}} The name of the collection
         P{{document}} The document to be inserted
@@ -47,7 +47,7 @@ public type CallerActions object {
         returns (error?);
 
     documentation {
-        The delete action implementation which deletes documents that match the given filter.
+        The delete operation implementation which deletes documents that match the given filter.
 
         P{{collectionName}} The name of the collection
         P{{filter}} The criteria used to delete the documents
@@ -57,19 +57,19 @@ public type CallerActions object {
     public native function delete(string collectionName, json filter, boolean multi) returns (int|error);
 
     documentation {
-        The update action implementation which updates documents that matches to given filter.
+        The update operation implementation which updates documents that matches to given filter.
 
         P{{collectionName}} The name of the collection
         P{{filter}} The criteria used to update the documents
         P{{multi}} Specifies whether to update multiple documents or not
         P{{upsert}} Specifies whether to create a new document when no document matches the filter
-        R{{}} `int` updated count or `error` if an error occurs
+        R{{}} `int` The updated count or `error` if an error occurs
     }
-    public native function update(string collectionName, json filter, json document, boolean
-    multi, boolean upsert) returns (int|error);
+    public native function update(string collectionName, json filter, json document, boolean multi, boolean upsert)
+        returns (int|error);
 
     documentation {
-        The insert action implementation which inserts an array of documents to a collection.
+        The batchInsert operation implementation which inserts an array of documents to the given collection.
 
         P{{collectionName}} The name of the collection
         P{{documents}} The document array to be inserted
@@ -80,6 +80,6 @@ public type CallerActions object {
 
 
 documentation {
-    The close action implementation which closes the MongoDB connection pool.
+    An internal function used by clients to shutdown the connection pool.
 }
-public native function close(CallerActions callerActions);
+native function close(CallerActions callerActions);
