@@ -24,8 +24,9 @@ package org.ballerinalang.mongodb;
  */
 public final class Constants {
     public static final String MONGODB_PACKAGE_PATH = "ballerina.mongodb";
+    public static final String BUILTIN_PACKAGE_PATH = "ballerina.builtin";
     public static final String CALLER_ACTIONS = "CallerActions";
-    public static final String MONGODB_CONNECTOR_ERROR = "MongoDBConnectorError";
+    public static final String MONGODB_CONNECTOR_ERROR = "error";
     public static final String MONGODB_EXCEPTION_OCCURED = "Exception Occurred while executing Mongo database";
 
     /**

@@ -1,15 +1,12 @@
-# Ballerina MongoDB Connector
+# Ballerina MongoDB Client Endpoint
 
-Ballerina MongoDB Connector is used to connect Ballerina with MongoDB data source. With the Ballerina MongoDB connector following actions are supported.
+Ballerina MongoDB Client Endpoint is used to connect Ballerina with MongoDB data source. With the Ballerina MongoDB client endpoint following actions are supported.
 
 1. insert - To insert document to a given collection
 2. find - To select document from a given collection according to given query.
 3. findOne - To select the first document match with the query.
 4. update - To update documents that matches to the given filter.
 5. delete - To delete documents that matches to the given filter.
-6. close - To close the MongoDB connection.
-
-
 
 Steps to Configure
 ==================================
@@ -18,15 +15,13 @@ Extract ballerina-mongodb-connector-<version>.zip and copy containing jars in to
 
 Building From the Source
 ==================================
-If you want to build Ballerina MongoDB connector from the source code:
+If you want to build Ballerina MongoDB client endpoint from the source code:
 
 1. Get a clone or download the source from this repository:
-    https://github.com/ballerinalang/connector-mongodb
+    https://github.com/wso2-ballerina/package-mongodb
 2. Run the following Maven command from the ballerina directory: 
     mvn clean install
-3. Copy and extract the distribution created at `/component/target/target/ballerina-mongodb-connector-<version>.zip`  into <BRE_HOME>/bre/lib/.
-
-
+3. Copy and extract the distribution created at `/component/target/ballerina-mongodb-connector-<version>.zip`  into <BRE_HOME>/bre/lib/.
 
 Sample
 ==================================
@@ -35,41 +30,69 @@ Sample
 import ballerina/mongodb;
 import ballerina/io;
 
-function main (string[] args) {
+function main(string... args) {
     endpoint mongodb:Client conn {
-        host:"localhost",
-        dbName:"testballerina",
-        username:"",
-        password:"",
-        options:{sslEnabled:false,
-                    serverSelectionTimeout:500}
+        host: "localhost",
+        dbName: "testballerina",
+        username: "",
+        password: "",
+        options: { sslEnabled: false, serverSelectionTimeout: 500 }
     };
 
-    json doc1 = {"name":"ballerina", "type":"src"};
-    json doc2 = {"name":"connectors", "type":"artifacts"};
-    json doc3 = {"name":"docerina", "type":"src"};
-    _ = conn -> insert("projects", doc1);
-    _ = conn -> insert("projects", doc2);
-    _ = conn -> insert("projects", doc3);
+    json doc1 = { "name": "ballerina", "type": "src" };
+    json doc2 = { "name": "connectors", "type": "artifacts" };
+    json doc3 = { "name": "docerina", "type": "src" };
 
-    json j0 = check conn -> find("projects", ());
-    io:println("initial data:");
-    io:println(j0);
-    
-    json queryString = {"name":"ballerina"};
-    json j1 = check conn -> find("projects", queryString);
-    io:println("query result:");
-    io:println(j1);
+    var ret = conn->insert("projects", doc1);
+    handleInsert(ret, "Insert to projects");
+    ret = conn->insert("projects", doc2);
+    handleInsert(ret, "Insert to projects");
+    ret = conn->insert("projects", doc3);
+    handleInsert(ret, "Insert to projects");
 
-    json j2 = check conn -> findOne("projects", queryString);
-    io:println("findOne query result:");
-    io:println(j2);
-    
-    json filter = {"type":"src"};
-    int deleted = check conn -> delete("projects", filter,true);
-    io:println(deleted);     
-       
-    _ = conn -> close();
+    var jsonRet = conn->find("projects", ());
+    match jsonRet {
+        json j => {
+            io:print("initial data:");
+            io:println(io:sprintf("%s", j));
+        }
+        error e => io:println("find failed: " + e.message);
+    }
+
+    json queryString = { "name": "ballerina" };
+    jsonRet = conn->find("projects", queryString);
+    match jsonRet {
+        json j => {
+            io:print("query result:");
+            io:println(io:sprintf("%s", j));
+        }
+        error e => io:println("find failed: " + e.message);
+    }
+
+    jsonRet = conn->findOne("projects", queryString);
+    match jsonRet {
+        json j => {
+            io:print("findOne query result:");
+            io:println(io:sprintf("%s", j));
+        }
+        error e => io:println("find failed: " + e.message);
+    }
+
+    json filter = { "type": "src" };
+    var deleteRet = conn->delete("projects", filter, true);
+    match deleteRet {
+        int i => io:println("deleted count: " + i);
+        error e => io:println("delete failed: " + e.message);
+    }
+
+    conn.stop();
+}
+
+function handleInsert(()|error returned, string message) {
+    match returned {
+        () => io:println(message + " success ");
+        error e => io:println(message + " failed: " + e.message);
+    }
 }
 ```   
     

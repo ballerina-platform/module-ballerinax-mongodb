@@ -51,7 +51,7 @@ public type Client object {
     }
 };
 
-public native function createClient(ClientEndpointConfiguration clientEndpointConfig) returns CallerActions;
+native function createClient(ClientEndpointConfiguration clientEndpointConfig) returns CallerActions;
 
 public type ClientEndpointConfiguration {
     string host,
