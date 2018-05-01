@@ -64,14 +64,14 @@
             <resource>
                 <directory>src/main/resources</directory>
                 <excludes>
-                    <exclude>ballerina/**</exclude>
+                    <exclude>wso2/**</exclude>
                 </excludes>
             </resource>
 
             <!-- copy built-in ballerina sources to the jar -->
             <resource>
-                <directory>${generated.ballerina.source.directory}</directory>
-                <targetPath>META-INF/ballerina</targetPath>
+                <directory>src/main/wso2</directory>
+                <targetPath>META-INF/wso2</targetPath>
             </resource>
         </resources>
         <plugins>
@@ -306,6 +306,6 @@
     </build>
 
     <properties>
-        <generated.ballerina.source.directory>${project.build.directory}/../src/main/ballerina</generated.ballerina.source.directory>
+        <generated.ballerina.source.directory>${project.build.directory}/../src/main/wso2</generated.ballerina.source.directory>
     </properties>
 </project>

@@ -34,7 +34,7 @@ import org.ballerinalang.natives.annotations.ReturnType;
  * @since 0.5.5
  */
 @BallerinaFunction(
-            orgName = "ballerina",
+            orgName = "wso2",
             packageName = "mongodb",
             functionName = "findOne",
             receiver = @Receiver(type = TypeKind.STRUCT, structType = Constants.CALLER_ACTIONS),
