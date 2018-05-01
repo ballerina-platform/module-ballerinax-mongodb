@@ -11,7 +11,7 @@ Ballerina MongoDB Client Endpoint is used to connect Ballerina with MongoDB data
 Steps to Configure
 ==================================
 
-Extract wso2-mongodb-package-<version>.zip and copy containing jars in to <BRE_HOME>/bre/lib/
+Extract wso2-mongodb-<version>.zip and copy containing jars in to <BRE_HOME>/bre/lib/
 
 Building From the Source
 ==================================
