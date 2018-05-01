@@ -24,7 +24,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>ballerina-mongodb</artifactId>
+    <artifactId>wso2-mongodb</artifactId>
     <packaging>jar</packaging>
     <name>Ballerina - mongodb Component</name>
     <url>http://ballerinalang.org</url>
@@ -187,7 +187,7 @@
                     <descriptors>
                         <descriptor>src/main/assembly/dist.xml</descriptor>
                     </descriptors>
-                    <finalName>ballerina-mongodb-connector-${project.version}</finalName>
+                    <finalName>wso2-mongodb-${project.version}</finalName>
                     <appendAssemblyId>false</appendAssemblyId>
                 </configuration>
                 <executions>
