@@ -24,7 +24,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>ballerina-mongodb</artifactId>
+    <artifactId>wso2-mongodb</artifactId>
     <packaging>jar</packaging>
     <name>Ballerina - mongodb Component</name>
     <url>http://ballerinalang.org</url>
@@ -162,7 +162,7 @@
                     </execution>
                 </executions>
             </plugin>
-            <!--<plugin>
+            <plugin>
                 <groupId>org.ballerinalang</groupId>
                 <artifactId>docerina-maven-plugin</artifactId>
                 <executions>
@@ -172,19 +172,22 @@
                             <goal>docerina</goal>
                         </goals>
                         <configuration>
-                            <outputDir>${project.build.directory}/docs</outputDir>
-                            <sourceDir>${connectors.source.temp.dir}</sourceDir>
+                            <outputDir>${project.build.directory}/api-docs</outputDir>
+                            <sourceRoot>${basedir}/target/classes/META-INF/wso2</sourceRoot>
+                            <nativeCode>true</nativeCode>
+                            <packageFilter>compression</packageFilter>
+                            <orgName>wso2</orgName>
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>-->
+            </plugin>
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>
                     <descriptors>
                         <descriptor>src/main/assembly/dist.xml</descriptor>
                     </descriptors>
-                    <finalName>ballerina-mongodb-connector-${project.version}</finalName>
+                    <finalName>wso2-mongodb-package-${project.version}</finalName>
                     <appendAssemblyId>false</appendAssemblyId>
                 </configuration>
                 <executions>
