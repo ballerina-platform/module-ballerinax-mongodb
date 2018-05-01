@@ -162,7 +162,7 @@
                     </execution>
                 </executions>
             </plugin>
-            <!--<plugin>
+            <plugin>
                 <groupId>org.ballerinalang</groupId>
                 <artifactId>docerina-maven-plugin</artifactId>
                 <executions>
@@ -172,12 +172,15 @@
                             <goal>docerina</goal>
                         </goals>
                         <configuration>
-                            <outputDir>${project.build.directory}/docs</outputDir>
-                            <sourceDir>${connectors.source.temp.dir}</sourceDir>
+                            <outputDir>${project.build.directory}/api-docs</outputDir>
+                            <sourceRoot>${basedir}/target/classes/META-INF/wso2</sourceRoot>
+                            <nativeCode>true</nativeCode>
+                            <packageFilter>compression</packageFilter>
+                            <orgName>wso2</orgName>
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>-->
+            </plugin>
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>
