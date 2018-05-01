@@ -1,4 +1,4 @@
-import ballerina/mongodb;
+import wso2/mongodb;
 
 @final string mongodbHost = "127.0.0.1";
 

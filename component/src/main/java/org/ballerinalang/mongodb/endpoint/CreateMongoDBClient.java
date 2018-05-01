@@ -33,7 +33,7 @@ import org.ballerinalang.natives.annotations.BallerinaFunction;
  *
  * @since 0.5.3
  */
-@BallerinaFunction(orgName = "ballerina",
+@BallerinaFunction(orgName = "wso2",
                    packageName = "mongodb",
                    functionName = "createClient",
                    args = {
