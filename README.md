@@ -27,7 +27,7 @@ Sample
 ==================================
 
 ```ballerina
-import ballerina/mongodb;
+import wso2/mongodb;
 import ballerina/io;
 
 function main(string... args) {
