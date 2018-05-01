@@ -187,7 +187,7 @@
                     <descriptors>
                         <descriptor>src/main/assembly/dist.xml</descriptor>
                     </descriptors>
-                    <finalName>wso2-mongodb-${project.version}</finalName>
+                    <finalName>wso2-mongodb-package-${project.version}</finalName>
                     <appendAssemblyId>false</appendAssemblyId>
                 </configuration>
                 <executions>
