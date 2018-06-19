@@ -23,7 +23,7 @@ package org.ballerinalang.mongodb;
  * @since 0.95.0
  */
 public final class Constants {
-    public static final String MONGODB_PACKAGE_PATH = "wso2.mongodb";
+    public static final String MONGODB_PACKAGE_PATH = "wso2/mongodb:0.0.0";
     public static final String BUILTIN_PACKAGE_PATH = "ballerina.builtin";
     public static final String CALLER_ACTIONS = "CallerActions";
     public static final String MONGODB_CONNECTOR_ERROR = "error";

@@ -30,8 +30,8 @@ public type Client object {
     documentation {
         Gets called when the endpoint is being initialized during the package initialization.
     }
-    public function init(ClientEndpointConfiguration clientEndpointConfig) {
-        self.callerActions = createClient(clientEndpointConfig);
+    public function init(ClientEndpointConfiguration config) {
+        self.callerActions = createClient(config);
     }
 
     documentation {

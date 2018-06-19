@@ -37,9 +37,9 @@ import org.ballerinalang.natives.annotations.ReturnType;
  */
 @BallerinaFunction(
             orgName = "wso2",
-            packageName = "mongodb",
+            packageName = "mongodb:0.0.0",
             functionName = "update",
-            receiver = @Receiver(type = TypeKind.STRUCT, structType = Constants.CALLER_ACTIONS),
+            receiver = @Receiver(type = TypeKind.OBJECT, structType = Constants.CALLER_ACTIONS),
             args = {@Argument(name = "collectionName", type = TypeKind.STRING),
                     @Argument(name = "filter", type = TypeKind.JSON),
                     @Argument(name = "document", type = TypeKind.JSON),
