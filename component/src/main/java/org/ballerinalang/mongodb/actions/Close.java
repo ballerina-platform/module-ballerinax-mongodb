@@ -33,10 +33,10 @@ import org.ballerinalang.natives.annotations.BallerinaFunction;
  */
 @BallerinaFunction(
             orgName = "wso2",
-            packageName = "mongodb",
+            packageName = "mongodb:0.0.0",
             functionName = "close",
             args = {
-                    @Argument(name = "parameters", type = TypeKind.STRUCT, structType = Constants.CALLER_ACTIONS,
+                    @Argument(name = "parameters", type = TypeKind.OBJECT, structType = Constants.CALLER_ACTIONS,
                               structPackage = "ballerina.mongodb")}
         )
 public class Close extends AbstractMongoDBAction {

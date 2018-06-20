@@ -34,11 +34,11 @@ import org.ballerinalang.natives.annotations.BallerinaFunction;
  * @since 0.5.3
  */
 @BallerinaFunction(orgName = "wso2",
-                   packageName = "mongodb",
+                   packageName = "mongodb:0.0.0",
                    functionName = "createClient",
                    args = {
                            @Argument(name = "clientEndpointConfig",
-                                     type = TypeKind.STRUCT,
+                                     type = TypeKind.RECORD,
                                      structType = "ClientEndpointConfiguration")
                    },
                    isPublic = true)

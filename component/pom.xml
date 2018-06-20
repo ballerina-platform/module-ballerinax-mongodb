@@ -38,6 +38,13 @@
             <groupId>org.ballerinalang</groupId>
             <artifactId>ballerina-builtin</artifactId>
         </dependency>
+        <!-- Following ballerina-binary-repo dependency is required to obtain balos -->
+        <dependency>
+            <groupId>org.ballerinalang</groupId>
+            <artifactId>ballerina-builtin</artifactId>
+            <type>zip</type>
+            <classifier>ballerina-binary-repo</classifier>
+        </dependency>
         <dependency>
             <groupId>org.mongodb</groupId>
             <artifactId>mongo-java-driver</artifactId>
@@ -64,14 +71,14 @@
             <resource>
                 <directory>src/main/resources</directory>
                 <excludes>
-                    <exclude>wso2/**</exclude>
+                    <exclude>ballerina/**</exclude>
                 </excludes>
             </resource>
 
             <!-- copy built-in ballerina sources to the jar -->
             <resource>
-                <directory>src/main/wso2</directory>
-                <targetPath>META-INF/wso2</targetPath>
+                <directory>src/main/ballerina</directory>
+                <targetPath>META-INF/ballerina</targetPath>
             </resource>
         </resources>
         <plugins>
@@ -160,6 +167,40 @@
                             <useBaseVersion>true</useBaseVersion>
                         </configuration>
                     </execution>
+                    <!-- Following execution unpacks balo dependencies (ballerina-binary-repo) -->
+                    <execution>
+                        <id>unpack-dependencies</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>unpack-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <includeClassifiers>ballerina-binary-repo</includeClassifiers>
+                            <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>properties-maven-plugin</artifactId>
+                <executions>
+                    <!-- Following execution is required to set ballerina home for docerina plugin -->
+                    <execution>
+                        <id>set-ballerina-home</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>set-system-properties</goal>
+                        </goals>
+                        <configuration>
+                            <properties>
+                                <property>
+                                    <name>ballerina.home</name>
+                                    <value>${project.build.directory}</value>
+                                </property>
+                            </properties>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
             <plugin>
@@ -173,7 +214,7 @@
                         </goals>
                         <configuration>
                             <outputDir>${project.build.directory}/api-docs</outputDir>
-                            <sourceRoot>${basedir}/target/classes/META-INF/wso2</sourceRoot>
+                            <sourceRoot>${basedir}/target/classes/META-INF/ballerina</sourceRoot>
                             <nativeCode>true</nativeCode>
                             <packageFilter>compression</packageFilter>
                             <orgName>wso2</orgName>
@@ -223,6 +264,10 @@
                     <suiteXmlFiles>
                         <suiteXmlFile>src/test/resources/testng.xml</suiteXmlFile>
                     </suiteXmlFiles>
+                    <!-- Required to set ballerina.home to target directory as the target/lib includes extracted balos -->
+                    <systemPropertyVariables>
+                        <ballerina.home>${project.build.directory}</ballerina.home>
+                    </systemPropertyVariables>
                 </configuration>
             </plugin>
             <plugin>
@@ -305,10 +350,63 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <executions>
+                    <!-- Following execution generates balo for mongodb package -->
+                    <execution>
+                        <id>gen-balo</id>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                        <phase>compile</phase>
+                        <configuration>
+                            <systemProperties>
+                                <systemProperty>
+                                    <key>BALLERINA_DEV_MODE_COMPILE</key>
+                                    <value>true</value>
+                                </systemProperty>
+                            </systemProperties>
+                            <arguments>
+                                <argument>false</argument>
+                                <argument>${basedir}/src/main/ballerina/</argument>
+                                <argument>${project.build.directory}/generated-balo/repo/wso2</argument>
+                                <argument>${project.build.directory}</argument>
+                                <argument>${project.version}</argument>
+                            </arguments>
+                            <mainClass>org.ballerinalang.stdlib.utils.GenerateBalo</mainClass>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <!-- Since mongodb balo is needed by tests, here it is copied to target/lib where other balos
+                    are copied to -->
+                    <execution>
+                        <id>copy-mongodb-balo</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/lib/repo</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${project.build.directory}/generated-balo/repo/</directory>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 
     <properties>
-        <generated.ballerina.source.directory>${project.build.directory}/../src/main/wso2</generated.ballerina.source.directory>
+        <generated.ballerina.source.directory>${project.build.directory}/../src/main/ballerina</generated.ballerina.source.directory>
     </properties>
 </project>

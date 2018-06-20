@@ -20,7 +20,7 @@ package org.ballerinalang.mongodb;
 import org.ballerinalang.bre.Context;
 import org.ballerinalang.model.values.BStruct;
 import org.ballerinalang.util.codegen.PackageInfo;
-import org.ballerinalang.util.codegen.StructInfo;
+import org.ballerinalang.util.codegen.StructureTypeInfo;
 
 /**
  * This class contains util methods for MongoDB package.
@@ -28,7 +28,7 @@ import org.ballerinalang.util.codegen.StructInfo;
 public class MongoDBDataSourceUtils {
     public static BStruct getMongoDBConnectorError(Context context, Throwable throwable) {
         PackageInfo mongoDBPackageInfo = context.getProgramFile().getPackageInfo(Constants.BUILTIN_PACKAGE_PATH);
-        StructInfo errorStructInfo = mongoDBPackageInfo.getStructInfo(Constants.MONGODB_CONNECTOR_ERROR);
+        StructureTypeInfo errorStructInfo = mongoDBPackageInfo.getStructInfo(Constants.MONGODB_CONNECTOR_ERROR);
         BStruct mongoDBConnectorError = new BStruct(errorStructInfo.getType());
         if (throwable.getMessage() == null) {
             mongoDBConnectorError.setStringField(0, Constants.MONGODB_EXCEPTION_OCCURED);
