@@ -71,14 +71,14 @@
             <resource>
                 <directory>src/main/resources</directory>
                 <excludes>
-                    <exclude>wso2/**</exclude>
+                    <exclude>ballerina/**</exclude>
                 </excludes>
             </resource>
 
             <!-- copy built-in ballerina sources to the jar -->
             <resource>
-                <directory>src/main/wso2</directory>
-                <targetPath>META-INF/wso2</targetPath>
+                <directory>src/main/ballerina</directory>
+                <targetPath>META-INF/ballerina</targetPath>
             </resource>
         </resources>
         <plugins>
@@ -214,7 +214,7 @@
                         </goals>
                         <configuration>
                             <outputDir>${project.build.directory}/api-docs</outputDir>
-                            <sourceRoot>${basedir}/target/classes/META-INF/wso2</sourceRoot>
+                            <sourceRoot>${basedir}/target/classes/META-INF/ballerina</sourceRoot>
                             <nativeCode>true</nativeCode>
                             <packageFilter>compression</packageFilter>
                             <orgName>wso2</orgName>
@@ -370,7 +370,7 @@
                             </systemProperties>
                             <arguments>
                                 <argument>false</argument>
-                                <argument>${basedir}/src/main/wso2/</argument>
+                                <argument>${basedir}/src/main/ballerina/</argument>
                                 <argument>${project.build.directory}/generated-balo/repo/wso2</argument>
                                 <argument>${project.build.directory}</argument>
                                 <argument>${project.version}</argument>
@@ -407,6 +407,6 @@
     </build>
 
     <properties>
-        <generated.ballerina.source.directory>${project.build.directory}/../src/main/wso2</generated.ballerina.source.directory>
+        <generated.ballerina.source.directory>${project.build.directory}/../src/main/ballerina</generated.ballerina.source.directory>
     </properties>
 </project>
