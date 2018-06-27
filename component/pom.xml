@@ -156,6 +156,17 @@
                                    <include>org.mongodb:mongo-java-driver</include>
                                </includes>
                             </artifactSet>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.DontIncludeResourceTransformer">
+                                    <resources>
+                                        <resource>installation-scripts/install.bat</resource>
+                                        <resource>installation-scripts/install.sh</resource>
+                                        <resource>installation-scripts/uninstall.bat</resource>
+                                        <resource>installation-scripts/uninstall.sh</resource>
+                                        <resource>installation-scripts/README.txt</resource>
+                                    </resources>
+                                </transformer>
+                            </transformers>
                         </configuration>
                     </execution>
                 </executions>
