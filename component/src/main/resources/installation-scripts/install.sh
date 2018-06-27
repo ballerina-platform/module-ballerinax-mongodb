@@ -54,4 +54,3 @@ else
     fi
     echo "Successfully installed MongoDB package!"
 fi
-

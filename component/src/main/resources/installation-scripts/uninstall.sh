@@ -1,4 +1,4 @@
-#bin/bash
+#!/bin/bash
 
 read -p "Enter Ballerina home: "  ballerina_home
 
