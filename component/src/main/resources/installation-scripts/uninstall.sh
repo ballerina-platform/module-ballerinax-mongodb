@@ -24,16 +24,18 @@ fi
 
 rm $ballerina_lib_location/wso2-$package_name-package-$version.jar
 
-if [ $? -ne 0 ]; then
+if [ -e "$ballerina_lib_location/wso2-$package_name-package-$version.jar" ]; then
     echo "Error occurred while deleting dependencies from $ballerina_lib_location"
-    echo "Please manually delete $ballerina_lib_location/wso2-$package_name-package-$version.jar"
+    echo "Please manually delete $ballerina_lib_location/wso2-$package_name-package-$version.jar and $ballerina_balo_location/wso2/$package_name/0.0.0/$package_name.zip"
+    exit 1
 fi    
 
 rm -r $ballerina_balo_location/wso2/$package_name/0.0.0
 
-if [ $? -ne 0 ]; then
+if [ -e "$ballerina_balo_location/wso2/$package_name/0.0.0/$package_name.zip" ]; then
     echo "Error occurred while deleting $package_name balo from $ballerina_balo_location"
     echo "Please manually delete $ballerina_balo_location/wso2/$package_name/0.0.0 directory"
+    exit 2
 else
     echo "Successfully uninstalled MongoDB package!"    
 fi    

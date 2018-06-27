@@ -8,6 +8,4 @@ In this directory, you can find two scripts of interest to you.
 1. install.{sh/bat} - Installs the MongoDB package.
 2. uninstall.{sh/bat} - Uninstalls the MongoDB package if installed already.
 
-Happy coding with Ballerina!
-
-
+Happy coding!

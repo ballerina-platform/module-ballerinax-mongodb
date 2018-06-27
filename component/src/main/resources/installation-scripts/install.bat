@@ -22,8 +22,8 @@ XCOPY ".\dependencies\wso2-%package_name%-package-%version%.jar" "%ballerina_lib
 
 IF %ERRORLEVEL% GTR 1 (
     ECHO An error occurred while copying .\dependencies\wso2-%package_name%-package-%version%.jar to %ballerina_lib_location%
-	ECHO Installtion unsuccessful.
-	GOTO :END
+	ECHO Installation unsuccessful.
+	GOTO :FAILED
 )
 
 rem Create directory hierarchy for the balo if it doesn't already exist
@@ -36,15 +36,22 @@ XCOPY ".\balo\wso2\%package_name%\0.0.0\%package_name%.zip" "%ballerina_balo_loc
 
 IF %ERRORLEVEL% GTR 1 (
     ECHO An error occurred while copying .\balo\wso2\%package_name%\0.0.0\%package_name%.zip to %ballerina_balo_location%\wso2\%package_name%\0.0.0
-    ECHO Installtion unsuccessful. Reverting changes.
+    ECHO Installation unsuccessful. Reverting changes.
     IF EXIST "temp\wso2-%package_name%-package-%version%.jar" (
 	    ECHO Copying backed-up wso2-%package_name%-package-%version%.jar to %ballerina_lib_location%
 	    XCOPY "temp\wso2-%package_name%-package-%version%.jar" "%ballerina_lib_location%" /y
 	)
-	GOTO :END
+	GOTO :FAILED
 )
 
+:SUCCESS
 ECHO Successfully installed MongoDB package!
+GOTO :END
+
+:FAILED
+ECHO You can manually install the package by copying
+ECHO 1. dependencies\wso2-%package_name%-package-%version%.jar to %ballerina_lib_location%
+ECHO 2. balo\wso2\%package_name%\0.0.0\%package_name%.zip to %ballerina_balo_location%\wso2\%package_name%\0.0.0
 
 :END
 IF EXIST ./temp (
