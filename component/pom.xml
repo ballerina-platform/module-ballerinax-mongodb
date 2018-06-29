@@ -67,20 +67,6 @@
     </dependencies>
 
     <build>
-        <resources>
-            <resource>
-                <directory>src/main/resources</directory>
-                <excludes>
-                    <exclude>ballerina/**</exclude>
-                </excludes>
-            </resource>
-
-            <!-- copy built-in ballerina sources to the jar -->
-            <resource>
-                <directory>src/main/ballerina</directory>
-                <targetPath>META-INF/ballerina</targetPath>
-            </resource>
-        </resources>
         <plugins>
             <!-- For ballerina annotation processing -->
             <plugin>
@@ -139,34 +125,6 @@
                 <artifactId>maven-dependency-plugin</artifactId>
                 <inherited>false</inherited>
                 <executions>
-                    <execution>
-                        <id>copy-dependencies</id>
-                        <phase>install</phase>
-                        <goals>
-                            <goal>copy</goal>
-                        </goals>
-                        <configuration>
-                            <artifactItems>
-                                <artifactItem>
-                                    <groupId>${project.groupId}</groupId>
-                                    <artifactId>${project.artifactId}</artifactId>
-                                    <version>${project.version}</version>
-                                    <type>${project.packaging}</type>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>org.mongodb</groupId>
-                                    <artifactId>mongo-java-driver</artifactId>
-                                    <version>${mongodb.version}</version>
-                                    <type>${project.packaging}</type>
-                                </artifactItem>
-                            </artifactItems>
-                            <outputDirectory>${project.build.directory}/distribution</outputDirectory>
-                            <overWriteReleases>false</overWriteReleases>
-                            <overWriteSnapshots>true</overWriteSnapshots>
-                            <overWriteIfNewer>true</overWriteIfNewer>
-                            <useBaseVersion>true</useBaseVersion>
-                        </configuration>
-                    </execution>
                     <!-- Following execution unpacks balo dependencies (ballerina-binary-repo) -->
                     <execution>
                         <id>unpack-dependencies</id>
@@ -177,6 +135,38 @@
                         <configuration>
                             <includeClassifiers>ballerina-binary-repo</includeClassifiers>
                             <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <finalName>wso2-mongodb-package-${project.version}</finalName>
+                            <artifactSet>
+                               <includes>
+                                   <include>org.ballerinalang:wso2-mongodb</include>
+                                   <include>org.mongodb:mongo-java-driver</include>
+                               </includes>
+                            </artifactSet>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.DontIncludeResourceTransformer">
+                                    <resources>
+                                        <resource>installation-scripts/install.bat</resource>
+                                        <resource>installation-scripts/install.sh</resource>
+                                        <resource>installation-scripts/uninstall.bat</resource>
+                                        <resource>installation-scripts/uninstall.sh</resource>
+                                        <resource>installation-scripts/README.txt</resource>
+                                    </resources>
+                                </transformer>
+                            </transformers>
                         </configuration>
                     </execution>
                 </executions>
@@ -214,7 +204,7 @@
                         </goals>
                         <configuration>
                             <outputDir>${project.build.directory}/api-docs</outputDir>
-                            <sourceRoot>${basedir}/target/classes/META-INF/ballerina</sourceRoot>
+                            <sourceRoot>${basedir}/src/main/ballerina</sourceRoot>
                             <nativeCode>true</nativeCode>
                             <packageFilter>compression</packageFilter>
                             <orgName>wso2</orgName>
@@ -224,20 +214,19 @@
             </plugin>
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <configuration>
-                    <descriptors>
-                        <descriptor>src/main/assembly/dist.xml</descriptor>
-                    </descriptors>
-                    <finalName>wso2-mongodb-package-${project.version}</finalName>
-                    <appendAssemblyId>false</appendAssemblyId>
-                </configuration>
                 <executions>
                     <execution>
                         <id>make-assembly</id>
-                        <phase>install</phase>
+                        <phase>package</phase>
                         <goals>
                             <goal>single</goal>
                         </goals>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>src/main/assembly/dist.xml</descriptor>
+                            </descriptors>
+                            <appendAssemblyId>false</appendAssemblyId>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -406,7 +395,4 @@
         </plugins>
     </build>
 
-    <properties>
-        <generated.ballerina.source.directory>${project.build.directory}/../src/main/ballerina</generated.ballerina.source.directory>
-    </properties>
 </project>

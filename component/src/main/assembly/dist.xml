@@ -24,9 +24,19 @@
     <formats>
         <format>zip</format>
     </formats>
+    <files>
+        <file>
+            <source>${project.build.directory}/${project.artifactId}-package-${project.version}.jar</source>
+            <outputDirectory>./dependencies</outputDirectory>
+        </file>
+    </files>
     <fileSets>
         <fileSet>
-            <directory>${project.build.directory}/distribution</directory>
+            <directory>${project.build.directory}/generated-balo/repo</directory>
+            <outputDirectory>./balo</outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>${project.basedir}/src/main/resources/installation-scripts</directory>
             <outputDirectory>.</outputDirectory>
         </fileSet>
     </fileSets>
