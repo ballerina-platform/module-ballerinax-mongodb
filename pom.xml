@@ -21,7 +21,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.ballerinalang</groupId>
     <artifactId>connector-mongodb-parent</artifactId>
-    <version>0.5.6-SNAPSHOT</version>
+    <version>0.5.6</version>
     <packaging>pom</packaging>
     <name>Ballerina - MongoDB Parent</name>
 
@@ -29,7 +29,7 @@
         <url>https://github.com/ballerinalang/connector-mongodb.git</url>
         <developerConnection>scm:git:https://github.com/ballerinalang/connector-mongodb.git</developerConnection>
         <connection>scm:git:https://github.com/ballerinalang/connector-mongodb.git</connection>
-        <tag>HEAD</tag>
+        <tag>v0.5.6</tag>
     </scm>
 
     <repositories>
