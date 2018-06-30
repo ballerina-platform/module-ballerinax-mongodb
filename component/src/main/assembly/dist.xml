@@ -36,7 +36,7 @@
             <outputDirectory>./balo</outputDirectory>
         </fileSet>
         <fileSet>
-            <directory>${project.basedir}/src/main/resources/installation-scripts</directory>
+            <directory>${project.build.directory}/classes/installation-scripts</directory>
             <outputDirectory>.</outputDirectory>
         </fileSet>
     </fileSets>

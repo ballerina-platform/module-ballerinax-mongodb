@@ -24,7 +24,7 @@ fi
 
 ballerina_lib_location=$ballerina_home/bre/lib/
 ballerina_balo_location=$ballerina_home/lib/repo/
-version=0.5.6-SNAPSHOT
+version=${project.version}
 package_name=mongodb
 
 if [ -e "$ballerina_lib_location/wso2-$package_name-package-$version.jar" ]
