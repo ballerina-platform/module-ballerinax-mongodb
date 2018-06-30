@@ -1,4 +1,22 @@
 @echo off
+rem ----------------------------------------------------------------------
+rem Copyright (c) 2018, WSO2 Inc. (http:www.wso2.org) All Rights Reserved.
+rem
+rem WSO2 Inc. licenses this file to you under the Apache License,
+rem Version 2.0 (the "License"); you may not use this file except
+rem in compliance with the License.
+rem You may obtain a copy of the License at
+rem
+rem     http:www.apache.orglicensesLICENSE-2.0
+rem
+rem Unless required by applicable law or agreed to in writing,
+rem software distributed under the License is distributed on an
+rem "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+rem KIND, either express or implied.  See the License for the
+rem specific language governing permissions and limitations
+rem under the License.
+rem
+
 SETLOCAL
 SET /P ballerina_home=Please enter Ballerina home:
 
