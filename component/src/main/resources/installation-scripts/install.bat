@@ -27,7 +27,7 @@ IF NOT EXIST "%ballerina_home%/bin/ballerina.bat" (
 
 SET ballerina_lib_location=%ballerina_home%\bre\lib
 SET ballerina_balo_location=%ballerina_home%\lib\repo
-SET version=0.5.6-SNAPSHOT
+SET version=${project.version}
 SET package_name=mongodb
 
 IF EXIST "%ballerina_lib_location%\wso2-%package_name%-package-%version%.jar" (
