@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/wso2-ballerina/package-mongodb.svg?branch=master)](https://travis-ci.org/wso2-ballerina/package-mongodb)
+
 # Ballerina MongoDB Client Endpoint
 
 Ballerina MongoDB Client Endpoint is used to connect Ballerina with MongoDB data source. With the Ballerina MongoDB client endpoint following actions are supported.
