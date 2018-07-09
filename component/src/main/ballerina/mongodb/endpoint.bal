@@ -22,10 +22,8 @@ documentation {
     Represents MongoDB client endpoint.
 }
 public type Client object {
-    private {
-        ClientEndpointConfiguration clientEndpointConfig;
-        CallerActions callerActions;
-    }
+    private ClientEndpointConfiguration clientEndpointConfig;
+    private CallerActions callerActions;
 
     documentation {
         Gets called when the endpoint is being initialized during the package initialization.
@@ -53,7 +51,7 @@ public type Client object {
 
 native function createClient(ClientEndpointConfiguration clientEndpointConfig) returns CallerActions;
 
-public type ClientEndpointConfiguration {
+public type ClientEndpointConfiguration record {
     string host,
     string dbName,
     string username,
@@ -61,7 +59,7 @@ public type ClientEndpointConfiguration {
     ConnectionProperties options,
 };
 
-public type ConnectionProperties {
+public type ConnectionProperties record {
     string url,
     string readConcern,
     string writeConcern,
