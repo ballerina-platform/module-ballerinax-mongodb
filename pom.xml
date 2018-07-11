@@ -138,6 +138,26 @@
                 <artifactId>ballerina-runtime</artifactId>
                 <version>${ballerina.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.ballerinalang</groupId>
+                <artifactId>ballerina-logging</artifactId>
+                <version>${ballerina.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.ballerinalang</groupId>
+                <artifactId>ballerina-log-api</artifactId>
+                <version>${ballerina.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.ballerinax.docker</groupId>
+                <artifactId>docker-extension</artifactId>
+                <version>${ballerina.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.ballerinax.kubernetes</groupId>
+                <artifactId>kubernetes-extension</artifactId>
+                <version>${ballerina.version}</version>
+            </dependency>
             <!-- Following ballerina-binary-repo dependency is required to obtain balos -->
             <dependency>
                 <groupId>org.ballerinalang</groupId>
@@ -152,6 +172,27 @@
                 <version>${ballerina.version}</version>
                 <type>zip</type>
                 <classifier>ballerina-binary-repo</classifier>
+            </dependency>
+            <dependency>
+                <groupId>org.ballerinalang</groupId>
+                <artifactId>ballerina-log-api</artifactId>
+                <version>${ballerina.version}</version>
+                <type>zip</type>
+                <classifier>ballerina-binary-repo</classifier>
+            </dependency>
+            <dependency>
+                <groupId>org.ballerinax.docker</groupId>
+                <artifactId>docker-extension</artifactId>
+                <type>zip</type>
+                <classifier>ballerina-binary-repo</classifier>
+                <version>${ballerina.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.ballerinax.kubernetes</groupId>
+                <artifactId>kubernetes-extension</artifactId>
+                <type>zip</type>
+                <classifier>ballerina-binary-repo</classifier>
+                <version>${ballerina.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.mongodb</groupId>
