@@ -28,7 +28,7 @@ import org.ballerinalang.util.codegen.StructureTypeInfo;
  * This class contains util methods for MongoDB package.
  */
 public class MongoDBDataSourceUtils {
-    public static BMap<?, ?> getMongoDBConnectorError(Context context, Throwable throwable) {
+    public static BMap<String, BValue> getMongoDBConnectorError(Context context, Throwable throwable) {
         PackageInfo mongoDBPackageInfo = context.getProgramFile().getPackageInfo(Constants.BUILTIN_PACKAGE_PATH);
         StructureTypeInfo errorStructInfo = mongoDBPackageInfo.getStructInfo(Constants.MONGODB_CONNECTOR_ERROR);
         BMap<String, BValue> mongoDBConnectorError = new BMap<>(errorStructInfo.getType());
