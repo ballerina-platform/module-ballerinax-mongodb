@@ -18,7 +18,9 @@
 package org.ballerinalang.mongodb;
 
 import org.ballerinalang.bre.Context;
-import org.ballerinalang.model.values.BStruct;
+import org.ballerinalang.model.values.BMap;
+import org.ballerinalang.model.values.BString;
+import org.ballerinalang.model.values.BValue;
 import org.ballerinalang.util.codegen.PackageInfo;
 import org.ballerinalang.util.codegen.StructureTypeInfo;
 
@@ -26,14 +28,14 @@ import org.ballerinalang.util.codegen.StructureTypeInfo;
  * This class contains util methods for MongoDB package.
  */
 public class MongoDBDataSourceUtils {
-    public static BStruct getMongoDBConnectorError(Context context, Throwable throwable) {
+    public static BMap<String, BValue> getMongoDBConnectorError(Context context, Throwable throwable) {
         PackageInfo mongoDBPackageInfo = context.getProgramFile().getPackageInfo(Constants.BUILTIN_PACKAGE_PATH);
         StructureTypeInfo errorStructInfo = mongoDBPackageInfo.getStructInfo(Constants.MONGODB_CONNECTOR_ERROR);
-        BStruct mongoDBConnectorError = new BStruct(errorStructInfo.getType());
+        BMap<String, BValue> mongoDBConnectorError = new BMap<>(errorStructInfo.getType());
         if (throwable.getMessage() == null) {
-            mongoDBConnectorError.setStringField(0, Constants.MONGODB_EXCEPTION_OCCURED);
+            mongoDBConnectorError.put(Constants.ERROR_MESSAGE_FIELD, new BString(Constants.MONGODB_EXCEPTION_OCCURED));
         } else {
-            mongoDBConnectorError.setStringField(0, throwable.getMessage());
+            mongoDBConnectorError.put(Constants.ERROR_MESSAGE_FIELD, new BString(throwable.getMessage()));
         }
         return mongoDBConnectorError;
     }

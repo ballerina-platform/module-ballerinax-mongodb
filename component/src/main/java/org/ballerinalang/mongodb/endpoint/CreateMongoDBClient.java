@@ -22,7 +22,8 @@ import org.ballerinalang.bre.bvm.BlockingNativeCallableUnit;
 import org.ballerinalang.connector.api.BLangConnectorSPIUtil;
 import org.ballerinalang.connector.api.Struct;
 import org.ballerinalang.model.types.TypeKind;
-import org.ballerinalang.model.values.BStruct;
+import org.ballerinalang.model.values.BMap;
+import org.ballerinalang.model.values.BValue;
 import org.ballerinalang.mongodb.Constants;
 import org.ballerinalang.mongodb.MongoDBDataSource;
 import org.ballerinalang.natives.annotations.Argument;
@@ -46,7 +47,7 @@ public class CreateMongoDBClient extends BlockingNativeCallableUnit {
 
     @Override
     public void execute(Context context) {
-        BStruct configBStruct = (BStruct) context.getRefArgument(0);
+        BMap<String, BValue> configBStruct = (BMap<String, BValue>) context.getRefArgument(0);
         Struct clientEndpointConfig = BLangConnectorSPIUtil.toStruct(configBStruct);
 
         String host = clientEndpointConfig.getStringField(Constants.EndpointConfig.HOST);
@@ -58,7 +59,7 @@ public class CreateMongoDBClient extends BlockingNativeCallableUnit {
         MongoDBDataSource dataSource = new MongoDBDataSource();
         dataSource.init(host, dbName, username, password, options);
 
-        BStruct mongoDBClient = BLangConnectorSPIUtil
+        BMap<String, BValue> mongoDBClient = BLangConnectorSPIUtil
                 .createBStruct(context.getProgramFile(), Constants.MONGODB_PACKAGE_PATH, Constants.CALLER_ACTIONS);
         mongoDBClient.addNativeData(Constants.CALLER_ACTIONS, dataSource);
         context.setReturnValues(mongoDBClient);

@@ -21,7 +21,8 @@ import org.ballerinalang.bre.Context;
 import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.model.values.BInteger;
 import org.ballerinalang.model.values.BJSON;
-import org.ballerinalang.model.values.BStruct;
+import org.ballerinalang.model.values.BMap;
+import org.ballerinalang.model.values.BValue;
 import org.ballerinalang.mongodb.Constants;
 import org.ballerinalang.mongodb.MongoDBDataSource;
 import org.ballerinalang.mongodb.MongoDBDataSourceUtils;
@@ -50,7 +51,7 @@ public class Delete extends AbstractMongoDBAction {
 
     @Override
     public void execute(Context context) {
-        BStruct bConnector = (BStruct) context.getRefArgument(0);
+        BMap<String, BValue> bConnector = (BMap<String, BValue>) context.getRefArgument(0);
         String collectionName = context.getStringArgument(0);
         BJSON filter = (BJSON) context.getRefArgument(1);
         Boolean isMultiple = context.getBooleanArgument(0);

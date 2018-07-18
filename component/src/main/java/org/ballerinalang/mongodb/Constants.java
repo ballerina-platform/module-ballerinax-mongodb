@@ -28,6 +28,7 @@ public final class Constants {
     public static final String CALLER_ACTIONS = "CallerActions";
     public static final String MONGODB_CONNECTOR_ERROR = "error";
     public static final String MONGODB_EXCEPTION_OCCURED = "Exception Occurred while executing Mongo database";
+    public static final String ERROR_MESSAGE_FIELD = "message";
 
     /**
      * Constants for EndpointConfiguration.
