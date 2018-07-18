@@ -28,16 +28,19 @@
         <file>
             <source>${project.build.directory}/${project.artifactId}-package-${project.version}.jar</source>
             <outputDirectory>./dependencies</outputDirectory>
+            <fileMode>0644</fileMode>
         </file>
     </files>
     <fileSets>
         <fileSet>
             <directory>${project.build.directory}/generated-balo/repo</directory>
             <outputDirectory>./balo</outputDirectory>
+            <fileMode>0644</fileMode>
         </fileSet>
         <fileSet>
             <directory>${project.build.directory}/classes/installation-scripts</directory>
             <outputDirectory>.</outputDirectory>
+            <fileMode>0755</fileMode>
         </fileSet>
     </fileSets>
 </assembly>
