@@ -19,8 +19,8 @@ package org.ballerinalang.mongodb.actions;
 
 import org.ballerinalang.bre.Context;
 import org.ballerinalang.model.types.TypeKind;
-import org.ballerinalang.model.values.BJSON;
 import org.ballerinalang.model.values.BMap;
+import org.ballerinalang.model.values.BRefValueArray;
 import org.ballerinalang.model.values.BValue;
 import org.ballerinalang.mongodb.Constants;
 import org.ballerinalang.mongodb.MongoDBDataSource;
@@ -51,7 +51,7 @@ public class BatchInsert extends AbstractMongoDBAction {
     public void execute(Context context) {
         BMap<String, BValue> bConnector = (BMap<String, BValue>) context.getRefArgument(0);
         String collectionName = context.getStringArgument(0);
-        BJSON documents = (BJSON) context.getRefArgument(1);
+        BRefValueArray documents = (BRefValueArray) context.getRefArgument(1);
         MongoDBDataSource datasource = (MongoDBDataSource) bConnector.getNativeData(Constants.CALLER_ACTIONS);
         try {
             batchInsert(datasource, collectionName, documents);

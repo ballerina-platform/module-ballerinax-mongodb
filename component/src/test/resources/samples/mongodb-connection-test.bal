@@ -1,4 +1,5 @@
 import wso2/mongodb;
+import ballerina/io;
 
 @final string mongodbHost = "127.0.0.1";
 
@@ -13,6 +14,7 @@ function testConnectorInitWithDirectUrl() returns (json) {
 
     json queryString = { "name": "Jim", "age": "21" };
     json result = check conn->find("students", queryString);
+    io:println(result);
     conn.stop();
     return result;
 }
@@ -29,6 +31,7 @@ function testConnectorInitWithConnectionPoolProperties() returns (json) {
     };
     json queryString = { "name": "Jim", "age": "21" };
     json result = check conn->find("students", queryString);
+    io:println(result);
     conn.stop();
     return result;
 }

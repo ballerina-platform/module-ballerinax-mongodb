@@ -1,4 +1,5 @@
 import wso2/mongodb;
+import ballerina/io;
 
 @final string mongodbHost = "127.0.0.1";
 
@@ -28,6 +29,7 @@ function find() returns (json) {
     };
     json queryString = { "age": "21" };
     json result = check conn->find("students", queryString);
+    io:println(result);
     conn.stop();
     return result;
 }
@@ -42,6 +44,7 @@ function findWithNilQuery() returns (json) {
             serverSelectionTimeout: 500 }
     };
     json result = check conn->find("students", ());
+    io:println(result);
     conn.stop();
     return result;
 }
@@ -57,6 +60,7 @@ function findOne() returns (json) {
     };
     json queryString = { "name": "Jim", "age": "21" };
     json result = check conn->findOne("students", queryString);
+    io:println(result);
     conn.stop();
     return result;
 }
@@ -72,6 +76,7 @@ function findOneWithNilQuery() returns (json) {
     };
 
     json result = check conn->findOne("students", ());
+    io:println(result);
     conn.stop();
     return result;
 }

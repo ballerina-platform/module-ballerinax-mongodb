@@ -30,10 +30,10 @@ import com.mongodb.WriteConcern;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import org.ballerinalang.connector.api.Struct;
+import org.ballerinalang.model.JSONDataSource;
 import org.ballerinalang.model.types.BType;
 import org.ballerinalang.model.util.JsonGenerator;
 import org.ballerinalang.model.util.JsonParser;
-import org.ballerinalang.model.values.BJSON;
 import org.ballerinalang.model.values.BValue;
 import org.ballerinalang.util.exceptions.BallerinaException;
 import org.bson.Document;
@@ -313,9 +313,9 @@ public class MongoDBDataSource implements BValue {
     }
 
     /**
-     * MongoDB result cursor implementation of {@link BJSON}.
+     * MongoDB result cursor implementation of {@link BStreamingJSON}.
      */
-    public static class MongoJSONDataSource implements BJSON.JSONDataSource {
+    public static class MongoJSONDataSource implements JSONDataSource {
 
         private MongoCursor<Document> mc;
 
@@ -327,7 +327,7 @@ public class MongoDBDataSource implements BValue {
         public void serialize(JsonGenerator jsonGenerator) throws IOException {
             jsonGenerator.writeStartArray();
             while (this.mc.hasNext()) {
-                JsonParser.parse(this.mc.next().toJson()).serialize(jsonGenerator);
+                jsonGenerator.serialize(JsonParser.parse(this.mc.next().toJson()));
             }
             jsonGenerator.writeEndArray();
         }
