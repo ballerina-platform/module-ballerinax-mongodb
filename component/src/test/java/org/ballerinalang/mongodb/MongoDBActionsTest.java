@@ -24,9 +24,8 @@ import de.flapdoodle.embed.mongo.MongodExecutable;
 import org.ballerinalang.launcher.util.BCompileUtil;
 import org.ballerinalang.launcher.util.BRunUtil;
 import org.ballerinalang.launcher.util.CompileResult;
-import org.ballerinalang.model.util.JsonNode;
 import org.ballerinalang.model.values.BInteger;
-import org.ballerinalang.model.values.BJSON;
+import org.ballerinalang.model.values.BMap;
 import org.ballerinalang.model.values.BValue;
 import org.ballerinalang.mongodb.utils.MongoDBTestUtils;
 import org.bson.Document;
@@ -87,12 +86,13 @@ public class MongoDBActionsTest {
     @Test(description = "Tests MongoDB find action")
     public void testFind() throws Exception {
         BValue[] results = BRunUtil.invoke(result, "find");
-        JsonNode jsonNodes = ((BJSON) results[0]).value();
-        Assert.assertEquals(jsonNodes.size(), 2, "Two results should have been received");
+        Assert.assertEquals(results.length, 2, "Two results should have been received");
         String[] names = { "Jim", "Peter" };
         for (int i = 0; i < 2; i++) {
-            Assert.assertEquals(jsonNodes.get(i).get("name").stringValue(), names[i], "Retrieved data is incorrect");
-            Assert.assertEquals(jsonNodes.get(i).get("age").stringValue(), "21", "Retrieved data is incorrect");
+            Assert.assertEquals(((BMap) results[i]).getMap().get("name").toString(), names[i],
+                    "Retrieved data is incorrect");
+            Assert.assertEquals(((BMap) results[i]).getMap().get("age").toString(), "21",
+                    "Retrieved data is incorrect");
         }
     }
 
@@ -100,26 +100,25 @@ public class MongoDBActionsTest {
     public void testFindOne() throws Exception {
         BValue[] results = BRunUtil.invoke(result, "findOne");
         Assert.assertEquals(results.length, 1, "Exactly one result should have been received");
-        Assert.assertEquals(((BJSON) results[0]).value().get("name").stringValue(), "Jim",
+        Assert.assertEquals(((BMap) results[0]).getMap().get("name").toString(), "Jim",
                 "Retrieved data is incorrect");
-        Assert.assertEquals(((BJSON) results[0]).value().get("age").stringValue(), "21", "Retrieved data is incorrect");
+        Assert.assertEquals(((BMap) results[0]).getMap().get("age").toString(), "21", "Retrieved data is incorrect");
     }
 
     @Test(description = "Tests MongoDB find-one action with nill query")
     public void testFindOneWithNilQuery() throws Exception {
         BValue[] results = BRunUtil.invoke(result, "findOneWithNilQuery");
         Assert.assertEquals(results.length, 1, "Exactly one result should have been received");
-        Assert.assertEquals(((BJSON) results[0]).value().get("name").stringValue(), "Jim",
+        Assert.assertEquals(((BMap) results[0]).getMap().get("name").toString(), "Jim",
                 "Retrieved data is incorrect");
-        Assert.assertEquals(((BJSON) results[0]).value().get("age").stringValue(), "21", "Retrieved data is incorrect");
+        Assert.assertEquals(((BMap) results[0]).getMap().get("age").toString(), "21", "Retrieved data is incorrect");
     }
 
     @Test(description = "Tests MongoDB find action with nil query",
           dependsOnMethods = "testFindOneWithNilQuery")
     public void testFindWithNilQuery() throws Exception {
         BValue[] results = BRunUtil.invoke(result, "findWithNilQuery");
-        JsonNode jsonNodes = ((BJSON) results[0]).value();
-        Assert.assertEquals(jsonNodes.size(), 10, "10 records should have been received");
+        Assert.assertEquals(results.length, 10, "10 records should have been received");
     }
 
     @Test(description = "Tests MongoDB delete action for multiple records",

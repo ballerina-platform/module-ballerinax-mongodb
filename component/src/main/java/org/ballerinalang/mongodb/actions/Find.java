@@ -19,8 +19,8 @@ package org.ballerinalang.mongodb.actions;
 
 import org.ballerinalang.bre.Context;
 import org.ballerinalang.model.types.TypeKind;
-import org.ballerinalang.model.values.BJSON;
 import org.ballerinalang.model.values.BMap;
+import org.ballerinalang.model.values.BStreamingJSON;
 import org.ballerinalang.model.values.BValue;
 import org.ballerinalang.mongodb.Constants;
 import org.ballerinalang.mongodb.MongoDBDataSource;
@@ -52,10 +52,10 @@ public class Find extends AbstractMongoDBAction {
     public void execute(Context context) {
         BMap<String, BValue> bConnector = (BMap<String, BValue>) context.getRefArgument(0);
         String collectionName = context.getStringArgument(0);
-        BJSON query = (BJSON) context.getNullableRefArgument(1);
+        BMap query = (BMap) context.getNullableRefArgument(1);
         MongoDBDataSource datasource = (MongoDBDataSource) bConnector.getNativeData(Constants.CALLER_ACTIONS);
         try {
-            BJSON result = find(datasource, collectionName, query);
+            BStreamingJSON result = find(datasource, collectionName, query);
             context.setReturnValues(result);
         } catch (Throwable e) {
             context.setReturnValues(MongoDBDataSourceUtils.getMongoDBConnectorError(context, e));

@@ -49,7 +49,7 @@ public type Client object {
     }
 };
 
-native function createClient(ClientEndpointConfiguration clientEndpointConfig) returns CallerActions;
+extern function createClient(ClientEndpointConfiguration clientEndpointConfig) returns CallerActions;
 
 public type ClientEndpointConfiguration record {
     string host,

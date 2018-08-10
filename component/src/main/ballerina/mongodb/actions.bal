@@ -25,7 +25,7 @@ public type CallerActions object {
         P{{queryString}} Query to use to select data
         R{{}} `json` result from the find operation or `error` if an error occurs
     }
-    public native function find(string collectionName, json? queryString) returns (json|error);
+    public extern function find(string collectionName, json? queryString) returns (json|error);
 
     documentation {
         The findOne operation implementation which selects the first document match with the query.
@@ -34,7 +34,7 @@ public type CallerActions object {
         P{{queryString}} Query to use to select data
         R{{}} `json` The result from the findOne operation or `error` if an error occurs
     }
-    public native function findOne(string collectionName, json? queryString) returns (json|error);
+    public extern function findOne(string collectionName, json? queryString) returns (json|error);
 
     documentation {
         The insert operation implementation which inserts a document to a collection.
@@ -43,7 +43,7 @@ public type CallerActions object {
         P{{document}} The document to be inserted
         R{{}} `nil` or `error` if an error occurs
     }
-    public native function insert(string collectionName, json document)
+    public extern function insert(string collectionName, json document)
         returns (error?);
 
     documentation {
@@ -54,7 +54,7 @@ public type CallerActions object {
         P{{multi}} Specifies whether to delete multiple documents or not
         R{{}} `int` deleted count or `error` if an error occurs
     }
-    public native function delete(string collectionName, json filter, boolean multi) returns (int|error);
+    public extern function delete(string collectionName, json filter, boolean multi) returns (int|error);
 
     documentation {
         The update operation implementation which updates documents that matches to given filter.
@@ -65,7 +65,7 @@ public type CallerActions object {
         P{{upsert}} Specifies whether to create a new document when no document matches the filter
         R{{}} `int` The updated count or `error` if an error occurs
     }
-    public native function update(string collectionName, json filter, json document, boolean multi, boolean upsert)
+    public extern function update(string collectionName, json filter, json document, boolean multi, boolean upsert)
         returns (int|error);
 
     documentation {
@@ -75,11 +75,11 @@ public type CallerActions object {
         P{{documents}} The document array to be inserted
         R{{}} `nil` or `error` if an error occurs
     }
-    public native function batchInsert(string collectionName, json documents) returns (error?);
+    public extern function batchInsert(string collectionName, json documents) returns (error?);
 };
 
 
 documentation {
     An internal function used by clients to shutdown the connection pool.
 }
-native function close(CallerActions callerActions);
+extern function close(CallerActions callerActions);

@@ -20,7 +20,6 @@ package org.ballerinalang.mongodb.actions;
 import org.ballerinalang.bre.Context;
 import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.model.values.BInteger;
-import org.ballerinalang.model.values.BJSON;
 import org.ballerinalang.model.values.BMap;
 import org.ballerinalang.model.values.BValue;
 import org.ballerinalang.mongodb.Constants;
@@ -55,8 +54,8 @@ public class Update extends AbstractMongoDBAction {
     public void execute(Context context) {
         BMap<String, BValue> bConnector = (BMap<String, BValue>) context.getRefArgument(0);
         String collectionName = context.getStringArgument(0);
-        BJSON filter = (BJSON) context.getRefArgument(1);
-        BJSON document = (BJSON) context.getRefArgument(2);
+        BMap filter = (BMap) context.getRefArgument(1);
+        BMap document = (BMap) context.getRefArgument(2);
         Boolean isMultiple = context.getBooleanArgument(0);
         Boolean upsert = context.getBooleanArgument(1);
         MongoDBDataSource datasource = (MongoDBDataSource) bConnector.getNativeData(Constants.CALLER_ACTIONS);

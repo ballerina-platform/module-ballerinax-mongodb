@@ -23,7 +23,11 @@ import com.mongodb.client.model.UpdateOptions;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
 import org.ballerinalang.bre.bvm.BlockingNativeCallableUnit;
-import org.ballerinalang.model.values.BJSON;
+import org.ballerinalang.model.util.JsonParser;
+import org.ballerinalang.model.values.BMap;
+import org.ballerinalang.model.values.BRefValueArray;
+import org.ballerinalang.model.values.BStreamingJSON;
+import org.ballerinalang.model.values.BValue;
 import org.ballerinalang.mongodb.MongoDBDataSource;
 import org.ballerinalang.util.exceptions.BallerinaException;
 import org.bson.Document;
@@ -37,7 +41,7 @@ import java.util.List;
  */
 public abstract class AbstractMongoDBAction extends BlockingNativeCallableUnit {
 
-    protected BJSON find(MongoDBDataSource dbDataSource, String collectionName, BJSON query) {
+    protected BStreamingJSON find(MongoDBDataSource dbDataSource, String collectionName, BMap query) {
         MongoCollection<Document> collection = getCollection(dbDataSource, collectionName);
         MongoCursor<Document> itr;
         if (query != null) {
@@ -45,10 +49,10 @@ public abstract class AbstractMongoDBAction extends BlockingNativeCallableUnit {
         } else {
             itr = collection.find().iterator();
         }
-        return new BJSON(new MongoDBDataSource.MongoJSONDataSource(itr));
+        return new BStreamingJSON(new MongoDBDataSource.MongoJSONDataSource(itr));
     }
 
-    protected BJSON findOne(MongoDBDataSource dbDataSource, String collectionName, BJSON query) {
+    protected BValue findOne(MongoDBDataSource dbDataSource, String collectionName, BMap query) {
         MongoCollection<Document> collection = getCollection(dbDataSource, collectionName);
         Document doc;
         if (query != null) {
@@ -59,16 +63,17 @@ public abstract class AbstractMongoDBAction extends BlockingNativeCallableUnit {
         if (doc == null) {
             return null;
         } else {
-            return new BJSON(doc.toJson());
+            return JsonParser.parse(doc.toJson());
         }
     }
 
-    protected void insert(MongoDBDataSource dbDataSource, String collectionName, BJSON document) {
+    protected void insert(MongoDBDataSource dbDataSource, String collectionName, BMap document) {
         MongoCollection<Document> collection = getCollection(dbDataSource, collectionName);
         collection.insertOne(Document.parse(document.stringValue()));
     }
 
-    protected long delete(MongoDBDataSource dbDataSource, String collectionName, BJSON filter, boolean isMultiple) {
+    protected long delete(MongoDBDataSource dbDataSource, String collectionName, BMap filter,
+            boolean isMultiple) {
         MongoCollection<Document> collection = getCollection(dbDataSource, collectionName);
         DeleteResult res;
         if (isMultiple) {
@@ -79,8 +84,8 @@ public abstract class AbstractMongoDBAction extends BlockingNativeCallableUnit {
         return res.getDeletedCount();
     }
 
-    protected long update(MongoDBDataSource dbDataSource, String collectionName, BJSON filter, BJSON document,
-            boolean isMultiple, boolean upsert) {
+    protected long update(MongoDBDataSource dbDataSource, String collectionName, BMap filter,
+            BMap document, boolean isMultiple, boolean upsert) {
         MongoCollection<Document> collection = getCollection(dbDataSource, collectionName);
         UpdateOptions options = new UpdateOptions();
         options.upsert(upsert);
@@ -93,12 +98,12 @@ public abstract class AbstractMongoDBAction extends BlockingNativeCallableUnit {
         return res.getModifiedCount();
     }
 
-    protected void batchInsert(MongoDBDataSource dbDataSource, String collectionName, BJSON documents) {
+    protected void batchInsert(MongoDBDataSource dbDataSource, String collectionName, BRefValueArray documents) {
         MongoCollection<Document> collection = getCollection(dbDataSource, collectionName);
-        int count =  documents.value().size();
-        List<Document> docList = new ArrayList<>(count);
+        long count =  documents.size();
+        List<Document> docList = new ArrayList<>();
         for (int i = 0; i < count; i++) {
-            docList.add(Document.parse(documents.value().get(i).toString()));
+            docList.add(Document.parse(documents.get(i).toString()));
         }
         collection.insertMany(docList);
     }
@@ -108,7 +113,7 @@ public abstract class AbstractMongoDBAction extends BlockingNativeCallableUnit {
     }
 
 
-    private Document jsonToDoc(BJSON json) {
+    private Document jsonToDoc(BMap json) {
         return Document.parse(json.stringValue());
     }
 

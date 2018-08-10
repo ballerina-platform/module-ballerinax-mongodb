@@ -23,8 +23,6 @@ import de.flapdoodle.embed.mongo.MongodExecutable;
 import org.ballerinalang.launcher.util.BCompileUtil;
 import org.ballerinalang.launcher.util.BRunUtil;
 import org.ballerinalang.launcher.util.CompileResult;
-import org.ballerinalang.model.util.JsonNode;
-import org.ballerinalang.model.values.BJSON;
 import org.ballerinalang.model.values.BValue;
 import org.ballerinalang.mongodb.utils.MongoDBTestUtils;
 import org.ballerinalang.util.exceptions.BLangRuntimeException;
@@ -70,8 +68,7 @@ public class MongoDBConnectionInitTest {
         BValue[] results = BRunUtil.invoke(result, "testConnectorInitWithDirectUrl");
         Assert.assertEquals(results.length, 1, "No data has been retrieved");
 
-        JsonNode jsonNodes = ((BJSON) results[0]).value();
-        Assert.assertEquals(jsonNodes.size(), 1, "Exactly one result should have been received");
+        Assert.assertEquals(results.length, 1, "Exactly one result should have been received");
     }
 
     @Test(description = "This method tests MongoDB connection initialization with connection pool parameters")
@@ -79,8 +76,7 @@ public class MongoDBConnectionInitTest {
         BValue[] results = BRunUtil.invoke(result, "testConnectorInitWithConnectionPoolProperties");
         Assert.assertEquals(results.length, 1, "No data has been retrieved");
 
-        JsonNode jsonNodes = ((BJSON) results[0]).value();
-        Assert.assertEquals(jsonNodes.size(), 1, "Exactly one result should have been received");
+        Assert.assertEquals(results.length, 1, "Exactly one result should have been received");
     }
 
     @Test(description = "This method tests MongoDB connection initialization with an invalid authentication "
