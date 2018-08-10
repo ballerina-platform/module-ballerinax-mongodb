@@ -313,7 +313,7 @@ public class MongoDBDataSource implements BValue {
     }
 
     /**
-     * MongoDB result cursor implementation of {@link BStreamingJSON}.
+     * MongoDB result cursor implementation.
      */
     public static class MongoJSONDataSource implements JSONDataSource {
 
