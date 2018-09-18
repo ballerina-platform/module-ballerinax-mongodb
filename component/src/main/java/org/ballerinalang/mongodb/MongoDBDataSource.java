@@ -34,6 +34,8 @@ import org.ballerinalang.model.JSONDataSource;
 import org.ballerinalang.model.types.BType;
 import org.ballerinalang.model.util.JsonGenerator;
 import org.ballerinalang.model.util.JsonParser;
+import org.ballerinalang.model.values.BRefType;
+import org.ballerinalang.model.values.BRefValueArray;
 import org.ballerinalang.model.values.BValue;
 import org.ballerinalang.util.exceptions.BallerinaException;
 import org.bson.Document;
@@ -326,10 +328,29 @@ public class MongoDBDataSource implements BValue {
         @Override
         public void serialize(JsonGenerator jsonGenerator) throws IOException {
             jsonGenerator.writeStartArray();
-            while (this.mc.hasNext()) {
-                jsonGenerator.serialize(JsonParser.parse(this.mc.next().toJson()));
+            while (this.hasNext()) {
+                jsonGenerator.serialize(this.next());
             }
             jsonGenerator.writeEndArray();
+        }
+
+        @Override
+        public boolean hasNext() {
+            return mc.hasNext();
+        }
+
+        @Override
+        public BRefType<?> next() {
+            return JsonParser.parse(this.mc.next().toJson());
+        }
+
+        @Override
+        public BRefType<?> build() {
+            BRefValueArray values = new BRefValueArray();
+            while (this.hasNext()) {
+                values.append(this.next());
+            }
+            return values;
         }
     }
 
