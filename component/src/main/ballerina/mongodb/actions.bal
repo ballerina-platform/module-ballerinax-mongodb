@@ -14,72 +14,57 @@
 // specific language governing permissions and limitations
 // under the License.
 
-documentation {
-    The Caller Actions for MongoDB databases.
-}
+# The Caller Actions for MongoDB databases.
 public type CallerActions object {
-    documentation {
-        The find operation implementation which selects a document in a given collection.
 
-        P{{collectionName}} The name of the collection to be queried
-        P{{queryString}} Query to use to select data
-        R{{}} `json` result from the find operation or `error` if an error occurs
-    }
+    # The find operation implementation which selects a document in a given collection.
+
+    # + collectionName - The name of the collection to be queried
+    # + queryString - Query to use to select data
+    # + return - `json` result from the find operation or `error` if an error occurs
     public extern function find(string collectionName, json? queryString) returns (json|error);
 
-    documentation {
-        The findOne operation implementation which selects the first document match with the query.
+    # The findOne operation implementation which selects the first document match with the query.
 
-        P{{collectionName}} The name of the collection to be queried
-        P{{queryString}} Query to use to select data
-        R{{}} `json` The result from the findOne operation or `error` if an error occurs
-    }
+    # + collectionName - The name of the collection to be queried
+    # + queryString - Query to use to select data
+    # + return - `json` The result from the findOne operation or `error` if an error occurs
     public extern function findOne(string collectionName, json? queryString) returns (json|error);
 
-    documentation {
-        The insert operation implementation which inserts a document to a collection.
+    # The insert operation implementation which inserts a document to a collection.
 
-        P{{collectionName}} The name of the collection
-        P{{document}} The document to be inserted
-        R{{}} `nil` or `error` if an error occurs
-    }
+    # + collectionName - The name of the collection
+    # + document - The document to be inserted
+    # + return - `nil` or `error` if an error occurs
     public extern function insert(string collectionName, json document)
         returns (error?);
 
-    documentation {
-        The delete operation implementation which deletes documents that match the given filter.
+    # The delete operation implementation which deletes documents that match the given filter.
 
-        P{{collectionName}} The name of the collection
-        P{{filter}} The criteria used to delete the documents
-        P{{multi}} Specifies whether to delete multiple documents or not
-        R{{}} `int` deleted count or `error` if an error occurs
-    }
+    # + collectionName - The name of the collection
+    # + filter - The criteria used to delete the documents
+    # + multi - Specifies whether to delete multiple documents or not
+    # + return - `int` deleted count or `error` if an error occurs
     public extern function delete(string collectionName, json filter, boolean multi) returns (int|error);
 
-    documentation {
-        The update operation implementation which updates documents that matches to given filter.
+    # The update operation implementation which updates documents that matches to given filter.
 
-        P{{collectionName}} The name of the collection
-        P{{filter}} The criteria used to update the documents
-        P{{multi}} Specifies whether to update multiple documents or not
-        P{{upsert}} Specifies whether to create a new document when no document matches the filter
-        R{{}} `int` The updated count or `error` if an error occurs
-    }
+    # + collectionName - The name of the collection
+    # + filter - The criteria used to update the documents
+    # + multi - Specifies whether to update multiple documents or not
+    # + upsert - Specifies whether to create a new document when no document matches the filter
+    # + return - `int` The updated count or `error` if an error occurs
     public extern function update(string collectionName, json filter, json document, boolean multi, boolean upsert)
         returns (int|error);
 
-    documentation {
-        The batchInsert operation implementation which inserts an array of documents to the given collection.
+    # The batchInsert operation implementation which inserts an array of documents to the given collection.
 
-        P{{collectionName}} The name of the collection
-        P{{documents}} The document array to be inserted
-        R{{}} `nil` or `error` if an error occurs
-    }
+    # + collectionName - The name of the collection
+    # + documents - The document array to be inserted
+    # + return - `nil` or `error` if an error occurs
     public extern function batchInsert(string collectionName, json documents) returns (error?);
 };
 
 
-documentation {
-    An internal function used by clients to shutdown the connection pool.
-}
+# An internal function used by clients to shutdown the connection pool.
 extern function close(CallerActions callerActions);

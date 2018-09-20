@@ -18,32 +18,23 @@
 // MongoDB Client Endpoint
 ///////////////////////////////
 
-documentation {
-    Represents MongoDB client endpoint.
-}
+# Represents MongoDB client endpoint.
 public type Client object {
     private ClientEndpointConfiguration clientEndpointConfig;
     private CallerActions callerActions;
 
-    documentation {
-        Gets called when the endpoint is being initialized during the package initialization.
-    }
+    # Gets called when the endpoint is being initialized during the package initialization.
     public function init(ClientEndpointConfiguration config) {
         self.callerActions = createClient(config);
     }
 
-    documentation {
-        Returns the CallerActions that client code uses.
-
-        R{{}} The CallerActions that client code uses
-    }
+    # Returns the CallerActions that client code uses.
+    # + return - The CallerActions that client code uses
     public function getCallerActions() returns CallerActions {
         return self.callerActions;
     }
 
-    documentation {
-        Stops the registered service.
-    }
+    # Stops the registered service.
     public function stop() {
         close(self.callerActions);
     }
