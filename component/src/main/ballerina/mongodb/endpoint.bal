@@ -43,34 +43,34 @@ public type Client object {
 extern function createClient(ClientEndpointConfiguration clientEndpointConfig) returns CallerActions;
 
 public type ClientEndpointConfiguration record {
-    string host,
-    string dbName,
-    string username,
-    string password,
-    ConnectionProperties options,
+    string host;
+    string dbName;
+    string username;
+    string password;
+    ConnectionProperties options;
 };
 
 public type ConnectionProperties record {
-    string url,
-    string readConcern,
-    string writeConcern,
-    string readPreference,
-    string authSource,
-    string authMechanism,
-    string gssapiServiceName,
-    boolean sslEnabled,
-    boolean sslInvalidHostNameAllowed,
-    int socketTimeout = -1,
-    int connectionTimeout = -1,
-    int maxPoolSize = -1,
-    int serverSelectionTimeout = -1,
-    int maxIdleTime = -1,
-    int maxLifeTime = -1,
-    int minPoolSize = -1,
-    int waitQueueMultiple = -1,
-    int waitQueueTimeout = -1,
-    int localThreshold = -1,
-    int heartbeatFrequency = -1,
+    string url;
+    string readConcern;
+    string writeConcern;
+    string readPreference;
+    string authSource;
+    string authMechanism;
+    string gssapiServiceName;
+    boolean sslEnabled;
+    boolean sslInvalidHostNameAllowed;
+    int socketTimeout = -1;
+    int connectionTimeout = -1;
+    int maxPoolSize = -1;
+    int serverSelectionTimeout = -1;
+    int maxIdleTime = -1;
+    int maxLifeTime = -1;
+    int minPoolSize = -1;
+    int waitQueueMultiple = -1;
+    int waitQueueTimeout = -1;
+    int localThreshold = -1;
+    int heartbeatFrequency = -1;
 };
 
 
