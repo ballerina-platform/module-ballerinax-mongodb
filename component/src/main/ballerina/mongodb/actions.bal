@@ -24,8 +24,8 @@ public type CallerActions object {
     # + return - `json` result from the find operation or `error` if an error occurs
     public extern function find(string collectionName, json? queryString) returns (json|error);
 
-    # The findOne operation implementation which selects the first document match with the query.
-
+    # The findOne operation implementation which selects the first document that matches with the query.
+    #
     # + collectionName - The name of the collection to be queried
     # + queryString - Query to use to select data
     # + return - `json` The result from the findOne operation or `error` if an error occurs
@@ -41,7 +41,7 @@ public type CallerActions object {
     # The delete operation implementation which deletes documents that match the given filter.
     #
     # + collectionName - The name of the collection
-    # + filter - The criteria used to delete the documents
+    # + filter - The criteria used to be delete the documents
     # + multi - Specifies whether to delete multiple documents or not
     # + return - `int` deleted count or `error` if an error occurs
     public extern function delete(string collectionName, json filter, boolean multi) returns (int|error);
