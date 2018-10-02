@@ -29,6 +29,7 @@ public type Client object {
     }
 
     # Returns the CallerActions that client code uses.
+    #
     # + return - The CallerActions that client code uses
     public function getCallerActions() returns CallerActions {
         return self.callerActions;

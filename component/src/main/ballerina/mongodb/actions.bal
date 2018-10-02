@@ -18,7 +18,7 @@
 public type CallerActions object {
 
     # The find operation implementation which selects a document in a given collection.
-
+    #
     # + collectionName - The name of the collection to be queried
     # + queryString - Query to use to select data
     # + return - `json` result from the find operation or `error` if an error occurs
@@ -32,15 +32,14 @@ public type CallerActions object {
     public extern function findOne(string collectionName, json? queryString) returns (json|error);
 
     # The insert operation implementation which inserts a document to a collection.
-
+    #
     # + collectionName - The name of the collection
     # + document - The document to be inserted
     # + return - `nil` or `error` if an error occurs
-    public extern function insert(string collectionName, json document)
-        returns (error?);
+    public extern function insert(string collectionName, json document) returns (error?);
 
     # The delete operation implementation which deletes documents that match the given filter.
-
+    #
     # + collectionName - The name of the collection
     # + filter - The criteria used to delete the documents
     # + multi - Specifies whether to delete multiple documents or not
@@ -48,7 +47,7 @@ public type CallerActions object {
     public extern function delete(string collectionName, json filter, boolean multi) returns (int|error);
 
     # The update operation implementation which updates documents that matches to given filter.
-
+    #
     # + collectionName - The name of the collection
     # + filter - The criteria used to update the documents
     # + multi - Specifies whether to update multiple documents or not
@@ -58,7 +57,7 @@ public type CallerActions object {
         returns (int|error);
 
     # The batchInsert operation implementation which inserts an array of documents to the given collection.
-
+    #
     # + collectionName - The name of the collection
     # + documents - The document array to be inserted
     # + return - `nil` or `error` if an error occurs
