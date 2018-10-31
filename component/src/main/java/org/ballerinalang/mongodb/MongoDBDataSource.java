@@ -289,7 +289,7 @@ public class MongoDBDataSource implements BValue {
         int port;
         if (hostPort.length > 1) {
             try {
-                port = Integer.parseInt(hostPort[2]);
+                port = Integer.parseInt(hostPort[1]);
             } catch (NumberFormatException e) {
                 throw new BallerinaException("the port of the host string must be an integer: " + hostStr, e);
             }
