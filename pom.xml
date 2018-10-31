@@ -332,7 +332,7 @@
     <properties>
         <project.scm.id>my-scm-server</project.scm.id>
         <ballerina.version>0.982.1-SNAPSHOT</ballerina.version>
-        <mongodb.version>3.6.1</mongodb.version>
+        <mongodb.version>3.8.2</mongodb.version>
         <mvn.processor.plugin.version>2.2.4</mvn.processor.plugin.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.checkstyle.plugin.version>2.17</maven.checkstyle.plugin.version>
@@ -342,7 +342,7 @@
         <wso2.maven.compiler.source>1.8</wso2.maven.compiler.source>
         <wso2.maven.compiler.target>1.8</wso2.maven.compiler.target>
         <testng.version>6.9.10</testng.version>
-        <embedmongo.version>2.0.1</embedmongo.version>
+        <embedmongo.version>2.1.1</embedmongo.version>
 
         <maven.wagon.ssh.version>2.1</maven.wagon.ssh.version>
         <maven.release.plugin.version>2.5.3</maven.release.plugin.version>
