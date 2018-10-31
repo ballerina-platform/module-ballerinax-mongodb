@@ -28,6 +28,9 @@ import de.flapdoodle.embed.process.runtime.Network;
 
 import java.io.IOException;
 
+/**
+ * This class contains utility methods used for tests.
+ */
 public class MongoDBTestUtils {
 
     public static final int MONGODB_PORT = 27017;
