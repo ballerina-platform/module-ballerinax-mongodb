@@ -61,7 +61,7 @@ public type ClientEndpointConfiguration record {
 # ConnectionProperties type represents the properties which are used to configure MongoDB connection.
 #
 # + url - The complete MongoDB connection URL. If this is provided, this will be directly used connect to the database
-#   instead of any provided host/port/username/password information
+#   instead of any provided host/port/username/password information. You still need to provide the `dbName` property
 # + readConcern - Controls the consistency and isolation properties of the data read from replica sets and replica set
 #   shards
 # + writeConcern - Describes the level of acknowledgement requested from MongoDB for write operations to a standalone
