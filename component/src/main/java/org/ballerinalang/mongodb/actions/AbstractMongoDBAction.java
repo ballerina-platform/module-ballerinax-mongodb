@@ -29,7 +29,6 @@ import org.ballerinalang.model.values.BRefValueArray;
 import org.ballerinalang.model.values.BStreamingJSON;
 import org.ballerinalang.model.values.BValue;
 import org.ballerinalang.mongodb.MongoDBDataSource;
-import org.ballerinalang.util.exceptions.BallerinaException;
 import org.bson.Document;
 
 import java.util.ArrayList;
@@ -118,10 +117,6 @@ public abstract class AbstractMongoDBAction extends BlockingNativeCallableUnit {
     }
 
     private MongoCollection<Document> getCollection(MongoDBDataSource dbDataSource, String collectionName) {
-        MongoCollection<Document> collection = dbDataSource.getMongoDatabase().getCollection(collectionName);
-        if (collection == null) {
-            throw new BallerinaException("invalid collection name: " + collectionName);
-        }
-        return collection;
+        return dbDataSource.getMongoDatabase().getCollection(collectionName);
     }
 }
