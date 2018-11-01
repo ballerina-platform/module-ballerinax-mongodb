@@ -85,6 +85,9 @@ public type ClientEndpointConfiguration record {
 #   threshold
 # + heartbeatFrequency - The frequency that the driver will attempt to determine the current state of each server in the
 #   cluster
+# + replicaSet - Implies that the hosts given are a seed list, and the driver will attempt to find all members of the
+#   set
+# + retryWrites - If true write operations will be retried if they fail due to a network error
 public type ConnectionProperties record {
     string url;
     string readConcern;
@@ -93,8 +96,10 @@ public type ConnectionProperties record {
     string authSource;
     string authMechanism;
     string gssapiServiceName;
+    string replicaSet;
     boolean sslEnabled;
     boolean sslInvalidHostNameAllowed;
+    boolean retryWrites;
     int socketTimeout = -1;
     int connectionTimeout = -1;
     int maxPoolSize = -1;
