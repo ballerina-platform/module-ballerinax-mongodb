@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/wso2-ballerina/package-mongodb.svg?branch=master)](https://travis-ci.org/wso2-ballerina/package-mongodb)
+[![Build Status](https://travis-ci.org/wso2-ballerina/module-mongodb.svg?branch=master)](https://travis-ci.org/wso2-ballerina/module-mongodb)
 
 # Ballerina MongoDB Client Endpoint
 
@@ -13,19 +13,19 @@ Ballerina MongoDB Client Endpoint is used to connect Ballerina with MongoDB data
 Steps to Configure
 ==================================
 
-Extract wso2-mongodb-<version>.zip and  Run the install.sh script to install the package.
-You can uninstall the package by running uninstall.sh.
+Extract wso2-mongodb-<version>.zip and  Run the install.sh script to install the module.
+You can uninstall the module by running uninstall.sh.
 
 Building From the Source
 ==================================
 If you want to build Ballerina MongoDB client endpoint from the source code:
 
 1. Get a clone or download the source from this repository:
-    https://github.com/wso2-ballerina/package-mongodb
+    https://github.com/wso2-ballerina/module-mongodb
 2. Run the following Maven command from the ballerina directory: 
     mvn clean install
-3. Extract the distribution created at `/component/target/wso2-mongodb-<version>.zip`. Run the install.{sh/bat} script to install the package.
-You can uninstall the package by running uninstall.{sh/bat}.
+3. Extract the distribution created at `/component/target/wso2-mongodb-<version>.zip`. Run the install.{sh/bat} script to install the module.
+You can uninstall the module by running uninstall.{sh/bat}.
 
 Sample
 ==================================
