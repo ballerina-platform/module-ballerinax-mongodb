@@ -34,7 +34,7 @@ Sample
 import wso2/mongodb;
 import ballerina/io;
 
-function main(string... args) {
+public function main() {
     endpoint mongodb:Client conn {
         host: "localhost",
         dbName: "testballerina",
