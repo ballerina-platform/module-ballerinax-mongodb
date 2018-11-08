@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/wso2-ballerina/package-mongodb.svg?branch=master)](https://travis-ci.org/wso2-ballerina/package-mongodb)
+[![Build Status](https://travis-ci.org/wso2-ballerina/module-mongodb.svg?branch=master)](https://travis-ci.org/wso2-ballerina/module-mongodb)
 
 # Ballerina MongoDB Client Endpoint
 
