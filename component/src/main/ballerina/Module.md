@@ -1,6 +1,6 @@
-## Package overview
+## Module overview
 
-This package provides the functionality required to access and manipulate data stored in an MongoDB datasource. 
+This module provides the functionality required to access and manipulate data stored in an MongoDB datasource.
 
 ### Endpoint 
 
@@ -8,7 +8,7 @@ To access a MongoDB datasource, you must first create an `endpoint`, which is a 
 
 ### Database operations
 
-Once the endpoint is created, database operations can be executed through that endpoint. This package provides support for updating data/schema and select data. 
+Once the endpoint is created, database operations can be executed through that endpoint. This module provides support for updating data/schema and select data.
 
 ## Samples
 

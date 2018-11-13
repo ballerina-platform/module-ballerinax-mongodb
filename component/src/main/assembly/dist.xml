@@ -26,7 +26,7 @@
     </formats>
     <files>
         <file>
-            <source>${project.build.directory}/${project.artifactId}-package-${project.version}.jar</source>
+            <source>${project.build.directory}/${project.artifactId}-module-${project.version}.jar</source>
             <outputDirectory>./dependencies</outputDirectory>
             <fileMode>0644</fileMode>
         </file>

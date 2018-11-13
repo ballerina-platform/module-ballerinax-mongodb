@@ -215,6 +215,7 @@ public class MongoDBDataSource implements BValue {
         if (sslInvalidHostNameAllowed) {
             builder.sslInvalidHostNameAllowed(true);
         }
+        builder.retryWrites(options.getBooleanField(ConnectionParam.RETRY_WRITES.getKey()));
         String readConcern = options.getStringField(ConnectionParam.READ_CONCERN.getKey());
         if (!readConcern.isEmpty()) {
             builder = builder.readConcern(new ReadConcern(ReadConcernLevel.valueOf(readConcern)));
@@ -226,6 +227,10 @@ public class MongoDBDataSource implements BValue {
         String readPreference = options.getStringField(ConnectionParam.READ_PREFERENCE.getKey());
         if (!readPreference.isEmpty()) {
             builder = builder.readPreference((ReadPreference.valueOf(readPreference)));
+        }
+        String replicaSet = options.getStringField(ConnectionParam.REPLICA_SET.getKey());
+        if (!replicaSet.isEmpty()) {
+            builder = builder.requiredReplicaSetName(replicaSet);
         }
         int socketTimeout = (int) options.getIntField(ConnectionParam.SOCKET_TIMEOUT.getKey());
         if (socketTimeout != -1) {
@@ -289,7 +294,7 @@ public class MongoDBDataSource implements BValue {
         int port;
         if (hostPort.length > 1) {
             try {
-                port = Integer.parseInt(hostPort[2]);
+                port = Integer.parseInt(hostPort[1]);
             } catch (NumberFormatException e) {
                 throw new BallerinaException("the port of the host string must be an integer: " + hostStr, e);
             }
@@ -366,10 +371,12 @@ public class MongoDBDataSource implements BValue {
         AUTHSOURCE("authSource"),
         AUTHMECHANISM("authMechanism"),
         GSSAPI_SERVICE_NAME("gssapiServiceName"),
+        REPLICA_SET("replicaSet"),
 
         // boolean params
         SSL_ENABLED("sslEnabled"),
         SSL_INVALID_HOSTNAME_ALLOWED("sslInvalidHostNameAllowed"),
+        RETRY_WRITES("retryWrites"),
 
         // int params
         SOCKET_TIMEOUT("socketTimeout"),

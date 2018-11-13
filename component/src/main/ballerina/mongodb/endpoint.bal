@@ -43,6 +43,13 @@ public type Client object {
 
 extern function createClient(ClientEndpointConfiguration clientEndpointConfig) returns CallerActions;
 
+# The Client endpoint configuration for MongoDB.
+#
+# + host - The host of the database to connect
+# + port - The port of the database to connect
+# + username - Username for the database connection
+# + password - Password for the database connection
+# + options - Properties for the connection configuration
 public type ClientEndpointConfiguration record {
     string host;
     string dbName;
@@ -51,6 +58,36 @@ public type ClientEndpointConfiguration record {
     ConnectionProperties options;
 };
 
+# ConnectionProperties type represents the properties which are used to configure MongoDB connection.
+#
+# + url - The complete MongoDB connection URL. If this is provided, this will be directly used connect to the database
+#   instead of any provided host/port/username/password information. You still need to provide the `dbName` property
+# + readConcern - Controls the consistency and isolation properties of the data read from replica sets and replica set
+#   shards
+# + writeConcern - Describes the level of acknowledgement requested from MongoDB for write operations to a standalone
+#   mongod or to replica sets or to sharded clusters
+# + readPreference - Describes how MongoDB clients route read operations to the members of a replica set
+# + authSource - The database name associated with the user’s credentials.
+# + authMechanism - The authentication mechanism that MongoDB will use to authenticate the connection
+# + gssapiServiceName - Sets the Kerberos service name when connecting to Kerberized MongoDB instances
+# + sslEnabled - Whether to connect using SSL
+# + sslInvalidHostNameAllowed - Whether to allow invalid host names for SSL connections
+# + socketTimeout - How long a send or receive on a socket can take before timing out
+# + connectionTimeout - How long a connection can take to be opened before timing out
+# + maxPoolSize - The maximum number of connections in the connection pool
+# + minPoolSize - The minimum number of connections in the connection pool
+# + waitQueueMultiple - This multiplier, multiplied with the maxPoolSize setting, gives the maximum number of
+#   waiting connection requests. All further requests will get an error right away
+# + waitQueueTimeout - The maximum wait time in milliseconds to wait for a connection to
+#   become available
+# + localThreshold - When choosing among multiple MongoDB servers to send a request, the driver will only
+#   send that request to a server whose ping time is less than or equal to the server with the fastest ping time plus the local
+#   threshold
+# + heartbeatFrequency - The frequency that the driver will attempt to determine the current state of each server in the
+#   cluster
+# + replicaSet - Implies that the hosts given are a seed list, and the driver will attempt to find all members of the
+#   set
+# + retryWrites - If true write operations will be retried if they fail due to a network error
 public type ConnectionProperties record {
     string url;
     string readConcern;
@@ -59,8 +96,10 @@ public type ConnectionProperties record {
     string authSource;
     string authMechanism;
     string gssapiServiceName;
+    string replicaSet;
     boolean sslEnabled;
     boolean sslInvalidHostNameAllowed;
+    boolean retryWrites;
     int socketTimeout = -1;
     int connectionTimeout = -1;
     int maxPoolSize = -1;
