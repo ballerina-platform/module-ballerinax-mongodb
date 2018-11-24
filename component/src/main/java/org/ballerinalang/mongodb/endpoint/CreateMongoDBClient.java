@@ -47,7 +47,7 @@ public class CreateMongoDBClient extends BlockingNativeCallableUnit {
 
     @Override
     public void execute(Context context) {
-        BMap<String, BValue> configBStruct = (BMap<String, BValue>) context.getRefArgument(0);
+        BMap<String, BValue> configBStruct = (BMap<String, BValue>) context.getRefArgument(1);
         Struct clientEndpointConfig = BLangConnectorSPIUtil.toStruct(configBStruct);
 
         String host = clientEndpointConfig.getStringField(Constants.EndpointConfig.HOST);
@@ -59,9 +59,8 @@ public class CreateMongoDBClient extends BlockingNativeCallableUnit {
         MongoDBDataSource dataSource = new MongoDBDataSource();
         dataSource.init(host, dbName, username, password, options);
 
-        BMap<String, BValue> mongoDBClient = BLangConnectorSPIUtil
-                .createBStruct(context.getProgramFile(), Constants.MONGODB_PACKAGE_PATH, Constants.CALLER_ACTIONS);
-        mongoDBClient.addNativeData(Constants.CALLER_ACTIONS, dataSource);
+        BMap<String, BValue> mongoDBClient = (BMap<String, BValue>) context.getRefArgument(0);
+        mongoDBClient.addNativeData(Constants.CLIENT, dataSource);
         context.setReturnValues(mongoDBClient);
     }
 }

@@ -39,7 +39,7 @@ import org.ballerinalang.natives.annotations.ReturnType;
             orgName = "wso2",
             packageName = "mongodb:0.0.0",
             functionName = "batchInsert",
-            receiver = @Receiver(type = TypeKind.OBJECT, structType = Constants.CALLER_ACTIONS),
+            receiver = @Receiver(type = TypeKind.OBJECT, structType = Constants.CLIENT),
             args = {@Argument(name = "collectionName", type = TypeKind.STRING),
                     @Argument(name = "documents", type = TypeKind.ARRAY, elementType = TypeKind.JSON)
             },
@@ -52,7 +52,7 @@ public class BatchInsert extends AbstractMongoDBAction {
         BMap<String, BValue> bConnector = (BMap<String, BValue>) context.getRefArgument(0);
         String collectionName = context.getStringArgument(0);
         BRefValueArray documents = (BRefValueArray) context.getRefArgument(1);
-        MongoDBDataSource datasource = (MongoDBDataSource) bConnector.getNativeData(Constants.CALLER_ACTIONS);
+        MongoDBDataSource datasource = (MongoDBDataSource) bConnector.getNativeData(Constants.CLIENT);
         try {
             batchInsert(datasource, collectionName, documents);
         } catch (Throwable e) {

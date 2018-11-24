@@ -44,6 +44,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * {@code MongoDBDataSource} util class for MongoDB connector initialization.
@@ -315,7 +316,12 @@ public class MongoDBDataSource implements BValue {
     }
 
     @Override
-    public BValue copy() {
+    public void stamp(BType bType) {
+
+    }
+
+    @Override
+    public BValue copy(Map<BValue, BValue> map) {
         return null;
     }
 
