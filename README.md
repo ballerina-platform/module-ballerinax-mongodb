@@ -35,13 +35,13 @@ import wso2/mongodb;
 import ballerina/io;
 
 public function main() {
-    endpoint mongodb:Client conn {
+    mongodb:Client conn = new({
         host: "localhost",
         dbName: "testballerina",
         username: "",
         password: "",
         options: { sslEnabled: false, serverSelectionTimeout: 500 }
-    };
+    });
 
     json doc1 = { "name": "ballerina", "type": "src" };
     json doc2 = { "name": "connectors", "type": "artifacts" };
@@ -55,47 +55,40 @@ public function main() {
     handleInsert(ret, "Insert to projects");
 
     var jsonRet = conn->find("projects", ());
-    match jsonRet {
-        json j => {
-            io:print("initial data:");
-            io:println(io:sprintf("%s", j));
-        }
-        error e => io:println("find failed: " + e.message);
-    }
+    handleFind(jsonRet);
 
     json queryString = { "name": "ballerina" };
     jsonRet = conn->find("projects", queryString);
-    match jsonRet {
-        json j => {
-            io:print("query result:");
-            io:println(io:sprintf("%s", j));
-        }
-        error e => io:println("find failed: " + e.message);
-    }
+    handleFind(jsonRet);
 
     jsonRet = conn->findOne("projects", queryString);
-    match jsonRet {
-        json j => {
-            io:print("findOne query result:");
-            io:println(io:sprintf("%s", j));
-        }
-        error e => io:println("find failed: " + e.message);
-    }
+    handleFind(jsonRet);
 
     json filter = { "type": "src" };
     var deleteRet = conn->delete("projects", filter, true);
-    match deleteRet {
-        int i => io:println("deleted count: " + i);
-        error e => io:println("delete failed: " + e.message);
+    if (deleteRet is int) {
+        io:println("deleted count: " + deleteRet);
+    } else if (deleteRet is error) {
+        io:println("delete failed: " + deleteRet.reason());
     }
 
     conn.stop();
 }
 
 function handleInsert(()|error returned, string message) {
-    match returned {
-        () => io:println(message + " success ");
-        error e => io:println(message + " failed: " + e.message);
+    if (returned is ()) {
+        io:println(message + " success ");
+    } else if (returned is error) {
+        io:println(message + " failed: " + returned.reason());
+    }
+}
+
+function handleFind(json|error returned) {
+    if (returned is json) {
+        io:print("initial data:");
+        io:println(io:sprintf("%s", returned));
+    } else if (returned is error) {
+        io:println("find failed: " + returned.reason());
     }
 }
 ```   
