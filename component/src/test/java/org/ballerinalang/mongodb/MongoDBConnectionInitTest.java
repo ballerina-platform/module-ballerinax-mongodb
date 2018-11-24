@@ -82,7 +82,7 @@ public class MongoDBConnectionInitTest {
     @Test(description = "This method tests MongoDB connection initialization with an invalid authentication "
             + "mechanism",
           expectedExceptions = { BLangRuntimeException.class },
-          expectedExceptionsMessageRegExp = ".*invalid authentication mechanism: invalid-auth-mechanism.*")
+          expectedExceptionsMessageRegExp = ".*Invalid authentication mechanism: invalid-auth-mechanism.*")
     public void testConnectorInitWithInvalidAuthMechanism() {
         BRunUtil.invoke(result, "testConnectorInitWithInvalidAuthMechanism");
         Assert.fail("The test should have failed at this point");
