@@ -29,6 +29,8 @@ public final class Constants {
     public static final String MONGODB_CONNECTOR_ERROR = "error";
     public static final String MONGODB_EXCEPTION_OCCURED = "Exception Occurred while executing Mongo database";
     public static final String ERROR_MESSAGE_FIELD = "message";
+    public static final String DATABASE_ERROR_DATA_RECORD_NAME = "DatabaseErrorData";
+    public static final String DATABASE_ERROR_CODE = "{wso2/mongodb}DatabaseError";
 
     /**
      * Constants for EndpointConfiguration.

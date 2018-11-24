@@ -24,7 +24,8 @@ public type Client client object {
 
     # Gets called when the endpoint is being initialized during the package initialization.
     public function __init(ClientEndpointConfig config) {
-        createClient(self, config);
+        self.clientEndpointConfig = config;
+        initClient(self, config);
     }
 
     # Stops the registered service.
@@ -80,7 +81,7 @@ public type Client client object {
 
 };
 
-extern function createClient(Client mongoDBClient, ClientEndpointConfig clientEndpointConfig);
+extern function initClient(Client mongoDBClient, ClientEndpointConfig clientEndpointConfig);
 
 # An internal function used by clients to shutdown the connection pool.
 extern function close(Client mongoDBClient);
@@ -157,4 +158,8 @@ public type ConnectionProperties record {
     !...
 };
 
+public type DatabaseErrorData record {
+    string message;
+    !...
+};
 

@@ -36,14 +36,14 @@ import org.ballerinalang.natives.annotations.BallerinaFunction;
  */
 @BallerinaFunction(orgName = "wso2",
                    packageName = "mongodb:0.0.0",
-                   functionName = "createClient",
+                   functionName = "initClient",
                    args = {
                            @Argument(name = "clientEndpointConfig",
                                      type = TypeKind.RECORD,
                                      structType = "ClientEndpointConfiguration")
                    },
                    isPublic = true)
-public class CreateMongoDBClient extends BlockingNativeCallableUnit {
+public class InitMongoDBClient extends BlockingNativeCallableUnit {
 
     @Override
     public void execute(Context context) {
