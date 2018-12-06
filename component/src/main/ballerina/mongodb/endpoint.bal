@@ -95,7 +95,7 @@ extern function close(Client mongoDBClient);
 # + options - Properties for the connection configuration
 public type ClientEndpointConfig record {
     string host = "";
-    string dbName = "";
+    string dbName;
     string username = "";
     string password = "";
     ConnectionProperties options = {};

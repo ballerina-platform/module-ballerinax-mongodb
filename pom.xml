@@ -149,16 +149,6 @@
                 <version>${ballerina.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.ballerinax.docker</groupId>
-                <artifactId>docker-extension</artifactId>
-                <version>${ballerina.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.ballerinax.kubernetes</groupId>
-                <artifactId>kubernetes-extension</artifactId>
-                <version>${ballerina.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>org.ballerinalang</groupId>
                 <artifactId>ballerina-io</artifactId>
                 <version>${ballerina.version}</version>
@@ -188,20 +178,6 @@
             <dependency>
                 <groupId>org.ballerinalang</groupId>
                 <artifactId>ballerina-io</artifactId>
-                <type>zip</type>
-                <classifier>ballerina-binary-repo</classifier>
-                <version>${ballerina.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.ballerinax.docker</groupId>
-                <artifactId>docker-extension</artifactId>
-                <type>zip</type>
-                <classifier>ballerina-binary-repo</classifier>
-                <version>${ballerina.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.ballerinax.kubernetes</groupId>
-                <artifactId>kubernetes-extension</artifactId>
                 <type>zip</type>
                 <classifier>ballerina-binary-repo</classifier>
                 <version>${ballerina.version}</version>
@@ -331,7 +307,7 @@
 
     <properties>
         <project.scm.id>my-scm-server</project.scm.id>
-        <ballerina.version>0.983.1-SNAPSHOT</ballerina.version>
+        <ballerina.version>0.990.1-SNAPSHOT</ballerina.version>
         <mongodb.version>3.8.2</mongodb.version>
         <mvn.processor.plugin.version>2.2.4</mvn.processor.plugin.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

@@ -1,8 +1,8 @@
 [![Build Status](https://travis-ci.org/wso2-ballerina/module-mongodb.svg?branch=master)](https://travis-ci.org/wso2-ballerina/module-mongodb)
 
-# Ballerina MongoDB Client Endpoint
+# Ballerina MongoDB Client
 
-Ballerina MongoDB Client Endpoint is used to connect Ballerina with MongoDB data source. With the Ballerina MongoDB client endpoint following actions are supported.
+Ballerina MongoDB Client is used to connect Ballerina with MongoDB data source. With the Ballerina MongoDB client following operations are supported.
 
 1. insert - To insert document to a given collection
 2. find - To select document from a given collection according to given query.
@@ -18,7 +18,7 @@ You can uninstall the module by running uninstall.sh.
 
 Building From the Source
 ==================================
-If you want to build Ballerina MongoDB client endpoint from the source code:
+If you want to build Ballerina MongoDB client from the source code:
 
 1. Get a clone or download the source from this repository:
     https://github.com/wso2-ballerina/module-mongodb
@@ -68,7 +68,7 @@ public function main() {
     var deleteRet = conn->delete("projects", filter, true);
     if (deleteRet is int) {
         io:println("deleted count: " + deleteRet);
-    } else if (deleteRet is error) {
+    } else {
         io:println("delete failed: " + deleteRet.reason());
     }
 
@@ -78,7 +78,7 @@ public function main() {
 function handleInsert(()|error returned, string message) {
     if (returned is ()) {
         io:println(message + " success ");
-    } else if (returned is error) {
+    } else {
         io:println(message + " failed: " + returned.reason());
     }
 }
@@ -87,7 +87,7 @@ function handleFind(json|error returned) {
     if (returned is json) {
         io:print("initial data:");
         io:println(io:sprintf("%s", returned));
-    } else if (returned is error) {
+    } else {
         io:println("find failed: " + returned.reason());
     }
 }
