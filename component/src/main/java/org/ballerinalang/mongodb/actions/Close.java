@@ -37,7 +37,7 @@ import org.ballerinalang.natives.annotations.BallerinaFunction;
             packageName = "mongodb:0.0.0",
             functionName = "close",
             args = {
-                    @Argument(name = "parameters", type = TypeKind.OBJECT, structType = Constants.CALLER_ACTIONS,
+                    @Argument(name = "parameters", type = TypeKind.OBJECT, structType = Constants.CLIENT,
                               structPackage = "wso2.mongodb")}
         )
 public class Close extends AbstractMongoDBAction {
@@ -45,7 +45,7 @@ public class Close extends AbstractMongoDBAction {
     @Override
     public void execute(Context context) {
         BMap<String, BValue> bConnector = (BMap<String, BValue>) context.getRefArgument(0);
-        MongoDBDataSource datasource = (MongoDBDataSource) bConnector.getNativeData(Constants.CALLER_ACTIONS);
+        MongoDBDataSource datasource = (MongoDBDataSource) bConnector.getNativeData(Constants.CLIENT);
         try {
             close(datasource);
         } catch (Throwable e) {

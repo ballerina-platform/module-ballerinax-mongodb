@@ -35,8 +35,8 @@ import org.ballerinalang.model.types.BType;
 import org.ballerinalang.model.util.JsonGenerator;
 import org.ballerinalang.model.util.JsonParser;
 import org.ballerinalang.model.values.BRefType;
-import org.ballerinalang.model.values.BRefValueArray;
 import org.ballerinalang.model.values.BValue;
+import org.ballerinalang.model.values.BValueArray;
 import org.ballerinalang.util.exceptions.BallerinaException;
 import org.bson.Document;
 
@@ -44,6 +44,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * {@code MongoDBDataSource} util class for MongoDB connector initialization.
@@ -315,7 +316,12 @@ public class MongoDBDataSource implements BValue {
     }
 
     @Override
-    public BValue copy() {
+    public void stamp(BType bType) {
+
+    }
+
+    @Override
+    public BValue copy(Map<BValue, BValue> map) {
         return null;
     }
 
@@ -351,7 +357,7 @@ public class MongoDBDataSource implements BValue {
 
         @Override
         public BRefType<?> build() {
-            BRefValueArray values = new BRefValueArray();
+            BValueArray values = new BValueArray();
             while (this.hasNext()) {
                 values.append(this.next());
             }

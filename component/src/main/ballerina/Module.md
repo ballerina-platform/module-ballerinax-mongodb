@@ -14,13 +14,13 @@ Once the endpoint is created, database operations can be executed through that e
 
 ### Creating an endpoint
 ```ballerina
-endpoint mongodb:Client conn {
+mongodb:Client conn = new({
     host: "localhost",
     dbName: "testballerina",
     username: "",
     password: "",
     options: { sslEnabled: false, serverSelectionTimeout: 500 }
-};
+});
 ```
 For the full list of available configuration options refer the API docs of the endpoint.
 

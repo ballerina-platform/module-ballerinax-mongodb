@@ -19,29 +19,72 @@
 ///////////////////////////////
 
 # Represents MongoDB client endpoint.
-public type Client object {
-    private ClientEndpointConfiguration clientEndpointConfig;
-    private CallerActions callerActions;
+public type Client client object {
+    private ClientEndpointConfig clientEndpointConfig;
 
     # Gets called when the endpoint is being initialized during the package initialization.
-    public function init(ClientEndpointConfiguration config) {
-        self.callerActions = createClient(config);
-    }
-
-    # Returns the CallerActions that client code uses.
-    #
-    # + return - The CallerActions that client code uses
-    public function getCallerActions() returns CallerActions {
-        return self.callerActions;
+    public function __init(ClientEndpointConfig config) {
+        self.clientEndpointConfig = config;
+        initClient(self, config);
     }
 
     # Stops the registered service.
     public function stop() {
-        close(self.callerActions);
+        close(self);
     }
+
+    # The find operation implementation which selects a document in a given collection.
+    #
+    # + collectionName - The name of the collection to be queried
+    # + queryString - Query to use to select data
+    # + return - `json` result from the find operation or `error` if an error occurs
+    public remote extern function find(string collectionName, json? queryString) returns (json|error);
+
+    # The findOne operation implementation which selects the first document that matches with the query.
+    #
+    # + collectionName - The name of the collection to be queried
+    # + queryString - Query to use to select data
+    # + return - `json` The result from the findOne operation or `error` if an error occurs
+    public remote extern function findOne(string collectionName, json? queryString) returns (json|error);
+
+    # The insert operation implementation which inserts a document to a collection.
+    #
+    # + collectionName - The name of the collection
+    # + document - The document to be inserted
+    # + return - `nil` or `error` if an error occurs
+    public remote extern function insert(string collectionName, json document) returns (error?);
+
+    # The delete operation implementation which deletes documents that match the given filter.
+    #
+    # + collectionName - The name of the collection
+    # + filter - The criteria used to be delete the documents
+    # + multi - Specifies whether to delete multiple documents or not
+    # + return - `int` deleted count or `error` if an error occurs
+    public remote extern function delete(string collectionName, json filter, boolean multi) returns (int|error);
+
+    # The update operation implementation which updates documents that matches to given filter.
+    #
+    # + collectionName - The name of the collection
+    # + filter - The criteria used to update the documents
+    # + multi - Specifies whether to update multiple documents or not
+    # + upsert - Specifies whether to create a new document when no document matches the filter
+    # + return - `int` The updated count or `error` if an error occurs
+    public remote extern function update(string collectionName, json filter, json document, boolean multi, boolean upsert)
+                               returns (int|error);
+
+    # The batchInsert operation implementation which inserts an array of documents to the given collection.
+    #
+    # + collectionName - The name of the collection
+    # + documents - The document array to be inserted
+    # + return - `nil` or `error` if an error occurs
+    public remote extern function batchInsert(string collectionName, json documents) returns (error?);
+
 };
 
-extern function createClient(ClientEndpointConfiguration clientEndpointConfig) returns CallerActions;
+extern function initClient(Client mongoDBClient, ClientEndpointConfig clientEndpointConfig);
+
+# An internal function used by clients to shutdown the connection pool.
+extern function close(Client mongoDBClient);
 
 # The Client endpoint configuration for MongoDB.
 #
@@ -50,12 +93,13 @@ extern function createClient(ClientEndpointConfiguration clientEndpointConfig) r
 # + username - Username for the database connection
 # + password - Password for the database connection
 # + options - Properties for the connection configuration
-public type ClientEndpointConfiguration record {
-    string host;
+public type ClientEndpointConfig record {
+    string host = "";
     string dbName;
-    string username;
-    string password;
-    ConnectionProperties options;
+    string username = "";
+    string password = "";
+    ConnectionProperties options = {};
+    !...
 };
 
 # ConnectionProperties type represents the properties which are used to configure MongoDB connection.
@@ -89,17 +133,17 @@ public type ClientEndpointConfiguration record {
 #   set
 # + retryWrites - If true write operations will be retried if they fail due to a network error
 public type ConnectionProperties record {
-    string url;
-    string readConcern;
-    string writeConcern;
-    string readPreference;
-    string authSource;
-    string authMechanism;
-    string gssapiServiceName;
-    string replicaSet;
-    boolean sslEnabled;
-    boolean sslInvalidHostNameAllowed;
-    boolean retryWrites;
+    string url = "";
+    string readConcern = "";
+    string writeConcern = "";
+    string readPreference = "";
+    string authSource = "";
+    string authMechanism = "";
+    string gssapiServiceName = "";
+    string replicaSet = "";
+    boolean sslEnabled = false;
+    boolean sslInvalidHostNameAllowed = false;
+    boolean retryWrites = false;
     int socketTimeout = -1;
     int connectionTimeout = -1;
     int maxPoolSize = -1;
@@ -111,6 +155,11 @@ public type ConnectionProperties record {
     int waitQueueTimeout = -1;
     int localThreshold = -1;
     int heartbeatFrequency = -1;
+    !...
 };
 
+public type DatabaseErrorData record {
+    string message;
+    !...
+};
 
