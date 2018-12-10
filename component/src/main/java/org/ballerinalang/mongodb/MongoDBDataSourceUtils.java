@@ -32,6 +32,10 @@ public class MongoDBDataSourceUtils {
     public static BError getMongoDBConnectorError(Context context, Throwable throwable) {
         String detailedErrorMessage =
                 throwable.getMessage() != null ? throwable.getMessage() : Constants.MONGODB_EXCEPTION_OCCURED;
+        return getMongoDBConnectorError(context, detailedErrorMessage);
+    }
+
+    public static BError getMongoDBConnectorError(Context context, String detailedErrorMessage) {
         BMap<String, BValue> sqlClientErrorDetailRecord = BLangConnectorSPIUtil
                 .createBStruct(context, Constants.MONGODB_PACKAGE_PATH, Constants.DATABASE_ERROR_DATA_RECORD_NAME,
                         detailedErrorMessage);
