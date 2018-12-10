@@ -1,17 +1,17 @@
 import wso2/mongodb;
 import ballerina/io;
 
-@final string mongodbHost = "127.0.0.1";
+final string mongodbHost = "127.0.0.1";
 
 function insert() {
-    endpoint mongodb:Client conn {
+    mongodb:Client conn = new({
         host: mongodbHost,
         dbName: "studentdb",
         username: "",
         password: "",
         options: { sslEnabled: false,
             serverSelectionTimeout: 500 }
-    };
+    });
 
     json document = { "name": "Tom", "age": "20" };
     _ = conn->insert("students", document);
@@ -19,145 +19,170 @@ function insert() {
 }
 
 function find() returns (json) {
-    endpoint mongodb:Client conn {
+    mongodb:Client conn = new({
         host: mongodbHost,
         dbName: "studentdb",
         username: "",
         password: "",
         options: { sslEnabled: false,
             serverSelectionTimeout: 500 }
-    };
+    });
     json queryString = { "age": "21" };
-    json result = check conn->find("students", queryString);
-    io:println(result);
+    var result = conn->find("students", queryString);
+    json j = getJsonResult(result);
     conn.stop();
-    return result;
+    return j;
 }
 
 function findWithNilQuery() returns (json) {
-    endpoint mongodb:Client conn {
+    mongodb:Client conn = new({
         host: mongodbHost,
         dbName: "studentdb",
         username: "",
         password: "",
         options: { sslEnabled: false,
             serverSelectionTimeout: 500 }
-    };
-    json result = check conn->find("students", ());
-    io:println(result);
+    });
+    var result = conn->find("students", ());
+    json j = getJsonResult(result);
     conn.stop();
-    return result;
+    return j;
 }
 
 function findOne() returns (json) {
-    endpoint mongodb:Client conn {
+    mongodb:Client conn = new({
         host: mongodbHost,
         dbName: "studentdb",
         username: "",
         password: "",
         options: { sslEnabled: false,
             serverSelectionTimeout: 500 }
-    };
+    });
     json queryString = { "name": "Jim", "age": "21" };
-    json result = check conn->findOne("students", queryString);
-    io:println(result);
+    var result = conn->findOne("students", queryString);
+    json j = getJsonResult(result);
     conn.stop();
-    return result;
+    return j;
 }
 
 function findOneWithNilQuery() returns (json) {
-    endpoint mongodb:Client conn {
+    mongodb:Client conn = new({
         host: mongodbHost,
         dbName: "studentdb",
         username: "",
         password: "",
         options: { sslEnabled: false,
             serverSelectionTimeout: 500 }
-    };
+    });
 
-    json result = check conn->findOne("students", ());
-    io:println(result);
+    var result = conn->findOne("students", ());
+    json j = getJsonResult(result);
     conn.stop();
-    return result;
+    return j;
 }
 
 function deleteMultipleRecords() returns (int) {
-    endpoint mongodb:Client conn {
+    mongodb:Client conn = new({
         host: mongodbHost,
         dbName: "studentdb",
         username: "",
         password: "",
         options: { sslEnabled: false,
             serverSelectionTimeout: 500 }
-    };
+    });
 
     json filter = { "age": "25" };
-    int result = check conn->delete("students", filter, true);
+    var result = conn->delete("students", filter, true);
+    int i = getIntResult(result);
     conn.stop();
-    return result;
+    return i;
 }
 
 function deleteSingleRecord() returns (int) {
-    endpoint mongodb:Client conn {
+    mongodb:Client conn = new({
         host: mongodbHost,
         dbName: "studentdb",
         username: "",
         password: "",
         options: { sslEnabled: false,
             serverSelectionTimeout: 500 }
-    };
+    });
 
     json filter = { "age": "13" };
-    int result = check conn->delete("students", filter, false);
+    var result = conn->delete("students", filter, false);
+    int i = getIntResult(result);
     conn.stop();
-    return result;
+    return i;
 }
 
 function updateMultipleRecords() returns (int) {
-    endpoint mongodb:Client conn {
+    mongodb:Client conn = new({
         host: mongodbHost,
         dbName: "studentdb",
         username: "",
         password: "",
         options: { sslEnabled: false,
             serverSelectionTimeout: 500 }
-    };
+    });
 
     json filter = { "age": "28" };
     json document = { "$set": { "age": "27" } };
-    int result = check conn->update("students", filter, document, true, false);
+    var result = conn->update("students", filter, document, true, false);
+    int i = getIntResult(result);
     conn.stop();
-    return result;
+    return i;
 }
 
 function updateSingleRecord() returns (int) {
-    endpoint mongodb:Client conn {
+    mongodb:Client conn = new({
         host: mongodbHost,
         dbName: "studentdb",
         username: "",
         password: "",
         options: { sslEnabled: false,
             serverSelectionTimeout: 500 }
-    };
+    });
 
     json filter = { "age": "30" };
     json document = { "$set": { "age": "32" } };
-    int result = check conn->update("students", filter, document, false, false);
+    var result = conn->update("students", filter, document, false, false);
+    int i = getIntResult(result);
     conn.stop();
-    return result;
+    return i;
 }
 
 function batchInsert() {
-    endpoint mongodb:Client conn {
+    mongodb:Client conn = new({
         host: mongodbHost,
         dbName: "studentdb",
         username: "",
         password: "",
         options: { sslEnabled: false,
             serverSelectionTimeout: 500 }
-    };
+    });
 
     json docs = [{ name: "Jessie", age: "18" }, { name: "Rose", age: "17" }, { name: "Anne", age: "15" }];
     _ = conn->batchInsert("students", docs);
     conn.stop();
+}
+
+function getJsonResult(json|error result) returns json {
+    json j;
+    if (result is json) {
+        io:println(result);
+        j = result;
+    } else if (result is error) {
+        j = { "Error" : result.reason() };
+    } else {
+        j = { "Error" : "Unreachable Code" };
+    }
+    return j;
+}
+
+function getIntResult(int|error result) returns int {
+    int i = -1;
+    if (result is int) {
+        i = result;
+    }
+    return i;
 }

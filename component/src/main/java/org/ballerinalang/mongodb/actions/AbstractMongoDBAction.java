@@ -25,9 +25,9 @@ import com.mongodb.client.result.UpdateResult;
 import org.ballerinalang.bre.bvm.BlockingNativeCallableUnit;
 import org.ballerinalang.model.util.JsonParser;
 import org.ballerinalang.model.values.BMap;
-import org.ballerinalang.model.values.BRefValueArray;
 import org.ballerinalang.model.values.BStreamingJSON;
 import org.ballerinalang.model.values.BValue;
+import org.ballerinalang.model.values.BValueArray;
 import org.ballerinalang.mongodb.MongoDBDataSource;
 import org.bson.Document;
 
@@ -97,12 +97,12 @@ public abstract class AbstractMongoDBAction extends BlockingNativeCallableUnit {
         return res.getModifiedCount();
     }
 
-    protected void batchInsert(MongoDBDataSource dbDataSource, String collectionName, BRefValueArray documents) {
+    protected void batchInsert(MongoDBDataSource dbDataSource, String collectionName, BValueArray documents) {
         MongoCollection<Document> collection = getCollection(dbDataSource, collectionName);
         long count =  documents.size();
         List<Document> docList = new ArrayList<>();
         for (int i = 0; i < count; i++) {
-            docList.add(Document.parse(documents.get(i).toString()));
+            docList.add(Document.parse(documents.getBValue(i).toString()));
         }
         collection.insertMany(docList);
     }

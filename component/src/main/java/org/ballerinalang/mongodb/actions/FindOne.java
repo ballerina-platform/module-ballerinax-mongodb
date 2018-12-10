@@ -37,7 +37,7 @@ import org.ballerinalang.natives.annotations.ReturnType;
             orgName = "wso2",
             packageName = "mongodb:0.0.0",
             functionName = "findOne",
-            receiver = @Receiver(type = TypeKind.OBJECT, structType = Constants.CALLER_ACTIONS),
+            receiver = @Receiver(type = TypeKind.OBJECT, structType = Constants.CLIENT),
             args = {@Argument(name = "collectionName", type = TypeKind.STRING),
                     @Argument(name = "queryString", type = TypeKind.JSON)
             },
@@ -50,7 +50,7 @@ public class FindOne extends AbstractMongoDBAction {
         BMap<String, BValue> bConnector = (BMap<String, BValue>) context.getRefArgument(0);
         String collectionName = context.getStringArgument(0);
         BMap query = (BMap) context.getNullableRefArgument(1);
-        MongoDBDataSource datasource = (MongoDBDataSource) bConnector.getNativeData(Constants.CALLER_ACTIONS);
+        MongoDBDataSource datasource = (MongoDBDataSource) bConnector.getNativeData(Constants.CLIENT);
         try {
             BValue result = findOne(datasource, collectionName, query);
             context.setReturnValues(result);

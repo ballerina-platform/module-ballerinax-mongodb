@@ -2,27 +2,27 @@
 
 This module provides the functionality required to access and manipulate data stored in an MongoDB datasource.
 
-### Endpoint 
+### Client
 
-To access a MongoDB datasource, you must first create an `endpoint`, which is a virtual representation of the physical endpoint of the MongoDB data source that you are trying to connect to. Create an endpoint of the MongoDB client type (i.e., `mongodb:Client`) and provide the necessary connection parameters. This will create a pool of connections to the given MongoDB database. A sample for creating an endpoint with a MongoDB client can be found below. 
+To access a MongoDB datasource, you must first create a `client` object. Create a `client` object of the MongoDB client type (i.e., `mongodb:Client`) and provide the necessary connection parameters. This will create a pool of connections to the given MongoDB database. A sample for creating a MongoDB client can be found below.
 
 ### Database operations
 
-Once the endpoint is created, database operations can be executed through that endpoint. This module provides support for updating data/schema and select data.
+Once the client is created, database operations can be executed through that client. This module provides support for updating data/schema and select data.
 
 ## Samples
 
-### Creating an endpoint
+### Creating a Client
 ```ballerina
-endpoint mongodb:Client conn {
+mongodb:Client conn = new({
     host: "localhost",
     dbName: "testballerina",
     username: "",
     password: "",
     options: { sslEnabled: false, serverSelectionTimeout: 500 }
-};
+});
 ```
-For the full list of available configuration options refer the API docs of the endpoint.
+For the full list of available configuration options refer the API docs of the client.
 
 ### Insert data
 

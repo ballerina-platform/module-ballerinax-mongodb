@@ -40,7 +40,7 @@ import org.ballerinalang.natives.annotations.ReturnType;
             orgName = "wso2",
             packageName = "mongodb:0.0.0",
             functionName = "find",
-            receiver = @Receiver(type = TypeKind.OBJECT, structType = Constants.CALLER_ACTIONS),
+            receiver = @Receiver(type = TypeKind.OBJECT, structType = Constants.CLIENT),
             args = { @Argument(name = "collectionName", type = TypeKind.STRING),
                     @Argument(name = "queryString", type = TypeKind.JSON)
             },
@@ -52,8 +52,13 @@ public class Find extends AbstractMongoDBAction {
     public void execute(Context context) {
         BMap<String, BValue> bConnector = (BMap<String, BValue>) context.getRefArgument(0);
         String collectionName = context.getStringArgument(0);
+        BValue queryInput =  context.getNullableRefArgument(1);
+        if (!(queryInput instanceof BMap)) {
+            context.setReturnValues(MongoDBDataSourceUtils
+                    .getMongoDBConnectorError(context, "query parameter should be a JSON object"));
+        }
         BMap query = (BMap) context.getNullableRefArgument(1);
-        MongoDBDataSource datasource = (MongoDBDataSource) bConnector.getNativeData(Constants.CALLER_ACTIONS);
+        MongoDBDataSource datasource = (MongoDBDataSource) bConnector.getNativeData(Constants.CLIENT);
         try {
             BStreamingJSON result = find(datasource, collectionName, query);
             context.setReturnValues(result);
