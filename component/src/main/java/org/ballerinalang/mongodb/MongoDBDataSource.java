@@ -29,6 +29,7 @@ import com.mongodb.ServerAddress;
 import com.mongodb.WriteConcern;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
+import org.ballerinalang.bre.bvm.BVM;
 import org.ballerinalang.connector.api.Struct;
 import org.ballerinalang.model.JSONDataSource;
 import org.ballerinalang.model.types.BType;
@@ -316,7 +317,7 @@ public class MongoDBDataSource implements BValue {
     }
 
     @Override
-    public void stamp(BType bType) {
+    public void stamp(BType bType, List<BVM.TypeValuePair> list) {
 
     }
 
