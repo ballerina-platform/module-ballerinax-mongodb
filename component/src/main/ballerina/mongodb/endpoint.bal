@@ -99,7 +99,7 @@ public type ClientEndpointConfig record {
     string username = "";
     string password = "";
     ConnectionProperties options = {};
-    !...
+    !...;
 };
 
 # ConnectionProperties type represents the properties which are used to configure MongoDB connection.
@@ -155,11 +155,11 @@ public type ConnectionProperties record {
     int waitQueueTimeout = -1;
     int localThreshold = -1;
     int heartbeatFrequency = -1;
-    !...
+    !...;
 };
 
 public type DatabaseErrorData record {
     string message;
-    !...
+    !...;
 };
 
