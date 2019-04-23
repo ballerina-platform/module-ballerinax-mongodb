@@ -38,21 +38,21 @@ public type Client client object {
     # + collectionName - The name of the collection to be queried
     # + queryString - Query to use to select data
     # + return - `json` result from the find operation or `error` if an error occurs
-    public remote extern function find(string collectionName, json? queryString) returns (json|error);
+    public remote function find(string collectionName, json? queryString) returns (json|error) = external;
 
     # The findOne operation implementation which selects the first document that matches with the query.
     #
     # + collectionName - The name of the collection to be queried
     # + queryString - Query to use to select data
     # + return - `json` The result from the findOne operation or `error` if an error occurs
-    public remote extern function findOne(string collectionName, json? queryString) returns (json|error);
+    public remote function findOne(string collectionName, json? queryString) returns (json|error) = external;
 
     # The insert operation implementation which inserts a document to a collection.
     #
     # + collectionName - The name of the collection
     # + document - The document to be inserted
     # + return - `nil` or `error` if an error occurs
-    public remote extern function insert(string collectionName, json document) returns (error?);
+    public remote function insert(string collectionName, json document) returns (error?) = external;
 
     # The delete operation implementation which deletes documents that match the given filter.
     #
@@ -60,7 +60,7 @@ public type Client client object {
     # + filter - The criteria used to be delete the documents
     # + multi - Specifies whether to delete multiple documents or not
     # + return - `int` deleted count or `error` if an error occurs
-    public remote extern function delete(string collectionName, json filter, boolean multi) returns (int|error);
+    public remote function delete(string collectionName, json filter, boolean multi) returns (int|error) = external;
 
     # The update operation implementation which updates documents that matches to given filter.
     #
@@ -69,22 +69,22 @@ public type Client client object {
     # + multi - Specifies whether to update multiple documents or not
     # + upsert - Specifies whether to create a new document when no document matches the filter
     # + return - `int` The updated count or `error` if an error occurs
-    public remote extern function update(string collectionName, json filter, json document, boolean multi, boolean upsert)
-                               returns (int|error);
+    public remote function update(string collectionName, json filter, json document, boolean multi, boolean upsert)
+                               returns (int|error) = external;
 
     # The batchInsert operation implementation which inserts an array of documents to the given collection.
     #
     # + collectionName - The name of the collection
     # + documents - The document array to be inserted
     # + return - `nil` or `error` if an error occurs
-    public remote extern function batchInsert(string collectionName, json documents) returns (error?);
+    public remote function batchInsert(string collectionName, json documents) returns (error?) = external;
 
 };
 
-extern function initClient(Client mongoDBClient, ClientEndpointConfig clientEndpointConfig);
+function initClient(Client mongoDBClient, ClientEndpointConfig clientEndpointConfig) = external;
 
 # An internal function used by clients to shutdown the connection pool.
-extern function close(Client mongoDBClient);
+function close(Client mongoDBClient) = external;
 
 # The Client endpoint configuration for MongoDB.
 #
@@ -93,14 +93,13 @@ extern function close(Client mongoDBClient);
 # + username - Username for the database connection
 # + password - Password for the database connection
 # + options - Properties for the connection configuration
-public type ClientEndpointConfig record {
+public type ClientEndpointConfig record {|
     string host = "";
     string dbName;
     string username = "";
     string password = "";
     ConnectionProperties options = {};
-    !...;
-};
+|};
 
 # ConnectionProperties type represents the properties which are used to configure MongoDB connection.
 #
@@ -132,7 +131,7 @@ public type ClientEndpointConfig record {
 # + replicaSet - Implies that the hosts given are a seed list, and the driver will attempt to find all members of the
 #   set
 # + retryWrites - If true write operations will be retried if they fail due to a network error
-public type ConnectionProperties record {
+public type ConnectionProperties record {|
     string url = "";
     string readConcern = "";
     string writeConcern = "";
@@ -155,11 +154,9 @@ public type ConnectionProperties record {
     int waitQueueTimeout = -1;
     int localThreshold = -1;
     int heartbeatFrequency = -1;
-    !...;
-};
+|};
 
-public type DatabaseErrorData record {
+public type DatabaseErrorData record {|
     string message;
-    !...;
-};
+|};
 

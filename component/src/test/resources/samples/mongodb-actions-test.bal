@@ -14,7 +14,7 @@ function insert() {
     });
 
     json document = { "name": "Tom", "age": "20" };
-    _ = conn->insert("students", document);
+    checkpanic conn->insert("students", document);
     conn.stop();
 }
 
@@ -162,7 +162,7 @@ function batchInsert() {
     });
 
     json docs = [{ name: "Jessie", age: "18" }, { name: "Rose", age: "17" }, { name: "Anne", age: "15" }];
-    _ = conn->batchInsert("students", docs);
+    checkpanic conn->batchInsert("students", docs);
     conn.stop();
 }
 
@@ -171,8 +171,6 @@ function getJsonResult(json|error result) returns json {
     if (result is json) {
         io:println(result);
         j = result;
-    } else if (result is error) {
-        j = { "Error" : result.reason() };
     } else {
         j = { "Error" : "Unreachable Code" };
     }
