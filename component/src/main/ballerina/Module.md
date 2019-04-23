@@ -31,9 +31,11 @@ The insert operation inserts a document to a given collection
 
 json doc1 = { "name": "ballerina", "type": "src" };
 var ret = conn->insert("projects", doc1);
-match ret {
-    () => io:println("insert data success ");
-    error e => io:println("insert data failed: " + e.message);
+if (ret is json) {
+    io:print("insert data success:");
+    io:println(io:sprintf("%s", ret));
+} else {
+    io:println("find failed: " + ret.reason());
 }
 ```
 
@@ -44,12 +46,11 @@ The find operation selects a document from a given collection
 
 json queryString = { "name": "ballerina" };
 var jsonRet = conn->find("projects", queryString);
-match jsonRet {
-    json j => {
-        io:print("query result:");
-        io:println(io:sprintf("%s", j));
-    }
-    error e => io:println("find failed: " + e.message);
+if (jsonRet is json) {
+    io:print("find query result:");
+    io:println(io:sprintf("%s", jsonRet));
+} else {
+    io:println("find failed: " + jsonRet.reason());
 }
 ```
 
@@ -60,12 +61,11 @@ The findOne operaton selects the first document match with the query.
 ```ballerina
 json queryString = { "name": "ballerina" };
 var jsonRet = conn->findOne("projects", queryString);
-match jsonRet {
-    json j => {
-        io:print("findOne query result:");
-        io:println(io:sprintf("%s", j));
-    }
-    error e => io:println("find failed: " + e.message);
+if (jsonRet is json) {
+    io:print("findOne query result:");
+    io:println(io:sprintf("%s", jsonRet));
+} else {
+    io:println("find failed: " + jsonRet.reason());
 }
 ```
 
@@ -76,9 +76,10 @@ The delete operation deletes documents that match the given filter.
 ```ballerina
 json filter = { "type": "src" };
 var deleteRet = conn->delete("projects", filter, true);
-match deleteRet {
-    int i => io:println("deleted count: " + i);
-    error e => io:println("delete failed: " + e.message);
+if (deleteRet is int) {
+    io:println("deleted count: " + deleteRet);
+} else {
+    io:println("delete failed: " + deleteRet.reason());
 }
 ```
 
@@ -90,9 +91,10 @@ The update operation updates documents that matches to given filter.
 json filter = { "age": "28" };
 json document = { "$set": { "age": "27" } };
 var result = conn->update("students", filter, document, true, false);
-match result {
-    int i => io:println("updated count: " + i);
-    error e => io:println("update failed: " + e.message);
+if (result is int) {
+    io:println("updated count: " + result);
+} else {
+    io:println("update failed: " + result.reason());
 }
 ```
 
@@ -103,8 +105,9 @@ The batchUpdate operation inserts an array of documents to the given collection.
 ```ballerina
 json docs = [{ name: "Jessie", age: "18" }, { name: "Rose", age: "17" }, { name: "Anne", age: "15" }];
 var returned = conn->batchInsert("students", docs);
-match returned {
-    () => io:println("Batch update success ");
-    error e => io:println("Batch update failed: " + e.message);
+if (returned is int) {
+    io:println("updated count: " + returned);
+} else {
+    io:println("update failed: " + returned.reason());
 }
 ```
