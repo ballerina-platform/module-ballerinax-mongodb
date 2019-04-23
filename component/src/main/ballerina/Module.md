@@ -92,7 +92,7 @@ json filter = { "age": "28" };
 json document = { "$set": { "age": "27" } };
 var result = conn->update("students", filter, document, true, false);
 if (result is int) {
-    io:println("updated count:: " + result);
+    io:println("updated count: " + result);
 } else {
     io:println("update failed: " + result.reason());
 }
@@ -106,7 +106,7 @@ The batchUpdate operation inserts an array of documents to the given collection.
 json docs = [{ name: "Jessie", age: "18" }, { name: "Rose", age: "17" }, { name: "Anne", age: "15" }];
 var returned = conn->batchInsert("students", docs);
 if (returned is int) {
-    io:println("updated count:: " + returned);
+    io:println("updated count: " + returned);
 } else {
     io:println("update failed: " + returned.reason());
 }
