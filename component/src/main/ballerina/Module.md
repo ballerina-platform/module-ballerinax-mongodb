@@ -105,9 +105,9 @@ The batchUpdate operation inserts an array of documents to the given collection.
 ```ballerina
 json docs = [{ name: "Jessie", age: "18" }, { name: "Rose", age: "17" }, { name: "Anne", age: "15" }];
 var returned = conn->batchInsert("students", docs);
-if (returned is int) {
-    io:println("updated count: " + returned);
+if (returned is ()) {
+    io:println("Batch update success");
 } else {
-    io:println("update failed: " + returned.reason());
+    io:println("Batch update failed: ", returned.reason());
 }
 ```
