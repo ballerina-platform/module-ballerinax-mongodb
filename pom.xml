@@ -135,7 +135,7 @@
             </dependency>
             <dependency>
                 <groupId>org.ballerinalang</groupId>
-                <artifactId>ballerina-runtime</artifactId>
+                <artifactId>ballerina-runtime-api</artifactId>
                 <version>${ballerina.version}</version>
             </dependency>
             <dependency>
@@ -163,7 +163,7 @@
             </dependency>
             <dependency>
                 <groupId>org.ballerinalang</groupId>
-                <artifactId>ballerina-runtime</artifactId>
+                <artifactId>ballerina-runtime-api</artifactId>
                 <version>${ballerina.version}</version>
                 <type>zip</type>
                 <classifier>ballerina-binary-repo</classifier>
@@ -178,6 +178,18 @@
             <dependency>
                 <groupId>org.ballerinalang</groupId>
                 <artifactId>ballerina-io</artifactId>
+                <type>zip</type>
+                <classifier>ballerina-binary-repo</classifier>
+                <version>${ballerina.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.ballerinalang</groupId>
+                <artifactId>ballerina-utils</artifactId>
+                <version>${ballerina.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.ballerinalang</groupId>
+                <artifactId>ballerina-utils</artifactId>
                 <type>zip</type>
                 <classifier>ballerina-binary-repo</classifier>
                 <version>${ballerina.version}</version>
@@ -222,6 +234,7 @@
                 <configuration>
                     <source>${wso2.maven.compiler.source}</source>
                     <target>${wso2.maven.compiler.target}</target>
+                    <compilerArgument>-proc:none</compilerArgument>
                 </configuration>
             </plugin>
             <plugin>
@@ -307,7 +320,7 @@
 
     <properties>
         <project.scm.id>my-scm-server</project.scm.id>
-        <ballerina.version>0.990.3</ballerina.version>
+        <ballerina.version>0.991.0</ballerina.version>
         <mongodb.version>3.8.2</mongodb.version>
         <mvn.processor.plugin.version>2.2.4</mvn.processor.plugin.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

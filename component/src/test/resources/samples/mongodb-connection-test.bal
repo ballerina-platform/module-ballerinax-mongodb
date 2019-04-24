@@ -18,10 +18,8 @@ function testConnectorInitWithDirectUrl() returns (json) {
     if (result is json) {
         io:println(result);
         j = result;
-    } else if (result is error) {
-        j = { "Error" : result.reason() };
     } else {
-        j = { "Error" : "Unreachable Code" };
+        j = { "Error" : result.reason() };
     }
     conn.stop();
     return j;
@@ -43,10 +41,8 @@ function testConnectorInitWithConnectionPoolProperties() returns (json) {
     if (result is json) {
         io:println(result);
         j = result;
-    } else if (result is error) {
-        j = { "Error" : result.reason() };
     } else {
-        j = { "Error" : "Unreachable Code" };
+        j = { "Error" : result.reason() };
     }
     conn.stop();
     return j;
