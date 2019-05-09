@@ -14,12 +14,16 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-read -p "Enter Ballerina home: "  ballerina_home
+ballerina_home=$BALLERINA_HOME
 
 if [ ! -e "$ballerina_home/bin/ballerina" ]
 then
-    echo "Incorrect Ballerina Home provided!"
-    exit 1
+    read -p "Couldn't find Ballerina home in your System!.Please enter Ballerina Home: "  ballerina_home
+    if [ ! -e "$ballerina_home/bin/ballerina" ]
+    then
+        echo "Incorrect Ballerina Home provided!"
+        exit 1
+    fi
 fi
 
 ballerina_lib_location=$ballerina_home/bre/lib/
@@ -42,7 +46,7 @@ if [ -e "$ballerina_lib_location/wso2-$module_name-module-$version.jar" ]; then
     echo "Error occurred while deleting dependencies from $ballerina_lib_location"
     echo "Please manually delete $ballerina_lib_location/wso2-$module_name-module-$version.jar and $ballerina_balo_location/wso2/$module_name/0.0.0/$module_name.zip"
     exit 1
-fi    
+fi
 
 rm -r $ballerina_balo_location/wso2/$module_name/0.0.0
 

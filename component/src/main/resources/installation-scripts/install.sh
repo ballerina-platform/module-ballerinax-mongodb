@@ -14,18 +14,48 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-read -p "Please enter Ballerina home: "  ballerina_home
+ballerina_home=$BALLERINA_HOME
 
 if [ ! -e "$ballerina_home/bin/ballerina" ]
 then
-    echo "Incorrect Ballerina Home provided!"
-    exit 1
+    echo "Couldn't find Ballerina home in your System!"
+    read -p "Please enter Ballerina Home: "  ballerina_home
+    if [ ! -e "$ballerina_home/bin/ballerina" ]
+    then
+        echo "Incorrect Ballerina Home provided!"
+        exit 1
+    fi
 fi
 
-ballerina_lib_location=$ballerina_home/bre/lib/
-ballerina_balo_location=$ballerina_home/lib/repo/
+ballerina_lib_location=$ballerina_home/bre/lib
+ballerina_balo_location=$ballerina_home/lib/repo
 version=${project.version}
 module_name=mongodb
+
+fileNamePattern="wso2-mongodb*.jar"
+for filename in $ballerina_home/bre/lib/*; do
+    existingFile=${filename##*/}
+    [[ $existingFile == $fileNamePattern ]] && file=$existingFile || file=""
+    if [ "$file" != "" ]; then
+        rm $ballerina_lib_location/$existingFile
+
+        if [ -e "$ballerina_lib_location/$existingFile" ]; then
+            echo "Error occurred while deleting dependencies from $ballerina_lib_location"
+            echo "Please manually delete $ballerina_lib_location/$existingFile and $ballerina_balo_location/wso2/$module_name/0.0.0/$module_name.zip"
+            exit 1
+        fi
+
+        rm -r $ballerina_balo_location/wso2/$module_name/0.0.0
+
+        if [ -e "$ballerina_balo_location/wso2/$module_name/0.0.0/$module_name.zip" ]; then
+            echo "Error occurred while deleting $module_name balo from $ballerina_balo_location"
+            echo "Please manually delete $ballerina_balo_location/wso2/$module_name/0.0.0 directory"
+            exit 2
+        else
+            echo "Successfully uninstalled existing Sap package: $existingFile"
+        fi
+    fi
+done
 
 if [ -e "$ballerina_lib_location/wso2-$module_name-module-$version.jar" ]
 then

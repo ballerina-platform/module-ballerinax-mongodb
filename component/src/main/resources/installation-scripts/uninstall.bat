@@ -17,8 +17,17 @@ rem specific language governing permissions and limitations
 rem under the License.
 rem
 
-SETLOCAL
-SET /P ballerina_home=Please enter Ballerina home:
+rem SETLOCAL
+IF NOT EXIST "%BALLERINA_HOME%/bin/ballerina.bat" (
+    SET /P ballerina_home=Couldn't find Ballerina home in your system!.Please enter Ballerina home:
+)
+
+IF NOT EXIST "%BALLERINA_HOME%/bin/ballerina.bat" (
+    ECHO "Incorrect Ballerina Home provided!"
+    GOTO :END
+) ELSE (
+    SET ballerina_home=%BALLERINA_HOME%
+)
 
 SET ballerina_lib_location=%ballerina_home%\bre\lib\
 SET ballerina_balo_location=%ballerina_home%\lib\repo\
