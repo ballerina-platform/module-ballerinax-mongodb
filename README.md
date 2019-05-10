@@ -46,6 +46,9 @@ public function main() {
     json doc1 = { "name": "ballerina", "type": "src" };
     json doc2 = { "name": "connectors", "type": "artifacts" };
     json doc3 = { "name": "docerina", "type": "src" };
+    json doc4 = { "name": "test", "type": "artifacts" };
+    json filter = { "type": "src" };
+    json replaceFilter = { "type": "artifacts" };
 
     var ret = conn->insert("projects", doc1);
     handleInsert(ret, "Insert to projects");
@@ -64,7 +67,6 @@ public function main() {
     jsonRet = conn->findOne("projects", queryString);
     handleFind(jsonRet);
 
-    json filter = { "type": "src" };
     var deleteRet = conn->delete("projects", filter, true);
     if (deleteRet is int) {
         io:println("deleted count: " + deleteRet);
@@ -72,6 +74,13 @@ public function main() {
         io:println("delete failed: " + deleteRet.reason());
     }
 
+    json doc5 = { "name": "main", "type": "artifacts" };
+    var response = conn->replaceOne("projects", replaceFilter, doc5);
+    if (response is int) {
+        io:println("Modified count: " + response);
+    } else {
+        io:println("Modified count: " + response.reason());
+    }
     conn.stop();
 }
 

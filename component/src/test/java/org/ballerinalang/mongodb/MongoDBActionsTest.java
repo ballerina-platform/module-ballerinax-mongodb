@@ -21,6 +21,8 @@ import com.mongodb.MongoClient;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import de.flapdoodle.embed.mongo.MongodExecutable;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.ballerinalang.launcher.util.BCompileUtil;
 import org.ballerinalang.launcher.util.BRunUtil;
 import org.ballerinalang.launcher.util.CompileResult;
@@ -44,6 +46,7 @@ public class MongoDBActionsTest {
     private MongoClient mongoClient;
     private MongoCollection mongoCollection;
     private MongodExecutable mongodExecutable;
+    private static Log log = LogFactory.getLog(MongoDBActionsTest.class);
 
     @BeforeClass
     public void setup() throws Exception {
@@ -67,7 +70,8 @@ public class MongoDBActionsTest {
                 "{\"name\":\"Harry\", \"age\":\"25\"}", "{\"name\":\"Peter\", \"age\":\"21\"}",
                 "{\"name\":\"Thomas\", \"age\":\"28\"}", "{\"name\":\"Newt\", \"age\":\"28\"}",
                 "{\"name\":\"Philips\", \"age\":\"30\"}", "{\"name\":\"James\", \"age\":\"30\"}",
-                "{\"name\":\"Lilly\", \"age\":\"13\"}", "{\"name\":\"Janet\", \"age\":\"13\"}"
+                "{\"name\":\"Lilly\", \"age\":\"13\"}", "{\"name\":\"Janet\", \"age\":\"13\"}",
+                "{\"name\":\"Petter\", \"age\":\"35\"}", "{\"name\":\"John\", \"age\":\"35\"}"
         };
         for (String document : documentStringArray) {
             mongoCollection.insertOne(Document.parse(document));
@@ -118,7 +122,7 @@ public class MongoDBActionsTest {
           dependsOnMethods = "testFindOneWithNilQuery")
     public void testFindWithNilQuery() throws Exception {
         BValue[] results = BRunUtil.invoke(result, "findWithNilQuery");
-        Assert.assertEquals(results.length, 10, "10 records should have been received");
+        Assert.assertEquals(results.length, 12, "12 records should have been received");
     }
 
     @Test(description = "Tests MongoDB delete action for multiple records",
@@ -173,6 +177,10 @@ public class MongoDBActionsTest {
         Document document1 = (Document) mongoCollection.find(Document.parse("{\"name\":\"Philips\"}")).first();
         Document document2 = (Document) mongoCollection.find(Document.parse("{\"name\":\"James\"}")).first();
 
+        log.info("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        log.info(document1.getString("name"));
+        log.info(document1.toJson());
+        log.info("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         Assert.assertEquals(document1.getString("age"), "32", "Document has not been updated correctly");
         Assert.assertEquals(document2.getString("age"), "30", "More than one document have been updated");
     }
@@ -191,6 +199,22 @@ public class MongoDBActionsTest {
         for (Document document : documentsArray) {
             Assert.assertNotNull(document, "The document may have not been inserted");
         }
+    }
+
+    @Test(description = "Tests MongoDB replaces a single document.")
+    public void testReplaceOne() throws Exception {
+        BValue[] results = BRunUtil.invoke(result, "replaceOne");
+        Assert.assertEquals(((BInteger) results[0]).intValue(), 1,
+                "Only 1 record should have been updated");
+        Document document1 = (Document) mongoCollection.find(Document.parse("{\"age\":\"35\"}")).first();
+        FindIterable iterable = mongoCollection.find(Document.parse("{\"age\":\"35\"}"));
+        int size = 0;
+        for (Object value : iterable) {
+            size++;
+        }
+        Assert.assertEquals(size, 2, "Only 2 records should have been received");
+        Assert.assertEquals(document1.getString("name"), "Esther",
+                "Document has not been updated correctly");
     }
 
     @AfterClass(alwaysRun = true)

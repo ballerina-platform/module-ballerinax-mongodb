@@ -72,6 +72,16 @@ public type Client client object {
     public remote function update(string collectionName, json filter, json document, boolean multi, boolean upsert)
                                returns (int|error) = external;
 
+    # The replaceOne operation implementation which replaces a single document within the collection based
+    # on the filter.
+    #
+    # + collectionName - The name of the collection
+    # + filter - The selection criteria used to update the document
+    # + replacement - 	The replacement document
+    # + return - `int` The updated count or `error` if an error occurs
+    public remote function replaceOne(string collectionName, json filter, json replacement) returns (int|error)
+    = external;
+
     # The batchInsert operation implementation which inserts an array of documents to the given collection.
     #
     # + collectionName - The name of the collection

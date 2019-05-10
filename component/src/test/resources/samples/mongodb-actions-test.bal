@@ -133,6 +133,24 @@ function updateMultipleRecords() returns (int) {
     return i;
 }
 
+function replaceOne() returns (int) {
+    mongodb:Client conn = new({
+        host: mongodbHost,
+        dbName: "studentdb",
+        username: "",
+        password: "",
+        options: { sslEnabled: false,
+            serverSelectionTimeout: 500 }
+    });
+
+    json filter = { "age": "35" };
+    json document = { "name":"Esther", "age":"35"};
+    var result = conn->replaceOne("students", filter, document);
+    int i = getIntResult(result);
+    conn.stop();
+    return i;
+}
+
 function updateSingleRecord() returns (int) {
     mongodb:Client conn = new({
         host: mongodbHost,
