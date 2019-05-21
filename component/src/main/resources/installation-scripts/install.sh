@@ -18,11 +18,11 @@ ballerina_home=$BALLERINA_HOME
 
 if [ ! -e "$ballerina_home/bin/ballerina" ]
 then
-    echo "Unable to find Ballerina home in your System!"
+    echo "[WARNING] Unable to find Ballerina home in your System!"
     read -p "Please enter Ballerina Home: "  ballerina_home
     if [ ! -e "$ballerina_home/bin/ballerina" ]
     then
-        echo "Incorrect Ballerina Home provided!"
+        echo "[ERROR] Incorrect Ballerina Home provided!"
         exit 1
     fi
 fi
@@ -37,14 +37,14 @@ for filename in $ballerina_home/bre/lib/*; do
     existingFile=${filename##*/}
     [[ $existingFile == $fileNamePattern ]] && file=$existingFile || file=""
     if [ "$file" != "" ]; then
-        echo "[WARNING] Another version of Mongodb module is already installed."
-        read -r -p "Do you want to uninstall it? (Y/N): " response
+        echo "[WARNING] Another version of MongoDB module is already installed."
+        read -r -p "Do you want to uninstall the previous version and continue installation? (Y/N): " response
         if [[ $response =~ ^([yY][eE][sS]|[yY])$ ]]; then
 
             rm $ballerina_lib_location/$existingFile
 
             if [ -e "$ballerina_lib_location/$existingFile" ]; then
-                echo "Error occurred while deleting dependencies from $ballerina_lib_location"
+                echo "[ERROR] Error occurred while deleting dependencies from $ballerina_lib_location"
                 echo "Please manually delete $ballerina_lib_location/$existingFile and $ballerina_balo_location/wso2/$module_name/0.0.0/$module_name.zip"
                 exit 1
             fi
@@ -52,14 +52,15 @@ for filename in $ballerina_home/bre/lib/*; do
             rm -r $ballerina_balo_location/wso2/$module_name/0.0.0
 
             if [ -e "$ballerina_balo_location/wso2/$module_name/0.0.0/$module_name.zip" ]; then
-                echo "Error occurred while deleting $module_name balo from $ballerina_balo_location"
+                echo "[ERROR] Error occurred while deleting $module_name balo from $ballerina_balo_location"
                 echo "Please manually delete $ballerina_balo_location/wso2/$module_name/0.0.0 directory"
                 exit 2
             else
-                echo "Successfully uninstalled existing Mongodb package: $existingFile"
+                echo "Successfully uninstalled existing MongoDB package: $existingFile"
             fi
         elif [[ $response =~ ^([nN][oO]|[nN])$ ]]; then
-            echo "[INFO] Installing module without uninstall the existing version of mongodb module: [$existingFile]."
+            echo "[INFO] Installing module without uninstall the existing version of mongoDB module: [$existingFile]."
+            exit 1
         else
             echo "[ERROR] Invalid option provided."
             exit 1
@@ -79,7 +80,7 @@ cp dependencies/wso2-$module_name-module-$version.jar $ballerina_lib_location
 
 if [ $? -ne 0 ]
 then
-    echo "[WARNING] Error occurred while copying dependencies to $ballerina_lib_location"
+    echo "[ERROR] Error occurred while copying dependencies to $ballerina_lib_location"
     if [ -e temp ]
     then rm -r temp
     fi
@@ -92,7 +93,7 @@ fi
 cp -r balo/* $ballerina_balo_location/
 
 if [ $? -ne 0 ]; then
-    echo "[WARNING] Error occurred while copying $module_name balo to $ballerina_balo_location. Reverting the changes"
+    echo "[ERROR] Error occurred while copying $module_name balo to $ballerina_balo_location. Reverting the changes"
     if [ -e temp/wso2-$module_name-module-$version.jar ]; then
         cp temp/wso2-$module_name-module-$version.jar $ballerina_lib_location/
         rm -r temp

@@ -177,10 +177,6 @@ public class MongoDBActionsTest {
         Document document1 = (Document) mongoCollection.find(Document.parse("{\"name\":\"Philips\"}")).first();
         Document document2 = (Document) mongoCollection.find(Document.parse("{\"name\":\"James\"}")).first();
 
-        log.info("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        log.info(document1.getString("name"));
-        log.info(document1.toJson());
-        log.info("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         Assert.assertEquals(document1.getString("age"), "32", "Document has not been updated correctly");
         Assert.assertEquals(document2.getString("age"), "30", "More than one document have been updated");
     }
@@ -201,7 +197,7 @@ public class MongoDBActionsTest {
         }
     }
 
-    @Test(description = "Tests MongoDB replaces a single document.")
+    @Test(description = "Tests MongoDB single document replacement.")
     public void testReplaceOne() throws Exception {
         BValue[] results = BRunUtil.invoke(result, "replaceOne");
         Assert.assertEquals(((BInteger) results[0]).intValue(), 1,
@@ -212,7 +208,6 @@ public class MongoDBActionsTest {
         for (Object value : iterable) {
             size++;
         }
-        Assert.assertEquals(size, 2, "Only 2 records should have been received");
         Assert.assertEquals(document1.getString("name"), "Esther",
                 "Document has not been updated correctly");
     }

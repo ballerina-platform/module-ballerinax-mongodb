@@ -44,7 +44,7 @@ fi
 rm $ballerina_lib_location/wso2-$module_name-module-$version.jar
 
 if [ -e "$ballerina_lib_location/wso2-$module_name-module-$version.jar" ]; then
-    echo "[WARNING] Error occurred while deleting dependencies from $ballerina_lib_location"
+    echo "[ERROR] Error occurred while deleting dependencies from $ballerina_lib_location"
     echo "[INFO] Please manually delete $ballerina_lib_location/wso2-$module_name-module-$version.jar and $ballerina_balo_location/wso2/$module_name/0.0.0/$module_name.zip"
     exit 1
 fi

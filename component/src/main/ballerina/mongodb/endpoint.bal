@@ -80,7 +80,7 @@ public type Client client object {
     # + replacement - 	The replacement document
     # + return - `int` The updated count or `error` if an error occurs
     public remote function replaceOne(string collectionName, json filter, json replacement) returns (int|error)
-    = external;
+                               = external;
 
     # The batchInsert operation implementation which inserts an array of documents to the given collection.
     #

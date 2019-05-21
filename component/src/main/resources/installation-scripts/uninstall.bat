@@ -24,7 +24,7 @@ IF NOT EXIST "%BALLERINA_HOME%/bin/ballerina.bat" (
 )
 
 IF NOT EXIST "%BALLERINA_HOME%/bin/ballerina.bat" (
-    ECHO [WARNING] Incorrect Ballerina Home provided!
+    ECHO [ERROR] Incorrect Ballerina Home provided!
     GOTO :END
 ) ELSE (
     SET ballerina_home=%BALLERINA_HOME%
@@ -45,7 +45,7 @@ IF NOT EXIST "%ballerina_lib_location%\wso2-%module_name%-module-%version%.jar" 
 IF EXIST "%ballerina_lib_location%\wso2-%module_name%-module-%version%.jar" (
    DEL "%ballerina_lib_location%\wso2-%module_name%-module-%version%.jar"
    IF EXIST "%ballerina_lib_location%\wso2-%module_name%-module-%version%.jar" (
-    ECHO [WARNING] An error occurred while deleting %ballerina_lib_location%wso2-%module_name%-module-%version%.jar
+    ECHO [ERROR] An error occurred while deleting %ballerina_lib_location%wso2-%module_name%-module-%version%.jar
 	GOTO :FAILED_JAR_DELETION
    )
 )
@@ -53,7 +53,7 @@ IF EXIST "%ballerina_lib_location%\wso2-%module_name%-module-%version%.jar" (
 IF EXIST "%ballerina_balo_location%\wso2\%module_name%\0.0.0\%module_name%.zip" (
    DEL "%ballerina_balo_location%\wso2\%module_name%\0.0.0\%module_name%.zip"
    IF EXIST "%ballerina_balo_location%\wso2\%module_name%\0.0.0\%module_name%.zip" (
-    ECHO [WARNING] An error occurred while deleting %ballerina_balo_location%wso2\%module_name%\0.0.0\%module_name%.zip
+    ECHO [ERROR] An error occurred while deleting %ballerina_balo_location%wso2\%module_name%\0.0.0\%module_name%.zip
 	GOTO :FAILED_BALO_DELETION
    )
 )
@@ -63,11 +63,11 @@ ECHO [INFO] Successfully uninstalled MongoDB module: wso2-%module_name%-module-%
 GOTO :END
 
 :FAILED_JAR_DELETION
-ECHO [WARNING] Un-installation is incomplete due to an error. Please manually delete %ballerina_lib_location%wso2-%module_name%-module-%version%.jar and %ballerina_balo_location%wso2\%module_name%\0.0.0\%module_name%.zip
+ECHO [ERROR] Un-installation is incomplete due to an error. Please manually delete %ballerina_lib_location%wso2-%module_name%-module-%version%.jar and %ballerina_balo_location%wso2\%module_name%\0.0.0\%module_name%.zip
 GOTO :END
 
 :FAILED_BALO_DELETION
-ECHO [WARNING] Un-installation is incomplete due to an error. Please manually delete %ballerina_balo_location%wso2\%module_name%\0.0.0\%module_name%.zip
+ECHO [ERROR] Un-installation is incomplete due to an error. Please manually delete %ballerina_balo_location%wso2\%module_name%\0.0.0\%module_name%.zip
 
 :END
 ENDLOCAL
