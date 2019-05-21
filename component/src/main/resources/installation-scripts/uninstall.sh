@@ -18,10 +18,11 @@ ballerina_home=$BALLERINA_HOME
 
 if [ ! -e "$ballerina_home/bin/ballerina" ]
 then
-    read -p "Couldn't find Ballerina home in your System!.Please enter Ballerina Home: "  ballerina_home
+    echo "[WARNING] Unable to find Ballerina home in your System!."
+    read -p "Please enter Ballerina Home: "  ballerina_home
     if [ ! -e "$ballerina_home/bin/ballerina" ]
     then
-        echo "Incorrect Ballerina Home provided!"
+        echo "[ERROR] Incorrect Ballerina Home provided!"
         exit 1
     fi
 fi
@@ -35,7 +36,7 @@ if [ ! -e "$ballerina_lib_location/wso2-$module_name-module-$version.jar" ]
 then
    if [ ! -e "$ballerina_balo_location/wso2/$module_name/0.0.0/$module_name.zip" ]
    then
-   echo "MongoDB module is not installed!"
+   echo "[WARNING] MongoDB module is not installed!"
    exit 0
    fi
 fi
@@ -43,17 +44,17 @@ fi
 rm $ballerina_lib_location/wso2-$module_name-module-$version.jar
 
 if [ -e "$ballerina_lib_location/wso2-$module_name-module-$version.jar" ]; then
-    echo "Error occurred while deleting dependencies from $ballerina_lib_location"
-    echo "Please manually delete $ballerina_lib_location/wso2-$module_name-module-$version.jar and $ballerina_balo_location/wso2/$module_name/0.0.0/$module_name.zip"
+    echo "[WARNING] Error occurred while deleting dependencies from $ballerina_lib_location"
+    echo "[INFO] Please manually delete $ballerina_lib_location/wso2-$module_name-module-$version.jar and $ballerina_balo_location/wso2/$module_name/0.0.0/$module_name.zip"
     exit 1
 fi
 
 rm -r $ballerina_balo_location/wso2/$module_name/0.0.0
 
 if [ -e "$ballerina_balo_location/wso2/$module_name/0.0.0/$module_name.zip" ]; then
-    echo "Error occurred while deleting $module_name balo from $ballerina_balo_location"
-    echo "Please manually delete $ballerina_balo_location/wso2/$module_name/0.0.0 directory"
+    echo "[ERROR] Error occurred while deleting $module_name balo from $ballerina_balo_location"
+    echo "[INFO] Please manually delete $ballerina_balo_location/wso2/$module_name/0.0.0 directory"
     exit 2
 else
-    echo "Successfully uninstalled MongoDB module!"    
+    echo "[INFO] Successfully uninstalled MongoDB module: wso2-$module_name-module-$version"
 fi    
