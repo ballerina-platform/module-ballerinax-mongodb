@@ -31,7 +31,7 @@ ballerina_lib_location=$ballerina_home/bre/lib
 ballerina_balo_location=$ballerina_home/lib/repo
 version=${project.version}
 module_name=mongodb
-fileNamePattern="wso2-mongodb-module-*.*.*.jar"
+fileNamePattern="wso2-mongodb-*-*.*.*.jar"
 
 for filename in $ballerina_home/bre/lib/*; do
     existingFile=${filename##*/}
