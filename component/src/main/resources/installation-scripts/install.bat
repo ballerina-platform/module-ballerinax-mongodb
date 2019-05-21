@@ -45,36 +45,38 @@ IF EXIST "%ballerina_lib_location%\%fileNamePattern%" (
     SET /P response="Do you want to uninstall it? [Y/N]: "
 )
 
-IF "%response%"=="Y" (
-    for /f "delims=" %%G in ('dir %file% /b') do (
-        SET filename[%id%]=%%~nG
-        SET /a id+=1
-    )
-    SET /a id-=1
-    for /l %%n in (1,1,%id%) do (
-        DEL "%ballerina_lib_location%\!filename[%index%]!.jar"
-
-        IF EXIST "%ballerina_lib_location%\!filename[%index%]!.jar" (
-            ECHO [WARNING] An error occurred while deleting %ballerina_lib_location%\!filename[%index%]!.jar
-            GOTO :FAILED_JAR_DELETION
+IF EXIST "%ballerina_lib_location%\%fileNamePattern%" (
+    IF "%response%"=="Y" (
+        for /f "delims=" %%G in ('dir %file% /b') do (
+            SET filename[%id%]=%%~nG
+            SET /a id+=1
         )
+        SET /a id-=1
+        for /l %%n in (1,1,%id%) do (
+            DEL "%ballerina_lib_location%\!filename[%index%]!.jar"
 
-        DEL "%ballerina_balo_location%\wso2\%module_name%\0.0.0\%module_name%.zip"
+            IF EXIST "%ballerina_lib_location%\!filename[%index%]!.jar" (
+                ECHO [WARNING] An error occurred while deleting %ballerina_lib_location%\!filename[%index%]!.jar
+                GOTO :FAILED_JAR_DELETION
+            )
 
-        IF EXIST "%ballerina_balo_location%\wso2\%module_name%\0.0.0\%module_name%.zip" (
-            ECHO [WARNING] An error occurred while deleting %ballerina_balo_location%wso2\%module_name%\0.0.0\%module_name%.zip
-            GOTO :FAILED_BALO_DELETION
-        ) ELSE (
-            ECHO [INFO] Successfully uninstalled existing mongodb package: !filename[%index%]!.jar
+            DEL "%ballerina_balo_location%\wso2\%module_name%\0.0.0\%module_name%.zip"
+
+            IF EXIST "%ballerina_balo_location%\wso2\%module_name%\0.0.0\%module_name%.zip" (
+                ECHO [WARNING] An error occurred while deleting %ballerina_balo_location%wso2\%module_name%\0.0.0\%module_name%.zip
+                GOTO :FAILED_BALO_DELETION
+            ) ELSE (
+                ECHO [INFO] Successfully uninstalled existing mongodb package: !filename[%index%]!.jar
+            )
+            SET /a index+=1
         )
-        SET /a index+=1
-    )
-) ELSE (
-    IF "%response%"=="N" (
-        ECHO [INFO] Install Mongodb module without uninstall the existing package.
     ) ELSE (
-        ECHO [ERROR] Invalid option provided.
-        GOTO :END
+        IF "%response%"=="N" (
+            ECHO [INFO] Install Mongodb module without uninstall the existing package.
+        ) ELSE (
+            ECHO [ERROR] Invalid option provided.
+            GOTO :END
+        )
     )
 )
 
