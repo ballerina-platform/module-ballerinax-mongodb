@@ -59,7 +59,7 @@ for filename in $ballerina_home/bre/lib/*; do
                 echo "Successfully uninstalled existing MongoDB package: $existingFile"
             fi
         elif [[ $response =~ ^([nN][oO]|[nN])$ ]]; then
-            echo "[INFO] Installing module without uninstall the existing version of mongoDB module: [$existingFile]."
+            echo "[ERROR] Another version of MongoDB module already exists. Please remove it before install another version."
             exit 1
         else
             echo "[ERROR] Invalid option provided."

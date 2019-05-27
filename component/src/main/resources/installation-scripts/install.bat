@@ -66,13 +66,13 @@ IF EXIST "%ballerina_lib_location%\%fileNamePattern%" (
                 ECHO [ERROR] An error occurred while deleting %ballerina_balo_location%wso2\%module_name%\0.0.0\%module_name%.zip
                 GOTO :FAILED_BALO_DELETION
             ) ELSE (
-                ECHO [INFO] Successfully uninstalled existing mongoDB package: !filename[%index%]!.jar
+                ECHO [INFO] Successfully uninstalled existing MongoDB package: !filename[%index%]!.jar
             )
             SET /a index+=1
         )
     ) ELSE (
         IF "%response%"=="N" (
-            ECHO [WARNING] Couldn't maintain the different versions of Kafka module.
+            ECHO [ERROR] Another version of MongoDB module already exists. Please remove it before install another version.
             GOTO :END
         ) ELSE (
             ECHO [ERROR] Invalid option provided.
