@@ -17,8 +17,18 @@ rem specific language governing permissions and limitations
 rem under the License.
 rem
 
-SETLOCAL
-SET /P ballerina_home=Please enter Ballerina home:
+rem SETLOCAL
+IF NOT EXIST "%BALLERINA_HOME%/bin/ballerina.bat" (
+    ECHO [WARNING] Unable to find Ballerina home in your system!.
+    SET /P ballerina_home=Please enter Ballerina home:
+)
+
+IF NOT EXIST "%BALLERINA_HOME%/bin/ballerina.bat" (
+    ECHO [ERROR] Incorrect Ballerina Home provided!
+    GOTO :END
+) ELSE (
+    SET ballerina_home=%BALLERINA_HOME%
+)
 
 SET ballerina_lib_location=%ballerina_home%\bre\lib\
 SET ballerina_balo_location=%ballerina_home%\lib\repo\
@@ -27,7 +37,7 @@ SET module_name=mongodb
 
 IF NOT EXIST "%ballerina_lib_location%\wso2-%module_name%-module-%version%.jar" (
     IF NOT EXIST "%ballerina_balo_location%\wso2\%module_name%\0.0.0\%module_name%.zip" (
-	   ECHO MongoDB module is not installed!
+	   ECHO [WARNING] MongoDB module is not installed!
 	   GOTO :END
 	)
 )
@@ -35,7 +45,7 @@ IF NOT EXIST "%ballerina_lib_location%\wso2-%module_name%-module-%version%.jar" 
 IF EXIST "%ballerina_lib_location%\wso2-%module_name%-module-%version%.jar" (
    DEL "%ballerina_lib_location%\wso2-%module_name%-module-%version%.jar"
    IF EXIST "%ballerina_lib_location%\wso2-%module_name%-module-%version%.jar" (
-    ECHO An error occurred while deleting %ballerina_lib_location%wso2-%module_name%-module-%version%.jar
+    ECHO [ERROR] An error occurred while deleting %ballerina_lib_location%wso2-%module_name%-module-%version%.jar
 	GOTO :FAILED_JAR_DELETION
    )
 )
@@ -43,21 +53,21 @@ IF EXIST "%ballerina_lib_location%\wso2-%module_name%-module-%version%.jar" (
 IF EXIST "%ballerina_balo_location%\wso2\%module_name%\0.0.0\%module_name%.zip" (
    DEL "%ballerina_balo_location%\wso2\%module_name%\0.0.0\%module_name%.zip"
    IF EXIST "%ballerina_balo_location%\wso2\%module_name%\0.0.0\%module_name%.zip" (
-    ECHO An error occurred while deleting %ballerina_balo_location%wso2\%module_name%\0.0.0\%module_name%.zip
+    ECHO [ERROR] An error occurred while deleting %ballerina_balo_location%wso2\%module_name%\0.0.0\%module_name%.zip
 	GOTO :FAILED_BALO_DELETION
    )
 )
 
 :SUCCESS
-ECHO Successfully uninstalled MongoDB module!
+ECHO [INFO] Successfully uninstalled MongoDB module: wso2-%module_name%-module-%version%
 GOTO :END
 
 :FAILED_JAR_DELETION
-ECHO Un-installation is incomplete due to an error. Please manually delete %ballerina_lib_location%wso2-%module_name%-module-%version%.jar and %ballerina_balo_location%wso2\%module_name%\0.0.0\%module_name%.zip
+ECHO [ERROR] Un-installation is incomplete due to an error. Please manually delete %ballerina_lib_location%wso2-%module_name%-module-%version%.jar and %ballerina_balo_location%wso2\%module_name%\0.0.0\%module_name%.zip
 GOTO :END
 
 :FAILED_BALO_DELETION
-ECHO Un-installation is incomplete due to an error. Please manually delete %ballerina_balo_location%wso2\%module_name%\0.0.0\%module_name%.zip
+ECHO [ERROR] Un-installation is incomplete due to an error. Please manually delete %ballerina_balo_location%wso2\%module_name%\0.0.0\%module_name%.zip
 
 :END
 ENDLOCAL

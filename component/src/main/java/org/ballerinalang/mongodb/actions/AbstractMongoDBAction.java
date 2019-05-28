@@ -39,7 +39,6 @@ import java.util.List;
  *
  */
 public abstract class AbstractMongoDBAction extends BlockingNativeCallableUnit {
-
     protected BStreamingJSON find(MongoDBDataSource dbDataSource, String collectionName, BMap query) {
         MongoCollection<Document> collection = getCollection(dbDataSource, collectionName);
         MongoCursor<Document> itr;
@@ -94,6 +93,12 @@ public abstract class AbstractMongoDBAction extends BlockingNativeCallableUnit {
         } else {
             res = collection.updateOne(this.jsonToDoc(filter), this.jsonToDoc(document), options);
         }
+        return res.getModifiedCount();
+    }
+
+    protected long replaceOne(MongoDBDataSource dbDataSource, String collectionName, BMap filter, BMap document) {
+        MongoCollection<Document> collection = getCollection(dbDataSource, collectionName);
+        UpdateResult res = collection.replaceOne(this.jsonToDoc(filter), this.jsonToDoc(document));
         return res.getModifiedCount();
     }
 

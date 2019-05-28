@@ -111,3 +111,18 @@ if (returned is ()) {
     io:println("Batch update failed: ", returned.reason());
 }
 ```
+
+### Replace the single document within the collection
+
+The replaceOne operation replaces a single document within the collection based on the filter.
+
+```ballerina
+json doc5 = { "name": "main", "type": "artifacts" };
+json replaceFilter = { "type": "artifacts" };
+var response = conn->replaceOne("projects", replaceFilter, doc5);
+if (response is int) {
+    io:println("Modified count: " + response);
+} else {
+    io:println("Modified count: " + response.reason());
+}
+```

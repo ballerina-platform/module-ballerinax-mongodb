@@ -14,18 +14,59 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-read -p "Please enter Ballerina home: "  ballerina_home
+ballerina_home=$BALLERINA_HOME
 
 if [ ! -e "$ballerina_home/bin/ballerina" ]
 then
-    echo "Incorrect Ballerina Home provided!"
-    exit 1
+    echo "[WARNING] Unable to find Ballerina home in your System!"
+    read -p "Please enter Ballerina Home: "  ballerina_home
+    if [ ! -e "$ballerina_home/bin/ballerina" ]
+    then
+        echo "[ERROR] Incorrect Ballerina Home provided!"
+        exit 1
+    fi
 fi
 
-ballerina_lib_location=$ballerina_home/bre/lib/
-ballerina_balo_location=$ballerina_home/lib/repo/
+ballerina_lib_location=$ballerina_home/bre/lib
+ballerina_balo_location=$ballerina_home/lib/repo
 version=${project.version}
 module_name=mongodb
+fileNamePattern="wso2-mongodb-*-*.*.*.jar"
+
+for filename in $ballerina_home/bre/lib/*; do
+    existingFile=${filename##*/}
+    [[ $existingFile == $fileNamePattern ]] && file=$existingFile || file=""
+    if [ "$file" != "" ]; then
+        echo "[WARNING] Another version of MongoDB module is already installed."
+        read -r -p "Do you want to uninstall the previous version and continue installation? (Y/N): " response
+        if [[ $response =~ ^([yY][eE][sS]|[yY])$ ]]; then
+
+            rm $ballerina_lib_location/$existingFile
+
+            if [ -e "$ballerina_lib_location/$existingFile" ]; then
+                echo "[ERROR] Error occurred while deleting dependencies from $ballerina_lib_location"
+                echo "Please manually delete $ballerina_lib_location/$existingFile and $ballerina_balo_location/wso2/$module_name/0.0.0/$module_name.zip"
+                exit 1
+            fi
+
+            rm -r $ballerina_balo_location/wso2/$module_name/0.0.0
+
+            if [ -e "$ballerina_balo_location/wso2/$module_name/0.0.0/$module_name.zip" ]; then
+                echo "[ERROR] Error occurred while deleting $module_name balo from $ballerina_balo_location"
+                echo "Please manually delete $ballerina_balo_location/wso2/$module_name/0.0.0 directory"
+                exit 2
+            else
+                echo "Successfully uninstalled existing MongoDB package: $existingFile"
+            fi
+        elif [[ $response =~ ^([nN][oO]|[nN])$ ]]; then
+            echo "[ERROR] Another version of MongoDB module already exists. Please remove it before install another version."
+            exit 1
+        else
+            echo "[ERROR] Invalid option provided."
+            exit 1
+        fi
+    fi
+done
 
 if [ -e "$ballerina_lib_location/wso2-$module_name-module-$version.jar" ]
 then
@@ -39,11 +80,11 @@ cp dependencies/wso2-$module_name-module-$version.jar $ballerina_lib_location
 
 if [ $? -ne 0 ]
 then
-    echo "Error occurred while copying dependencies to $ballerina_lib_location"
+    echo "[ERROR] Error occurred while copying dependencies to $ballerina_lib_location"
     if [ -e temp ]
     then rm -r temp
     fi
-    echo "You can install the module by manually copying"
+    echo "[INFO] You can install the module by manually copying"
     echo 1. "dependencies/wso2-$module_name-module-$version.jar to $ballerina_lib_location"
     echo 2. "Contents of balo directory to $ballerina_balo_location".
     exit 2
@@ -52,19 +93,20 @@ fi
 cp -r balo/* $ballerina_balo_location/
 
 if [ $? -ne 0 ]; then
-    echo "Error occurred while copying $module_name balo to $ballerina_balo_location. Reverting the changes"
-    if [ -e temp/wso2-$module_name-module-$version.jar ]
-    then cp temp/wso2-$module_name-module-$version.jar $ballerina_lib_location/
-    rm -r temp
-    else rm $ballerina_lib_location/wso2-$module_name-module-$version.jar
+    echo "[ERROR] Error occurred while copying $module_name balo to $ballerina_balo_location. Reverting the changes"
+    if [ -e temp/wso2-$module_name-module-$version.jar ]; then
+        cp temp/wso2-$module_name-module-$version.jar $ballerina_lib_location/
+        rm -r temp
+    else
+        rm $ballerina_lib_location/wso2-$module_name-module-$version.jar
     fi
-    echo "You can install the module by manually copying"
+    echo "[INFO] You can install the module by manually copying"
     echo 1. "dependencies/wso2-$module_name-module-$version.jar to $ballerina_lib_location"
     echo 2. "Contents of balo directory to $ballerina_balo_location"
     exit 3
 else
-    if [ -e "temp/wso2-$module_name-module-$version.jar" ]
-    then rm -r temp
+    if [ -e "temp/wso2-$module_name-module-$version.jar" ]; then
+        rm -r temp
     fi
-    echo "Successfully installed MongoDB module!"
+    echo "[INFO] Successfully installed MongoDB module: wso2-$module_name-module-$version"
 fi
