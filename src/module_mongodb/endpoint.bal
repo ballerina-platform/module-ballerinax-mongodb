@@ -169,4 +169,3 @@ public type ConnectionProperties record {|
 public type DatabaseErrorData record {|
     string message;
 |};
-
