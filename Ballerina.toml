@@ -3,3 +3,38 @@ org-name= "nipuni"
 version= "0.1.0"
 
 [dependencies]
+
+[platform]
+target = "java8"
+
+[[platform.libraries]]
+module = "module_mongodb"
+path = "./utils/target/mongo-utils-0.8.3-SNAPSHOT.jar"
+artafactId = "mongo-utils"
+version = "0.8.3-SNAPSHOT"
+groupId = "org.wso2.ei"
+
+
+[[platform.libraries]]
+module = "module_mongodb"
+path = "/Users/nipuni/Documents/Ballerina_Integrator/MongoConnector/jar_files/mongodb-driver-3.8.2.jar"
+artafactId = "mongo-java-driver"
+version = "3.8.2"
+groupId = "org.mongodb"
+
+[[platform.libraries]]
+module = "module_mongodb"
+path = "/Users/nipuni/Documents/Ballerina_Integrator/MongoConnector/jar_files/mongodb-driver-core-3.8.2.jar"
+artafactId = "mongo-java-driver"
+version = "3.8.2"
+groupId = "org.mongodb"
+
+
+[[platform.libraries]]
+module = "module_mongodb"
+path = "/Users/nipuni/Documents/Ballerina_Integrator/MongoConnector/jar_files/bson-3.8.2.jar"
+artafactId = "bson"
+version = "2.3"
+groupId = "org.mongodb"
+
+

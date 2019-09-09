@@ -18,83 +18,71 @@
 // MongoDB Client Endpoint
 ///////////////////////////////
 
+
+import ballerinax/java;
+
+///////////////////////////////
+// MongoDB Client Endpoint
+///////////////////////////////
+
 # Represents MongoDB client endpoint.
 public type Client client object {
     private ClientEndpointConfig clientEndpointConfig;
 
+    handle datasource;
+
     # Gets called when the endpoint is being initialized during the package initialization.
-    public function __init(ClientEndpointConfig config) {
-        self.clientEndpointConfig = config;
-        initClient(self, config);
+    public function __init(ClientEndpointConfig config) returns error? {
+        // self.clientEndpointConfig = config;
+        // self.clientEndpointConfig = config;
+        self.datasource = initClient(config);
     }
+
 
     # Stops the registered service.
-    public function stop() {
-        close(self);
+    //public function stop() {
+    //    close(self);
+    //}
+
+
+    public function find(handle datasource, string collectionName, json? queryString) returns json | error {
+        handle|error result = queryData(datasource, java:fromString(collectionName), queryString);
     }
 
-    # The find operation implementation which selects a document in a given collection.
-    #
-    # + collectionName - The name of the collection to be queried
-    # + queryString - Query to use to select data
-    # + return - `json` result from the find operation or `error` if an error occurs
-    public remote function find(string collectionName, json? queryString) returns (json|error) = external;
-
-    # The findOne operation implementation which selects the first document that matches with the query.
-    #
-    # + collectionName - The name of the collection to be queried
-    # + queryString - Query to use to select data
-    # + return - `json` The result from the findOne operation or `error` if an error occurs
-    public remote function findOne(string collectionName, json? queryString) returns (json|error) = external;
-
-    # The insert operation implementation which inserts a document to a collection.
-    #
-    # + collectionName - The name of the collection
-    # + document - The document to be inserted
-    # + return - `nil` or `error` if an error occurs
-    public remote function insert(string collectionName, json document) returns (error?) = external;
-
-    # The delete operation implementation which deletes documents that match the given filter.
-    #
-    # + collectionName - The name of the collection
-    # + filter - The criteria used to be delete the documents
-    # + multi - Specifies whether to delete multiple documents or not
-    # + return - `int` deleted count or `error` if an error occurs
-    public remote function delete(string collectionName, json filter, boolean multi) returns (int|error) = external;
-
-    # The update operation implementation which updates documents that matches to given filter.
-    #
-    # + collectionName - The name of the collection
-    # + filter - The criteria used to update the documents
-    # + multi - Specifies whether to update multiple documents or not
-    # + upsert - Specifies whether to create a new document when no document matches the filter
-    # + return - `int` The updated count or `error` if an error occurs
-    public remote function update(string collectionName, json filter, json document, boolean multi, boolean upsert)
-                               returns (int|error) = external;
-
-    # The replaceOne operation implementation which replaces a single document within the collection based
-    # on the filter.
-    #
-    # + collectionName - The name of the collection
-    # + filter - The selection criteria used to update the document
-    # + replacement - 	The replacement document
-    # + return - `int` The updated count or `error` if an error occurs
-    public remote function replaceOne(string collectionName, json filter, json replacement) returns (int|error)
-                               = external;
-
-    # The batchInsert operation implementation which inserts an array of documents to the given collection.
-    #
-    # + collectionName - The name of the collection
-    # + documents - The document array to be inserted
-    # + return - `nil` or `error` if an error occurs
-    public remote function batchInsert(string collectionName, json documents) returns (error?) = external;
-
+   public function insert(handle datasource, string collectionName, json? queryString) returns json | error {
+          insertData(datasource, java:fromString(collectionName), queryString);
+    }
 };
 
-function initClient(Client mongoDBClient, ClientEndpointConfig clientEndpointConfig) = external;
 
-# An internal function used by clients to shutdown the connection pool.
-function close(Client mongoDBClient) = external;
+function initClient(ClientEndpointConfig config) returns handle  = @java:Method {
+    class: "org.wso2.mongo.endpoint.InitMongoDbClient"
+} external;
+
+
+
+function getMongoClient(handle datasource) returns handle = @java:Method {
+    class: "org.wso2.mongo.MongoDBDataSource"
+} external;
+
+function queryData(handle datasource,handle collectionName, json? queryString) returns handle  = @java:Method {
+    class: "org.wso2.mongo.actions.Find",
+    paramTypes: ["org.wso2.mongo.MongoDBDataSource", "java.lang.String", "java.lang.Object"]
+} external;
+
+function insertData(handle datasource,handle collectionName, json? queryString)  = @java:Method {
+    class: "org.wso2.mongo.actions.Insert",
+    paramTypes: ["org.wso2.mongo.MongoDBDataSource", "java.lang.String", "java.lang.Object"]
+} external;
+
+
+
+
+
+//function find(hanlde message) returns json|error = @java:method {
+//    class: "org.wso2.ei.module.mongo.Actions"
+//}external;
+
 
 # The Client endpoint configuration for MongoDB.
 #
@@ -111,36 +99,6 @@ public type ClientEndpointConfig record {|
     ConnectionProperties options = {};
 |};
 
-# ConnectionProperties type represents the properties which are used to configure MongoDB connection.
-#
-# + url - The complete MongoDB connection URL. If this is provided, this will be directly used connect to the database
-#   instead of any provided host/port/username/password information. You still need to provide the `dbName` property
-# + readConcern - Controls the consistency and isolation properties of the data read from replica sets and replica set
-#   shards
-# + writeConcern - Describes the level of acknowledgement requested from MongoDB for write operations to a standalone
-#   mongod or to replica sets or to sharded clusters
-# + readPreference - Describes how MongoDB clients route read operations to the members of a replica set
-# + authSource - The database name associated with the user’s credentials.
-# + authMechanism - The authentication mechanism that MongoDB will use to authenticate the connection
-# + gssapiServiceName - Sets the Kerberos service name when connecting to Kerberized MongoDB instances
-# + sslEnabled - Whether to connect using SSL
-# + sslInvalidHostNameAllowed - Whether to allow invalid host names for SSL connections
-# + socketTimeout - How long a send or receive on a socket can take before timing out
-# + connectionTimeout - How long a connection can take to be opened before timing out
-# + maxPoolSize - The maximum number of connections in the connection pool
-# + minPoolSize - The minimum number of connections in the connection pool
-# + waitQueueMultiple - This multiplier, multiplied with the maxPoolSize setting, gives the maximum number of
-#   waiting connection requests. All further requests will get an error right away
-# + waitQueueTimeout - The maximum wait time in milliseconds to wait for a connection to
-#   become available
-# + localThreshold - When choosing among multiple MongoDB servers to send a request, the driver will only
-#   send that request to a server whose ping time is less than or equal to the server with the fastest ping time plus the local
-#   threshold
-# + heartbeatFrequency - The frequency that the driver will attempt to determine the current state of each server in the
-#   cluster
-# + replicaSet - Implies that the hosts given are a seed list, and the driver will attempt to find all members of the
-#   set
-# + retryWrites - If true write operations will be retried if they fail due to a network error
 public type ConnectionProperties record {|
     string url = "";
     string readConcern = "";

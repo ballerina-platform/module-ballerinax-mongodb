@@ -55,9 +55,9 @@
                 <scope>compile</scope>
             </dependency>
             <!--<dependency>-->
-                <!--<groupId>javax.jms</groupId>-->
-                <!--<artifactId>javax.jms-api</artifactId>-->
-                <!--<version>${jms.version}</version>-->
+            <!--<groupId>javax.jms</groupId>-->
+            <!--<artifactId>javax.jms-api</artifactId>-->
+            <!--<version>${jms.version}</version>-->
             <!--</dependency>-->
             <dependency>
                 <groupId>org.slf4j</groupId>
@@ -65,10 +65,42 @@
                 <scope>test</scope>
             </dependency>
             <dependency>
+                <groupId>org.ballerinalang</groupId>
+                <artifactId>ballerina-runtime</artifactId>
+                <version>${ballerina.version}</version>
+                <scope>compile</scope>
+            </dependency>
+            <dependency>
                 <groupId>org.testng</groupId>
                 <artifactId>testng</artifactId>
                 <scope>test</scope>
             </dependency>
+            <!-- https://mvnrepository.com/artifact/org.mongodb/mongo-java-driver -->
+            <dependency>
+                <groupId>org.mongodb</groupId>
+                <artifactId>mongo-java-driver</artifactId>
+                <version>2.1</version>
+            </dependency>
+            <dependency>
+            <groupId>org.mongodb</groupId>
+            <artifactId>mongo-java-driver</artifactId>
+            <version>3.8.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mongodb</groupId>
+            <artifactId>mongo-java-driver</artifactId>
+            <version>3.8.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mongodb</groupId>
+            <artifactId>mongodb-driver-core</artifactId>
+            <version>3.8.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mongodb</groupId>
+            <artifactId>bson</artifactId>
+            <version>2.3</version>
+        </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -79,7 +111,7 @@
         <ballerina.version>1.0.0-beta</ballerina.version>
         <maven.checkstyleplugin.excludes>**/generated/**</maven.checkstyleplugin.excludes>
         <maven.spotbugsplugin.exclude.file>spotbugs-exclude.xml</maven.spotbugsplugin.exclude.file>
-        <!--<slf4j.version>1.7.21</slf4j.version>-->
+        <slf4j.version>1.7.21</slf4j.version>
         <!--<jms.version>2.0.1</jms.version>-->
     </properties>
     <profiles>
@@ -104,7 +136,7 @@
                             <executable>ballerina</executable>
                             <arguments>
                                 <argument>compile</argument>
-<!--                                <argument>jms</argument>-->
+                                <!--                                <argument>jms</argument>-->
                             </arguments>
                         </configuration>
                     </plugin>
