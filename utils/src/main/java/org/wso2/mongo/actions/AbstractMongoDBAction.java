@@ -44,9 +44,9 @@ public class AbstractMongoDBAction {
         }
     }
 
-    protected static void insert(MongoDBDataSource dbDataSource, String collectionName, MapValue document) {
+    protected static void insert(MongoDBDataSource dbDataSource, String collectionName, String document) {
         MongoCollection<Document> collection = getCollection(dbDataSource, collectionName);
-        collection.insertOne(Document.parse(document.stringValue()));
+        collection.insertOne(Document.parse(document));
     }
 
     protected long delete(MongoDBDataSource dbDataSource, String collectionName, BMap filter,

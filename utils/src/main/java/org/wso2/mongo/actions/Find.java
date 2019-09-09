@@ -5,8 +5,8 @@ import org.wso2.mongo.MongoDBDataSource;
 
 public class Find extends AbstractMongoDBAction {
 
-    public static StreamingJsonValue queryData(MongoDBDataSource datasource, String collectionName, Object queryString) {
-        MongoDBDataSource mongoDataClient = datasource;
+    public static StreamingJsonValue queryData(HandleValue datasource, String collectionName, Object queryString) {
+        MongoDBDataSource mongoDataClient = (MongoDBDataSource) datasource.getValue();
 //         mongoDataClient.
 //        BMap<String, Object> bConnector = (BMap<String, Object>) context.getRefArgument(0);
 //        String collectionName = context.getStringArgument(0);

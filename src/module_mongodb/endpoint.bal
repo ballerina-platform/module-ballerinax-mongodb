@@ -31,6 +31,10 @@ public type Client client object {
 
     handle datasource;
 
+    //public function getDataSource() returns handle {
+    //    return self.datasource;
+    //}
+
     # Gets called when the endpoint is being initialized during the package initialization.
     public function __init(ClientEndpointConfig config) returns error? {
         // self.clientEndpointConfig = config;
@@ -45,12 +49,13 @@ public type Client client object {
     //}
 
 
-    public function find(handle datasource, string collectionName, json? queryString) returns json | error {
-        handle|error result = queryData(datasource, java:fromString(collectionName), queryString);
+    public remote function find(string collectionName, json? queryString) returns json | error {
+        handle|error result = queryData(self.datasource, java:fromString(collectionName), queryString);
     }
 
-   public function insert(handle datasource, string collectionName, json? queryString) returns json | error {
-          insertData(datasource, java:fromString(collectionName), queryString);
+   public remote function insert( string collectionName, json? queryString) returns json | error {
+       string jsonString = queryString.toJsonString();
+       return insertData(self.datasource, java:fromString(collectionName), java:fromString(jsonString));
     }
 };
 
@@ -59,20 +64,16 @@ function initClient(ClientEndpointConfig config) returns handle  = @java:Method 
     class: "org.wso2.mongo.endpoint.InitMongoDbClient"
 } external;
 
-
-
 function getMongoClient(handle datasource) returns handle = @java:Method {
     class: "org.wso2.mongo.MongoDBDataSource"
 } external;
 
 function queryData(handle datasource,handle collectionName, json? queryString) returns handle  = @java:Method {
-    class: "org.wso2.mongo.actions.Find",
-    paramTypes: ["org.wso2.mongo.MongoDBDataSource", "java.lang.String", "java.lang.Object"]
+    class: "org.wso2.mongo.actions.Find"
 } external;
 
-function insertData(handle datasource,handle collectionName, json? queryString)  = @java:Method {
-    class: "org.wso2.mongo.actions.Insert",
-    paramTypes: ["org.wso2.mongo.MongoDBDataSource", "java.lang.String", "java.lang.Object"]
+function insertData(handle datasource,handle collectionName, handle queryString)  = @java:Method {
+    class: "org.wso2.mongo.actions.Insert"
 } external;
 
 
