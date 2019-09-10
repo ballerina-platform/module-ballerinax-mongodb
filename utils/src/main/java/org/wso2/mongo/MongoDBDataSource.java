@@ -5,9 +5,9 @@ import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import org.ballerinalang.jvm.JSONDataSource;
 import org.ballerinalang.jvm.JSONGenerator;
+import org.ballerinalang.jvm.JSONParser;
 import org.ballerinalang.jvm.values.ArrayValue;
 import org.ballerinalang.jvm.values.MapValue;
-import org.ballerinalang.model.util.JsonParser;
 import org.ballerinalang.util.exceptions.BallerinaException;
 import org.bson.Document;
 
@@ -293,7 +293,7 @@ public class MongoDBDataSource {
 
         @Override
         public Object next() {
-            return JsonParser.parse(this.mc.next().toJson());
+            return JSONParser.parse(this.mc.next().toJson());
         }
 
         @Override

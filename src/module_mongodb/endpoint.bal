@@ -48,14 +48,17 @@ public type Client client object {
     //    close(self);
     //}
 
-
-    public remote function find(string collectionName, json? queryString) returns json | error {
-        handle|error result = queryData(self.datasource, java:fromString(collectionName), queryString);
-    }
-
-   public remote function insert( string collectionName, json? queryString) returns json | error {
+   public remote function insert(string collectionName, json? queryString) returns json|error {
        string jsonString = queryString.toJsonString();
        return insertData(self.datasource, java:fromString(collectionName), java:fromString(jsonString));
+    }
+
+    public remote function find(string collectionName, json? queryString) returns json[] {
+        if (queryString is ()) {
+            return queryData(self.datasource, java:fromString(collectionName), ());
+        }
+        string jsonString = queryString.toJsonString();
+        return queryData(self.datasource, java:fromString(collectionName), java:fromString(jsonString));
     }
 };
 
@@ -68,13 +71,14 @@ function getMongoClient(handle datasource) returns handle = @java:Method {
     class: "org.wso2.mongo.MongoDBDataSource"
 } external;
 
-function queryData(handle datasource,handle collectionName, json? queryString) returns handle  = @java:Method {
-    class: "org.wso2.mongo.actions.Find"
-} external;
-
 function insertData(handle datasource,handle collectionName, handle queryString)  = @java:Method {
     class: "org.wso2.mongo.actions.Insert"
 } external;
+
+function queryData(handle datasource,handle collectionName, handle? queryString) returns json[]  = @java:Method {
+    class: "org.wso2.mongo.actions.Find"
+} external;
+
 
 
 
