@@ -48,9 +48,9 @@ public type Client client object {
     //    close(self);
     //}
 
-   public remote function insert(string collectionName, json? queryString) returns json|error {
-       string jsonString = queryString.toJsonString();
-       return insertData(self.datasource, java:fromString(collectionName), java:fromString(jsonString));
+    public remote function insert(string collectionName, json? queryString) returns json | error {
+        string jsonString = queryString.toJsonString();
+        return insertData(self.datasource, java:fromString(collectionName), java:fromString(jsonString));
     }
 
     public remote function find(string collectionName, json? queryString) returns json[] {
@@ -60,10 +60,20 @@ public type Client client object {
         string jsonString = queryString.toJsonString();
         return queryData(self.datasource, java:fromString(collectionName), java:fromString(jsonString));
     }
+
+
+    public remote function findOne(string collectionName, json? queryString) returns json {
+        if (queryString is ()) {
+            return queryOne(self.datasource, java:fromString(collectionName), ());
+        }
+        string jsonString = queryString.toJsonString();
+         json jsonValue = queryOne(self.datasource, java:fromString(collectionName), java:fromString(jsonString)).toJsonString();
+         return jsonValue;
+    }
 };
 
 
-function initClient(ClientEndpointConfig config) returns handle  = @java:Method {
+function initClient(ClientEndpointConfig config) returns handle = @java:Method {
     class: "org.wso2.mongo.endpoint.InitMongoDbClient"
 } external;
 
@@ -71,12 +81,16 @@ function getMongoClient(handle datasource) returns handle = @java:Method {
     class: "org.wso2.mongo.MongoDBDataSource"
 } external;
 
-function insertData(handle datasource,handle collectionName, handle queryString)  = @java:Method {
+function insertData(handle datasource, handle collectionName, handle queryString) = @java:Method {
     class: "org.wso2.mongo.actions.Insert"
 } external;
 
-function queryData(handle datasource,handle collectionName, handle? queryString) returns json[]  = @java:Method {
+function queryData(handle datasource, handle collectionName, handle? queryString) returns json[] = @java:Method {
     class: "org.wso2.mongo.actions.Find"
+} external;
+
+function queryOne(handle datasource, handle collectionName, handle? queryString) returns string = @java:Method {
+    class: "org.wso2.mongo.actions.FindOne"
 } external;
 
 
