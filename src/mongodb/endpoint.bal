@@ -70,11 +70,11 @@ public type Client client object {
         return jsonValue;
     }
 
-    public remote function update(string collectionName, json? filter, json? documents, boolean isMultiple, boolean upsert) returns int {
-        string jsonStringFilter = filter.toJsonString();
-        string jsonStringDocument = documents.toJsonString();
-        return updateData(self.datasource, java:fromString(collectionName), java:fromString(jsonStringFilter), java:fromString(jsonStringDocument), isMultiple, upsert);
-    }
+    //public remote function update(string collectionName, json? filter, json? documents, boolean isMultiple, boolean upsert) returns int {
+    //    string jsonStringFilter = filter.toJsonString();
+    //    string jsonStringDocument = documents.toJsonString();
+    //    return updateData(self.datasource, java:fromString(collectionName), java:fromString(jsonStringFilter), java:fromString(jsonStringDocument), isMultiple, upsert);
+    //}
 
     public remote function replace(string collectionName, json? filter, json? replacement, boolean upsert) returns int {
         string jsonStringFilter = filter.toJsonString();
@@ -85,6 +85,11 @@ public type Client client object {
     public remote function delete(string collectionName, json? filter, boolean isMultiple) returns int {
         string jsonStringFilter = filter.toJsonString();
         return deleteData(self.datasource, java:fromString(collectionName), java:fromString(jsonStringFilter), isMultiple);
+    }
+
+    public remote function batchInsert(string collectionName, json[] queryString) returns json | error {
+       // string jsonString = queryString.toJsonString();
+        return insertBatchData(self.datasource, java:fromString(collectionName), queryString);
     }
 };
 
@@ -109,9 +114,9 @@ function queryOne(handle datasource, handle collectionName, handle? queryString)
     class: "org.wso2.mongo.actions.FindOne"
 } external;
 
-function updateData(handle datasource, handle collectionName, handle? filter, handle? document, boolean isMultiple, boolean upsert) returns int = @java:Method {
-    class: "org.wso2.mongo.actions.Update"
-} external;
+//function updateData(handle datasource, handle collectionName, handle? filter, handle? document, boolean isMultiple, boolean upsert) returns int = @java:Method {
+//    class: "org.wso2.mongo.actions.Update"
+//} external;
 
 function replaceData(handle datasource, handle collectionName, handle? filter, handle? document, boolean upsert) returns int = @java:Method {
     class: "org.wso2.mongo.actions.ReplaceOne"
@@ -121,8 +126,9 @@ function deleteData(handle datasource, handle collectionName, handle? filter, bo
     class: "org.wso2.mongo.actions.Delete"
 } external;
 
-
-
+function insertBatchData(handle datasource, handle collectionName, json[] queryString) = @java:Method {
+    class: "org.wso2.mongo.actions.BatchInsert"
+} external;
 
 
 //function find(hanlde message) returns json|error = @java:method {

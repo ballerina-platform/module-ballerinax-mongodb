@@ -62,7 +62,6 @@ public class AbstractMongoDBAction {
     }
 
     protected static long update(MongoDBDataSource dbDataSource, String collectionName, Object filter, Object document, boolean isMultiple, boolean upsert) {
-
         MongoCollection<Document> collection = getCollection(dbDataSource, collectionName);
         UpdateOptions options = new UpdateOptions();
         options.upsert(upsert);
@@ -75,29 +74,26 @@ public class AbstractMongoDBAction {
         return res.getModifiedCount();
     }
 
-
     protected static long replaceOne(MongoDBDataSource dbDataSource, String collectionName, Object filter, Object document, boolean upsert) {
         MongoCollection<Document> collection = getCollection(dbDataSource, collectionName);
         UpdateResult res = collection.replaceOne(jsonToDoc(filter), jsonToDoc(document));
         return res.getModifiedCount();
     }
 
-    //
-//    protected void batchInsert(MongoDBDataSource dbDataSource, String collectionName, ArrayValue documents) {
-//        MongoCollection<Document> collection = getCollection(dbDataSource, collectionName);
-//        long count =  documents.size();
-//        List<Document> docList = new ArrayList<>();
-//        for (int i = 0; i < count; i++) {
-//            docList.add(Document.parse(documents.get(i).toString()));
-//        }
-//        collection.insertMany(docList);
-//    }
-//
-//    protected void close(MongoDBDataSource dbDataSource) {
-//        dbDataSource.getMongoClient().close();
-//    }
-//
-//
+    protected static void batchInsert(MongoDBDataSource dbDataSource, String collectionName, ArrayValue documents) {
+        MongoCollection<Document> collection = getCollection(dbDataSource, collectionName);
+        long count = documents.size();
+        List<Document> docList = new ArrayList<>();
+        for (int i = 0; i < count; i++) {
+            docList.add(Document.parse(documents.get(i).toString()));
+        }
+        collection.insertMany(docList);
+    }
+
+    protected void close(MongoDBDataSource dbDataSource) {
+        dbDataSource.getMongoClient().close();
+    }
+
     private static Document jsonToDoc(Object json) {
         return Document.parse(json.toString());
     }

@@ -27,8 +27,8 @@
     <groupId>org.wso2.ei</groupId>
     <artifactId>module-mongo</artifactId>
     <packaging>pom</packaging>
-    <version>0.8.3-SNAPSHOT</version>
-    <name>Ballerina Mongo Module</name>
+    <version>0.9.3-SNAPSHOT</version>
+    <name>Ballerina MongoDB Module</name>
 
     <modules>
         <module>utils</module>

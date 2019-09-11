@@ -18,11 +18,10 @@ public class Insert extends AbstractMongoDBAction {
             log.info("Successfully inserted data");
         } catch (Throwable e) {
             log.info("Error occured while inserting data");
-            //throw BallerinaErrors.createError("{wso2/mongo}InsertError", "Failed to insert the data: " + e. getMessage());
+            throw BallerinaErrors.createError("{wso2/mongo}InsertError", "Failed to insert the data: " + e. getMessage());
            // context.setReturnValues(MongoDBDataSourceUtils.getMongoDBConnectorError(context, e));
         }
         //return null;
 
     }
-
 }
