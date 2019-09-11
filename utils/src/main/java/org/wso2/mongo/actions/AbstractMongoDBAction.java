@@ -1,12 +1,13 @@
 package org.wso2.mongo.actions;
 
+import com.mongodb.client.ClientSession;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.model.UpdateOptions;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
 import org.ballerinalang.jvm.values.ArrayValue;
-//import org.ballerinalang.jvm.values.MapValue;
+import org.ballerinalang.jvm.values.MapValue;
 import org.ballerinalang.jvm.values.ObjectValue;
 import org.ballerinalang.jvm.values.StreamingJsonValue;
 
@@ -33,7 +34,7 @@ public class AbstractMongoDBAction {
         MongoCollection<Document> collection = getCollection(dbDataSource, collectionName);
         Document doc;
         if (query != null) {
-            doc =  collection.find(Document.parse(query.toString())).first();
+            doc = collection.find(Document.parse(query.toString())).first();
         } else {
             doc = collection.find().first();
         }
@@ -50,7 +51,7 @@ public class AbstractMongoDBAction {
         collection.insertOne(Document.parse(document));
     }
 
-//    protected long delete(MongoDBDataSource dbDataSource, String collectionName, MapValue filter,
+    //    protected long delete(MongoDBDataSource dbDataSource, String collectionName, MapValue filter,
 //            boolean isMultiple) {
 //        MongoCollection<Document> collection = getCollection(dbDataSource, collectionName);
 //        DeleteResult res;
@@ -62,21 +63,22 @@ public class AbstractMongoDBAction {
 //        return res.getDeletedCount();
 //    }
 //
-//    protected long update(MongoDBDataSource dbDataSource, String collectionName, MapValue filter,
-//            MapValue document, boolean isMultiple, boolean upsert) {
-//        MongoCollection<Document> collection = getCollection(dbDataSource, collectionName);
-//        UpdateOptions options = new UpdateOptions();
-//        options.upsert(upsert);
-//        UpdateResult res;
-//        if (isMultiple) {
-//            res = collection.updateMany(this.jsonToDoc(filter), this.jsonToDoc(document), options);
-//        } else {
-//            res = collection.updateOne(this.jsonToDoc(filter), this.jsonToDoc(document), options);
-//        }
-//        return res.getModifiedCount();
-//    }
-//
-//    protected long replaceOne(MongoDBDataSource dbDataSource, String collectionName, MapValue filter, MapValue document) {
+    protected static long update(MongoDBDataSource dbDataSource, String collectionName, Object filter, Object document, boolean isMultiple, boolean upsert) {
+
+        MongoCollection<Document> collection = getCollection(dbDataSource, collectionName);
+        UpdateOptions options = new UpdateOptions();
+        options.upsert(upsert);
+        UpdateResult res;
+        if (isMultiple) {
+            res = collection.updateMany(jsonToDoc(filter.toString()), jsonToDoc(document), options);
+        } else {
+            res = collection.updateOne(jsonToDoc(filter.toString()), jsonToDoc(document), options);
+        }
+        return res.getModifiedCount();
+    }
+
+
+    //    protected long replaceOne(MongoDBDataSource dbDataSource, String collectionName, MapValue filter, MapValue document) {
 //        MongoCollection<Document> collection = getCollection(dbDataSource, collectionName);
 //        UpdateResult res = collection.replaceOne(this.jsonToDoc(filter), this.jsonToDoc(document));
 //        return res.getModifiedCount();
@@ -97,9 +99,9 @@ public class AbstractMongoDBAction {
 //    }
 //
 //
-//    private Document jsonToDoc(MapValue json) {
-//        return Document.parse(json.stringValue());
-//    }
+    private static Document jsonToDoc(Object json) {
+        return Document.parse(json.toString());
+    }
 
     private static MongoCollection<Document> getCollection(MongoDBDataSource dbDataSource, String collectionName) {
         return dbDataSource.getMongoDatabase().getCollection(collectionName);

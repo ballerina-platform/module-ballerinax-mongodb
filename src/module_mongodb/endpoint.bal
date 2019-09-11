@@ -70,6 +70,12 @@ public type Client client object {
          json jsonValue = queryOne(self.datasource, java:fromString(collectionName), java:fromString(jsonString)).toJsonString();
          return jsonValue;
     }
+
+    public remote function update(string collectionName, json? filter, json? documents, boolean isMultiple, boolean upsert) returns int {
+        string jsonStringFilter = filter.toJsonString();
+        string jsonStringDocument = documents.toJsonString();
+        return updateData(self.datasource, java:fromString(collectionName), java:fromString(jsonStringFilter), java:fromString(jsonStringDocument), isMultiple, upsert);
+    }
 };
 
 
@@ -93,6 +99,13 @@ function queryOne(handle datasource, handle collectionName, handle? queryString)
     class: "org.wso2.mongo.actions.FindOne"
 } external;
 
+function updateData(handle datasource, handle collectionName, handle? filter, handle? document, boolean isMultiple, boolean upsert) returns int = @java:Method {
+    class: "org.wso2.mongo.actions.Update"
+} external;
+
+//function replaceOne(handle datasource, handle collectionName, handle? filter, handle? document, boolean isMultiple, boolean upsert) returns int = @java:Method {
+//    class: "org.wso2.mongo.actions.ReplaceOne"
+//} external;
 
 
 
