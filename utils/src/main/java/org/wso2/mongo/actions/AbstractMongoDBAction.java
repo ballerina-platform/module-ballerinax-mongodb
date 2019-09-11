@@ -78,12 +78,13 @@ public class AbstractMongoDBAction {
     }
 
 
-    //    protected long replaceOne(MongoDBDataSource dbDataSource, String collectionName, MapValue filter, MapValue document) {
-//        MongoCollection<Document> collection = getCollection(dbDataSource, collectionName);
-//        UpdateResult res = collection.replaceOne(this.jsonToDoc(filter), this.jsonToDoc(document));
-//        return res.getModifiedCount();
-//    }
-//
+    protected static long replaceOne(MongoDBDataSource dbDataSource, String collectionName, Object filter, Object document, boolean upsert) {
+        MongoCollection<Document> collection = getCollection(dbDataSource, collectionName);
+        UpdateResult res = collection.replaceOne(jsonToDoc(filter), jsonToDoc(document));
+        return res.getModifiedCount();
+    }
+
+    //
 //    protected void batchInsert(MongoDBDataSource dbDataSource, String collectionName, ArrayValue documents) {
 //        MongoCollection<Document> collection = getCollection(dbDataSource, collectionName);
 //        long count =  documents.size();

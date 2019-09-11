@@ -67,14 +67,26 @@ public type Client client object {
             return queryOne(self.datasource, java:fromString(collectionName), ());
         }
         string jsonString = queryString.toJsonString();
-         json jsonValue = queryOne(self.datasource, java:fromString(collectionName), java:fromString(jsonString)).toJsonString();
-         return jsonValue;
+        json jsonValue = queryOne(self.datasource, java:fromString(collectionName), java:fromString(jsonString)).toJsonString();
+        return jsonValue;
     }
 
     public remote function update(string collectionName, json? filter, json? documents, boolean isMultiple, boolean upsert) returns int {
         string jsonStringFilter = filter.toJsonString();
         string jsonStringDocument = documents.toJsonString();
         return updateData(self.datasource, java:fromString(collectionName), java:fromString(jsonStringFilter), java:fromString(jsonStringDocument), isMultiple, upsert);
+    }
+
+    public remote function replace(string collectionName, json? filter, json? replacement, boolean upsert) returns int {
+        string jsonStringFilter = filter.toJsonString();
+        string jsonStringReplacement = replacement.toJsonString();
+        return replaceData(self.datasource, java:fromString(collectionName), java:fromString(jsonStringFilter), java:fromString(jsonStringReplacement), upsert);
+    }
+
+    public remote function delete(string collectionName, json? filter, json? replacement, boolean upsert) returns int {
+        string jsonStringFilter = filter.toJsonString();
+        string jsonStringReplacement = replacement.toJsonString();
+        return deleteData(self.datasource, java:fromString(collectionName), java:fromString(jsonStringFilter), java:fromString(jsonStringReplacement), upsert);
     }
 };
 
@@ -103,9 +115,13 @@ function updateData(handle datasource, handle collectionName, handle? filter, ha
     class: "org.wso2.mongo.actions.Update"
 } external;
 
-//function replaceOne(handle datasource, handle collectionName, handle? filter, handle? document, boolean isMultiple, boolean upsert) returns int = @java:Method {
-//    class: "org.wso2.mongo.actions.ReplaceOne"
-//} external;
+function replaceData(handle datasource, handle collectionName, handle? filter, handle? document, boolean upsert) returns int = @java:Method {
+    class: "org.wso2.mongo.actions.ReplaceOne"
+} external;
+
+function deleteData(handle datasource, handle collectionName, handle? filter, handle? document, boolean upsert) returns int = @java:Method {
+    class: "org.wso2.mongo.actions.Delete"
+} external;
 
 
 
