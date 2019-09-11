@@ -1,4 +1,4 @@
-// Copyright (c) 2018 WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+// Copyright (c) 2019 WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
 //
 // WSO2 Inc. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -61,7 +61,6 @@ public type Client client object {
         return queryData(self.datasource, java:fromString(collectionName), java:fromString(jsonString));
     }
 
-
     public remote function findOne(string collectionName, json? queryString) returns json {
         if (queryString is ()) {
             return queryOne(self.datasource, java:fromString(collectionName), ());
@@ -83,10 +82,9 @@ public type Client client object {
         return replaceData(self.datasource, java:fromString(collectionName), java:fromString(jsonStringFilter), java:fromString(jsonStringReplacement), upsert);
     }
 
-    public remote function delete(string collectionName, json? filter, json? replacement, boolean upsert) returns int {
+    public remote function delete(string collectionName, json? filter, boolean isMultiple) returns int {
         string jsonStringFilter = filter.toJsonString();
-        string jsonStringReplacement = replacement.toJsonString();
-        return deleteData(self.datasource, java:fromString(collectionName), java:fromString(jsonStringFilter), java:fromString(jsonStringReplacement), upsert);
+        return deleteData(self.datasource, java:fromString(collectionName), java:fromString(jsonStringFilter), isMultiple);
     }
 };
 
@@ -119,7 +117,7 @@ function replaceData(handle datasource, handle collectionName, handle? filter, h
     class: "org.wso2.mongo.actions.ReplaceOne"
 } external;
 
-function deleteData(handle datasource, handle collectionName, handle? filter, handle? document, boolean upsert) returns int = @java:Method {
+function deleteData(handle datasource, handle collectionName, handle? filter, boolean isMultiple) returns int = @java:Method {
     class: "org.wso2.mongo.actions.Delete"
 } external;
 

@@ -44,25 +44,23 @@ public class AbstractMongoDBAction {
             return JSONParser.parse(doc.toJson()).toString();
         }
     }
-    //map<json>
 
     protected static void insert(MongoDBDataSource dbDataSource, String collectionName, String document) {
         MongoCollection<Document> collection = getCollection(dbDataSource, collectionName);
         collection.insertOne(Document.parse(document));
     }
 
-    //    protected long delete(MongoDBDataSource dbDataSource, String collectionName, MapValue filter,
-//            boolean isMultiple) {
-//        MongoCollection<Document> collection = getCollection(dbDataSource, collectionName);
-//        DeleteResult res;
-//        if (isMultiple) {
-//            res = collection.deleteMany(this.jsonToDoc(filter));
-//        } else {
-//            res = collection.deleteOne(this.jsonToDoc(filter));
-//        }
-//        return res.getDeletedCount();
-//    }
-//
+    protected static long delete(MongoDBDataSource dbDataSource, String collectionName, Object filter, boolean isMultiple) {
+        MongoCollection<Document> collection = getCollection(dbDataSource, collectionName);
+        DeleteResult res;
+        if (isMultiple) {
+            res = collection.deleteMany(jsonToDoc(filter));
+        } else {
+            res = collection.deleteOne(jsonToDoc(filter));
+        }
+        return res.getDeletedCount();
+    }
+
     protected static long update(MongoDBDataSource dbDataSource, String collectionName, Object filter, Object document, boolean isMultiple, boolean upsert) {
 
         MongoCollection<Document> collection = getCollection(dbDataSource, collectionName);
