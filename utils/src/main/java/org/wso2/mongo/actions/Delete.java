@@ -21,6 +21,11 @@ import org.apache.commons.logging.LogFactory;
 import org.ballerinalang.jvm.values.HandleValue;
 import org.wso2.mongo.MongoDBDataSource;
 
+/**
+ * {@code Delete} action to delete documents in a collection.
+ *
+ */
+
 public class Delete extends AbstractMongoDBAction {
     private static Log log = LogFactory.getLog(Insert.class);
 

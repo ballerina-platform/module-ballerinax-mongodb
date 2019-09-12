@@ -21,6 +21,11 @@ import org.apache.commons.logging.LogFactory;
 import org.ballerinalang.jvm.values.HandleValue;
 import org.wso2.mongo.MongoDBDataSource;
 
+/**
+ * {@code ReplaceOne} replaces a single document within the collection based on the filter..
+ *
+ */
+
 public class ReplaceOne extends AbstractMongoDBAction {
     private static Log log = LogFactory.getLog(Insert.class);
 

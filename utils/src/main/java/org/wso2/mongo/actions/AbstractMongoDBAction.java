@@ -30,6 +30,11 @@ import org.wso2.mongo.MongoDBDataSource;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * {@code AbstractMongoDBAction} is the base class for all MongoDB actions.
+ *
+ */
+
 public class AbstractMongoDBAction {
     protected static StreamingJsonValue find(MongoDBDataSource dbDataSource, String collectionName, Object query) {
         MongoCollection<Document> collection = getCollection(dbDataSource, collectionName);

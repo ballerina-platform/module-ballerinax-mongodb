@@ -6,6 +6,12 @@ import org.ballerinalang.jvm.values.ArrayValue;
 import org.ballerinalang.jvm.values.HandleValue;
 import org.wso2.mongo.MongoDBDataSource;
 
+/**
+ * {@code BatchInsert} action to insert multiple documents into a collection.
+ *
+ * @since 0.5.4
+ */
+
 public class BatchInsert extends AbstractMongoDBAction {
 
     private static Log log = LogFactory.getLog(Insert.class);
@@ -24,15 +30,3 @@ public class BatchInsert extends AbstractMongoDBAction {
     }
 }
 
-//
-//public void execute(Context context) {
-//        BMap<String, BValue> bConnector = (BMap<String, BValue>) context.getRefArgument(0);
-//        String collectionName = context.getStringArgument(0);
-//        BValueArray documents = (BValueArray) context.getRefArgument(1);
-//        MongoDBDataSource datasource = (MongoDBDataSource) bConnector.getNativeData(Constants.CLIENT);
-//        try {
-//            batchInsert(datasource, collectionName, documents);
-//        } catch (Throwable e) {
-//            context.setReturnValues(MongoDBDataSourceUtils.getMongoDBConnectorError(context, e));
-//        }
-//    }

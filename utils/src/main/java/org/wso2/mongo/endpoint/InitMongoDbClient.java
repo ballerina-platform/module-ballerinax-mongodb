@@ -20,6 +20,11 @@ import org.ballerinalang.jvm.values.HandleValue;
 import org.ballerinalang.jvm.values.MapValue;
 import org.wso2.mongo.MongoDBDataSource;
 
+/**
+ * {@code InitMongoDbClient} creates a MongoDbClient with provided configuration.
+ *
+ */
+
 public class InitMongoDbClient {
     public static HandleValue initClient(MapValue config) {
         String host = config.getStringValue("host");

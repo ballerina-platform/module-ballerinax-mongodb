@@ -21,6 +21,11 @@ import org.apache.commons.logging.LogFactory;
 import org.ballerinalang.jvm.values.HandleValue;
 import org.wso2.mongo.MongoDBDataSource;
 
+/**
+ * {@code Close} action is used to close the MongoDB connection pool.
+ *
+ */
+
 public class Close extends AbstractMongoDBAction {
     private static Log log = LogFactory.getLog(Insert.class);
 

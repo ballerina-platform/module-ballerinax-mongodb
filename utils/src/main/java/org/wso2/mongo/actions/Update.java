@@ -21,6 +21,11 @@ import org.apache.commons.logging.LogFactory;
 import org.ballerinalang.jvm.values.HandleValue;
 import org.wso2.mongo.MongoDBDataSource;
 
+/**
+ * {@code Update} modifies existing document or documents in a collection.
+ *
+ */
+
 public class Update extends AbstractMongoDBAction {
     private static Log log = LogFactory.getLog(Insert.class);
 

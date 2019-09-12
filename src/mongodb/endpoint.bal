@@ -125,7 +125,7 @@ function closeConnection(handle datasource)  = @java:Method {
 # The Client endpoint configuration for MongoDB.
 #
 # + host - The host of the database to connect
-# + port - The port of the database to connect
+# + dbName - The name of the database to connect
 # + username - Username for the database connection
 # + password - Password for the database connection
 # + options - Properties for the connection configuration

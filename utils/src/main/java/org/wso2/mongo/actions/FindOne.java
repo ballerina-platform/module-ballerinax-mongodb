@@ -21,6 +21,11 @@ import org.apache.commons.logging.LogFactory;
 import org.ballerinalang.jvm.values.HandleValue;
 import org.wso2.mongo.MongoDBDataSource;
 
+/**
+ * {@code FindOne} action selects the first document that satisfies the given query criteria.
+ *
+ */
+
 public class FindOne extends AbstractMongoDBAction {
     private static Log log = LogFactory.getLog(Insert.class);
 

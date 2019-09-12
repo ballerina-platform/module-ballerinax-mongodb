@@ -21,6 +21,11 @@ import org.apache.commons.logging.LogFactory;
 import org.ballerinalang.jvm.values.HandleValue;
 import org.wso2.mongo.MongoDBDataSource;
 
+/**
+ * {@code Insert} action insert a document or documents into a collection.
+ *
+ */
+
 public class Insert extends AbstractMongoDBAction {
     private static Log log = LogFactory.getLog(Insert.class);
 

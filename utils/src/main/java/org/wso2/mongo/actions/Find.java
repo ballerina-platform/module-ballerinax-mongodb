@@ -21,6 +21,11 @@ import org.apache.commons.logging.LogFactory;
 import org.ballerinalang.jvm.values.*;
 import org.wso2.mongo.MongoDBDataSource;
 
+/**
+ * {@code Find} action select documents in a collection.
+ *
+ */
+
 public class Find extends AbstractMongoDBAction {
     private static Log log = LogFactory.getLog(Insert.class);
 
