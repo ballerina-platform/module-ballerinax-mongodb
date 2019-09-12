@@ -76,10 +76,6 @@ public type Client client object {
         return deleteData(self.datasource, java:fromString(collectionName), java:fromString(jsonStringFilter),
                                                                        isMultiple);
     }
-
-    public remote function batchInsert(string collectionName, json[] queryString) returns json | error {
-        return insertBatchData(self.datasource, java:fromString(collectionName), queryString);
-    }
 };
 
 
@@ -111,10 +107,6 @@ function replaceData(handle datasource, handle collectionName, handle? filter, h
 function deleteData(handle datasource, handle collectionName, handle? filter, boolean isMultiple)
                                                                                             returns int = @java:Method {
     class: "org.wso2.mongo.actions.Delete"
-} external;
-
-function insertBatchData(handle datasource, handle collectionName, json[] queryString) = @java:Method {
-    class: "org.wso2.mongo.actions.BatchInsert"
 } external;
 
 function closeConnection(handle datasource)  = @java:Method {

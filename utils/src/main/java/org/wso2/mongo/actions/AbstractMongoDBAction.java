@@ -18,7 +18,6 @@ package org.wso2.mongo.actions;
 
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
-import com.mongodb.client.model.UpdateOptions;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
 import org.ballerinalang.jvm.JSONParser;
@@ -79,35 +78,11 @@ public class AbstractMongoDBAction {
         return res.getDeletedCount();
     }
 
-    protected static long update(MongoDBDataSource dbDataSource, String collectionName, Object filter, Object document,
-                                                                                 boolean isMultiple, boolean upsert) {
-        MongoCollection<Document> collection = getCollection(dbDataSource, collectionName);
-        UpdateOptions options = new UpdateOptions();
-        options.upsert(upsert);
-        UpdateResult res;
-        if (isMultiple) {
-            res = collection.updateMany(jsonToDoc(filter.toString()), jsonToDoc(document), options);
-        } else {
-            res = collection.updateOne(jsonToDoc(filter.toString()), jsonToDoc(document), options);
-        }
-        return res.getModifiedCount();
-    }
-
     protected static long replaceOne(MongoDBDataSource dbDataSource, String collectionName, Object filter,
                                                                                   Object document, boolean upsert) {
         MongoCollection<Document> collection = getCollection(dbDataSource, collectionName);
         UpdateResult res = collection.replaceOne(jsonToDoc(filter), jsonToDoc(document));
         return res.getModifiedCount();
-    }
-
-    protected static void batchInsert(MongoDBDataSource dbDataSource, String collectionName, ArrayValue documents) {
-        MongoCollection<Document> collection = getCollection(dbDataSource, collectionName);
-        long count = documents.size();
-        List<Document> docList = new ArrayList<>();
-        for (int i = 0; i < count; i++) {
-            docList.add(Document.parse(documents.get(i).toString()));
-        }
-        collection.insertMany(docList);
     }
 
     protected static void close(MongoDBDataSource dbDataSource) {
