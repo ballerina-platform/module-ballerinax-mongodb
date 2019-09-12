@@ -16,40 +16,91 @@
 //import ballerina/config;
 //import ballerina/io;
 //import ballerina/test;
-//
-//mongodb:ClientEndpointConfig mongoConfig = {
-//    host: "localhost",
-//    dbName: "projectsTest1",
-//    username: "",
-//    password: "",
-//    options: {sslEnabled: false, serverSelectionTimeout: 500}
-//};
-//
-//mongodb:Client mongoClient = check new (mongoConfig);
-//
-//json doc1 = {"name": "ballerina", "type": "src"};
-//json doc2 = {"name": "connectors", "type": "artifacts"};
-//json doc3 = {"name": "docerina", "type": "src"};
-//json doc4 = {"name": "test", "type": "artifacts"};
-//
-//json queryString = {name: "connectors"};
-//json replaceFilter = {"type": "artifacts"};
-//json doc5 = {"name": "main", "type": "artifacts"};
-//boolean upsert = true;
-//
-//json deleteFilter = { "name": "ballerina" };
-//
-//@test:Config {}
-//function testCreateSpreadsheet() {
-//    io:println("-----------------Test case for createSpreadsheet method------------------");
-//
-//    var ret = mongoClient->insert("projects", doc1);
-//    handleInsert(ret, "Insert to projects");
-//    ret = mongoClient->insert("projects", doc2);
-//    handleInsert(ret, "Insert to projects");
-//    ret = mongoClient->insert("projects", doc3);
-//
-//
-//}
+
+import ballerina/io;
+import ballerina/log;
+import ballerina/test;
+
+ClientEndpointConfig mongoConfig = {
+    host: "localhost",
+    dbName: "projectsTest1",
+    username: "",
+    password: "",
+    options: {sslEnabled: false, serverSelectionTimeout: 500}
+};
+
+Client mongoClient = check new (mongoConfig);
+
+json doc1 = {"name": "ballerina", "type": "src"};
+json doc2 = {"name": "connectors", "type": "artifacts"};
+json doc3 = {"name": "docerina", "type": "src"};
+json doc4 = {"name": "test", "type": "artifacts"};
+
+json queryString = {name: "connectors"};
+json replaceFilter = {"type": "artifacts"};
+json doc5 = {"name": "main", "type": "artifacts"};
+boolean upsert = true;
+
+json deleteFilter = {"name": "ballerina"};
+
+
+//function handleInsert(json | error returned, string message) {
+
+
+@test:Config {
+}
+public function testInsertData() {
+    log:printInfo("------------------ Inserting Data -------------------");
+
+    var returned = mongoClient->insert("projects", doc1);
+
+    if (returned is error) {
+        io:println(" failed: ");
+        test:assertFalse(false, msg = "Assert False failed");
+    } else {
+        io:println(" success ");
+    }
+}
+
+@test:Config {
+    dependsOn: ["testInsertData"]
+}
+function testUpdate() {
+
+    log:printInfo("------------------ Updating Data -------------------");
+    var jsonRet = mongoClient->find("projects", ());
+
+    json replaceFilter = {"type": "artifacts"};
+    json doc5 = {"name": "main", "type": "artifacts"};
+
+    int response = mongoClient->replace("projects", replaceFilter, doc5, true);
+    if (response > 0) {
+        log:printInfo("Modified count: ");
+        log:printInfo(response.toString());
+        test:assertEquals(response, 1, msg = "Assert failed");
+    } else {
+        test:assertFail(msg = response.toString());
+    }
+}
+
+@test:Config {
+    dependsOn: ["testInsertData"]
+}
+function testDelete() {
+
+    log:printInfo("------------------ Deleting Data -------------------");
+    json deleteFilter = {"name": "ballerina"};
+    var deleteRet = mongoClient->delete("projects", deleteFilter, true);
+
+    int response = mongoClient->replace("projects", replaceFilter, doc5, true);
+    if (response > 0) {
+        log:printInfo("Modified count: ");
+        log:printInfo(response.toString());
+        test:assertEquals(response, 1, msg = "Assert failed");
+    } else {
+        test:assertFail(msg = response.toString());
+    }
+}
+
 
 
