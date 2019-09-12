@@ -41,12 +41,6 @@ json replaceFilter = {"type": "artifacts"};
 json doc5 = {"name": "main", "type": "artifacts"};
 boolean upsert = true;
 
-json deleteFilter = {"name": "ballerina"};
-
-
-//function handleInsert(json | error returned, string message) {
-
-
 @test:Config {
 }
 public function testInsertData() {
@@ -101,6 +95,4 @@ function testDelete() {
         test:assertFail(msg = response.toString());
     }
 }
-
-
 

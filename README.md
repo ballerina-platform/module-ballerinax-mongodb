@@ -1,94 +1,93 @@
 [![Build Status](https://travis-ci.org/wso2-ballerina/module-mongodb.svg?branch=master)](https://travis-ci.org/wso2-ballerina/module-mongodb)
 
-# Ballerina MongoDB Client
+Ballerina MongoDB Client is used to connect Ballerina with MongoDB data source.<br/> <br/>
+ With the Ballerina MongoDB client following operations are supported.
 
-Ballerina MongoDB Client is used to connect Ballerina with MongoDB data source. With the Ballerina MongoDB client following operations are supported.
-
-1. insert - To insert document to a given collection
-2. find - To select document from a given collection according to given query.
-3. findOne - To select the first document match with the query.
-4. update - To update documents that matches to the given filter.
+1. insert - To insert document to a given collection <br/>
+2. find - To select document from a given collection according to given query. <br/>
+3. findOne - To select the first document match with the query.<br/>
+4. update - To update documents that matches to the given filter. <br/>
 5. delete - To delete documents that matches to the given filter.
+Steps to Configure <br/>
 
-Steps to Configure
-==================================
+## Samples
 
-Extract wso2-mongodb-<version>.zip and  Run the install.sh script to install the module.
-You can uninstall the module by running uninstall.sh.
+### Performing CRUD operations with MongoDB client
 
-Building From the Source
-==================================
-If you want to build Ballerina MongoDB client from the source code:
-
-1. Get a clone or download the source from this repository:
-    https://github.com/wso2-ballerina/module-mongodb
-2. Run the following Maven command from the ballerina directory: 
-    mvn clean install
-3. Extract the distribution created at `/component/target/wso2-mongodb-<version>.zip`. Run the install.{sh/bat} script to install the module.
-You can uninstall the module by running uninstall.{sh/bat}.
-
-Sample
-==================================
+Following is a simple Ballerina program that can be used to perform CRUD operations.
 
 ```ballerina
-import wso2/mongodb;
 import ballerina/io;
+import wso2/mongodb;
+import ballerina/log;
 
-public function main() {
-    mongodb:Client conn = new({
-        host: "localhost",
-        dbName: "testballerina",
-        username: "",
-        password: "",
-        options: { sslEnabled: false, serverSelectionTimeout: 500 }
-    });
+mongodb:ClientEndpointConfig mongoConfig = {
+    host: "localhost",
+    dbName: "projectsTest1",
+    username: "",
+    password: "",
+    options: {sslEnabled: false, serverSelectionTimeout: 500}
+};
+
+public function main() returns error? {
+   
+mongodb:Client mongoClient =  check new (mongoConfig);
 
     json doc1 = { "name": "ballerina", "type": "src" };
     json doc2 = { "name": "connectors", "type": "artifacts" };
     json doc3 = { "name": "docerina", "type": "src" };
     json doc4 = { "name": "test", "type": "artifacts" };
-    json filter = { "type": "src" };
+
+    log:printInfo("------------------ Inserting Data -------------------");
+    var ret = mongoClient->insert("projects", doc1);
+    handleInsert(ret, "Insert to projects");
+    ret = mongoClient->insert("projects", doc2);
+    handleInsert(ret, "Insert to projects");
+    ret = mongoClient->insert("projects", doc3);
+    handleInsert(ret, "Insert to projects");
+  
+    log:printInfo("------------------ Querying Data -------------------");
+    var jsonRet = mongoClient->find("projects", ());
+    handleFind(jsonRet);
+
+    json queryString = {name: "connectors" };
+    jsonRet = mongoClient->find("projects", queryString);
+    handleFind(jsonRet);
+
+    json jsonRetOne = mongoClient->findOne("projects", queryString);
+    handleFind(jsonRetOne);
+
+    log:printInfo("------------------ Updating Data -------------------");
     json replaceFilter = { "type": "artifacts" };
-
-    var ret = conn->insert("projects", doc1);
-    handleInsert(ret, "Insert to projects");
-    ret = conn->insert("projects", doc2);
-    handleInsert(ret, "Insert to projects");
-    ret = conn->insert("projects", doc3);
-    handleInsert(ret, "Insert to projects");
-
-    var jsonRet = conn->find("projects", ());
-    handleFind(jsonRet);
-
-    json queryString = { "name": "ballerina" };
-    jsonRet = conn->find("projects", queryString);
-    handleFind(jsonRet);
-
-    jsonRet = conn->findOne("projects", queryString);
-    handleFind(jsonRet);
-
-    var deleteRet = conn->delete("projects", filter, true);
-    if (deleteRet is int) {
-        io:println("deleted count: " + deleteRet);
-    } else {
-        io:println("delete failed: " + deleteRet.reason());
-    }
-
     json doc5 = { "name": "main", "type": "artifacts" };
-    var response = conn->replaceOne("projects", replaceFilter, doc5);
-    if (response is int) {
-        io:println("Modified count: " + response);
+    boolean upsert = true;
+
+    int response = mongoClient->replace("projects", replaceFilter, doc5,upsert);
+    if (response > 0 ) {
+        log:printInfo("Modified count: ") ;
+        log:printInfo(response.toString());
     } else {
-        io:println("Modified count: " + response.reason());
+        log:printInfo("Error in replacing data");
     }
-    conn.stop();
+
+   log:printInfo("------------------ Deleting Data -------------------");
+   json deleteFilter = { "name": "ballerina" };
+   var deleteRet = mongoClient->delete("projects", deleteFilter, true);
+    if (response > 0 ) {
+        log:printInfo("Modified count: ") ;
+        log:printInfo(response.toString());
+    } else {
+        log:printInfo("Error in replacing data");
+    }
+    
+     mongoClient.stop();
 }
 
-function handleInsert(()|error returned, string message) {
-    if (returned is ()) {
-        io:println(message + " success ");
+function handleInsert(json|error returned, string message) {
+    if (returned is error) {
+        io:println(message + " failed: " , returned.reason());
     } else {
-        io:println(message + " failed: " + returned.reason());
+        io:println(message + " success ");
     }
 }
 
@@ -99,6 +98,5 @@ function handleFind(json|error returned) {
     } else {
         io:println("find failed: " + returned.reason());
     }
-}
-```   
-    
+}```
+
