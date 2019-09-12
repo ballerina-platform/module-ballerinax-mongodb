@@ -90,7 +90,7 @@ public class AbstractMongoDBAction {
         collection.insertMany(docList);
     }
 
-    protected void close(MongoDBDataSource dbDataSource) {
+    protected static void close(MongoDBDataSource dbDataSource) {
         dbDataSource.getMongoClient().close();
     }
 

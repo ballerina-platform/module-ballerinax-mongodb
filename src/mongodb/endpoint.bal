@@ -31,22 +31,15 @@ public type Client client object {
 
     handle datasource;
 
-    //public function getDataSource() returns handle {
-    //    return self.datasource;
-    //}
-
     # Gets called when the endpoint is being initialized during the package initialization.
     public function __init(ClientEndpointConfig config) returns error? {
-        // self.clientEndpointConfig = config;
-        // self.clientEndpointConfig = config;
         self.datasource = initClient(config);
     }
 
-
     # Stops the registered service.
-    //public function stop() {
-    //    close(self);
-    //}
+    public function stop() {
+
+    }
 
     public remote function insert(string collectionName, json? queryString) returns json | error {
         string jsonString = queryString.toJsonString();
@@ -88,7 +81,6 @@ public type Client client object {
     }
 
     public remote function batchInsert(string collectionName, json[] queryString) returns json | error {
-       // string jsonString = queryString.toJsonString();
         return insertBatchData(self.datasource, java:fromString(collectionName), queryString);
     }
 };
@@ -128,6 +120,10 @@ function deleteData(handle datasource, handle collectionName, handle? filter, bo
 
 function insertBatchData(handle datasource, handle collectionName, json[] queryString) = @java:Method {
     class: "org.wso2.mongo.actions.BatchInsert"
+} external;
+
+function closeConnection(handle datasource)  = @java:Method {
+    class: "org.wso2.mongo.actions.Close"
 } external;
 
 
