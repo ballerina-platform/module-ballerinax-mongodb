@@ -1,17 +1,29 @@
+// Copyright (c) 2019 WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+//
+// WSO2 Inc. licenses this file to you under the Apache License,
+// Version 2.0 (the "License"); you may not use this file except
+// in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing,
+// software distributed under the License is distributed on an
+// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, either express or implied.  See the License for the
+// specific language governing permissions and limitations
+// under the License.
+
 package org.wso2.mongo.actions;
 
-import com.mongodb.client.ClientSession;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.model.UpdateOptions;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
-import org.ballerinalang.jvm.values.ArrayValue;
-import org.ballerinalang.jvm.values.MapValue;
-import org.ballerinalang.jvm.values.ObjectValue;
-import org.ballerinalang.jvm.values.StreamingJsonValue;
-
 import org.ballerinalang.jvm.JSONParser;
+import org.ballerinalang.jvm.values.ArrayValue;
+import org.ballerinalang.jvm.values.StreamingJsonValue;
 import org.bson.Document;
 import org.wso2.mongo.MongoDBDataSource;
 
@@ -50,7 +62,8 @@ public class AbstractMongoDBAction {
         collection.insertOne(Document.parse(document));
     }
 
-    protected static long delete(MongoDBDataSource dbDataSource, String collectionName, Object filter, boolean isMultiple) {
+    protected static long delete(MongoDBDataSource dbDataSource, String collectionName, Object filter,
+                                                                                         boolean isMultiple) {
         MongoCollection<Document> collection = getCollection(dbDataSource, collectionName);
         DeleteResult res;
         if (isMultiple) {
@@ -61,7 +74,8 @@ public class AbstractMongoDBAction {
         return res.getDeletedCount();
     }
 
-    protected static long update(MongoDBDataSource dbDataSource, String collectionName, Object filter, Object document, boolean isMultiple, boolean upsert) {
+    protected static long update(MongoDBDataSource dbDataSource, String collectionName, Object filter, Object document,
+                                                                                 boolean isMultiple, boolean upsert) {
         MongoCollection<Document> collection = getCollection(dbDataSource, collectionName);
         UpdateOptions options = new UpdateOptions();
         options.upsert(upsert);
@@ -74,7 +88,8 @@ public class AbstractMongoDBAction {
         return res.getModifiedCount();
     }
 
-    protected static long replaceOne(MongoDBDataSource dbDataSource, String collectionName, Object filter, Object document, boolean upsert) {
+    protected static long replaceOne(MongoDBDataSource dbDataSource, String collectionName, Object filter,
+                                                                                  Object document, boolean upsert) {
         MongoCollection<Document> collection = getCollection(dbDataSource, collectionName);
         UpdateResult res = collection.replaceOne(jsonToDoc(filter), jsonToDoc(document));
         return res.getModifiedCount();

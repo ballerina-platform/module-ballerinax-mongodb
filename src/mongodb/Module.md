@@ -77,8 +77,10 @@ mongodb:Client mongoClient =  check new (mongoConfig);
         log:printInfo("Modified count: ") ;
         log:printInfo(response.toString());
     } else {
-        io:println("Error in replacing data");
+        log:printInfo("Error in replacing data");
     }
+    
+     mongoClient.stop();
 }
 
 function handleInsert(json|error returned, string message) {

@@ -1,3 +1,19 @@
+// Copyright (c) 2019 WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+//
+// WSO2 Inc. licenses this file to you under the Apache License,
+// Version 2.0 (the "License"); you may not use this file except
+// in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing,
+// software distributed under the License is distributed on an
+// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, either express or implied.  See the License for the
+// specific language governing permissions and limitations
+// under the License.
+
 package org.wso2.mongo;
 
 import com.mongodb.*;
@@ -122,13 +138,16 @@ public class MongoDBDataSource {
             AuthenticationMechanism authMechanism = retrieveAuthMechanism(authMechanismString);
             switch (authMechanism) {
                 case PLAIN:
-                    mongoCredential = MongoCredential.createPlainCredential(username, authSource, password.toCharArray());
+                    mongoCredential = MongoCredential.createPlainCredential(username, authSource,
+                                                                                         password.toCharArray());
                     break;
                 case SCRAM_SHA_1:
-                    mongoCredential = MongoCredential.createScramSha1Credential(username, authSource, password.toCharArray());
+                    mongoCredential = MongoCredential.createScramSha1Credential(username, authSource,
+                                                                                         password.toCharArray());
                     break;
                 case MONGODB_CR:
-                    mongoCredential = MongoCredential.createMongoCRCredential(username, authSource, password.toCharArray());
+                    mongoCredential = MongoCredential.createMongoCRCredential(username, authSource,
+                                                                                         password.toCharArray());
                     break;
                 case MONGODB_X509:
                     if (!username.isEmpty()) {
@@ -145,7 +164,8 @@ public class MongoDBDataSource {
                     }
                     break;
                 default:
-                    throw new UnsupportedOperationException("Functionality for \"" + authMechanism + "\" authentication mechanism is not implemented yet");
+                    throw new UnsupportedOperationException("Functionality for \"" + authMechanism
+                                                            + "\" authentication mechanism is not implemented yet");
             }
         } else if (!username.isEmpty() && !password.isEmpty()) {
             mongoCredential = MongoCredential.createCredential(username, authSource, password.toCharArray());
@@ -173,7 +193,8 @@ public class MongoDBDataSource {
         if (sslEnabled) {
             builder = builder.sslEnabled(true);
         }
-        boolean sslInvalidHostNameAllowed = options.getBooleanValue(ConnectionParam.SSL_INVALID_HOSTNAME_ALLOWED.getKey());
+        boolean sslInvalidHostNameAllowed = options.getBooleanValue(ConnectionParam.SSL_INVALID_HOSTNAME_ALLOWED
+                                                                                                         .getKey());
         if (sslInvalidHostNameAllowed) {
             builder.sslInvalidHostNameAllowed(true);
         }
@@ -206,7 +227,8 @@ public class MongoDBDataSource {
         if (maxPoolSize != -1) {
             builder = builder.connectionsPerHost(maxPoolSize);
         }
-        int serverSelectionTimeout = (int) options.getIntValue(ConnectionParam.SERVER_SELECTION_TIMEOUT.getKey()).intValue();
+        int serverSelectionTimeout = (int) options.getIntValue(ConnectionParam.SERVER_SELECTION_TIMEOUT.getKey())
+                                                                                                        .intValue();
         if (serverSelectionTimeout != -1) {
             builder = builder.serverSelectionTimeout(serverSelectionTimeout);
         }
@@ -311,13 +333,19 @@ public class MongoDBDataSource {
      */
     private enum ConnectionParam {
         // String Params
-        URL("url"), READ_CONCERN("readConcern"), WRITE_CONCERN("writeConcern"), READ_PREFERENCE("readPreference"), AUTHSOURCE("authSource"), AUTHMECHANISM("authMechanism"), GSSAPI_SERVICE_NAME("gssapiServiceName"), REPLICA_SET("replicaSet"),
+        URL("url"), READ_CONCERN("readConcern"), WRITE_CONCERN("writeConcern"), READ_PREFERENCE("readPreference"),
+        AUTHSOURCE("authSource"), AUTHMECHANISM("authMechanism"), GSSAPI_SERVICE_NAME("gssapiServiceName"),
+                                                                                        REPLICA_SET("replicaSet"),
 
         // boolean params
-        SSL_ENABLED("sslEnabled"), SSL_INVALID_HOSTNAME_ALLOWED("sslInvalidHostNameAllowed"), RETRY_WRITES("retryWrites"),
+        SSL_ENABLED("sslEnabled"), SSL_INVALID_HOSTNAME_ALLOWED("sslInvalidHostNameAllowed"),
+                                                                                          RETRY_WRITES("retryWrites"),
 
         // int params
-        SOCKET_TIMEOUT("socketTimeout"), CONNECTION_TIMEOUT("connectionTimeout"), MAX_POOL_SIZE("maxPoolSize"), SERVER_SELECTION_TIMEOUT("serverSelectionTimeout"), MAX_IDLE_TIME("maxIdleTime"), MAX_LIFE_TIME("maxLifeTime"), MIN_POOL_SIZE("minPoolSize"), WAIT_QUEUE_MULTIPLE("waitQueueMultiple"), WAIT_QUEUE_TIMEOUT("waitQueueTimeout"), LOCAL_THRESHOLD("localThreshold"), HEART_BEAT_FREQUENCY("heartbeatFrequency");
+        SOCKET_TIMEOUT("socketTimeout"), CONNECTION_TIMEOUT("connectionTimeout"), MAX_POOL_SIZE("maxPoolSize"),
+        SERVER_SELECTION_TIMEOUT("serverSelectionTimeout"), MAX_IDLE_TIME("maxIdleTime"), MAX_LIFE_TIME("maxLifeTime"),
+        MIN_POOL_SIZE("minPoolSize"), WAIT_QUEUE_MULTIPLE("waitQueueMultiple"), WAIT_QUEUE_TIMEOUT("waitQueueTimeout"),
+                                       LOCAL_THRESHOLD("localThreshold"), HEART_BEAT_FREQUENCY("heartbeatFrequency");
 
         private String key;
 
