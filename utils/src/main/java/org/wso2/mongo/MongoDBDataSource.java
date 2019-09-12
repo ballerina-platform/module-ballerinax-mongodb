@@ -38,9 +38,7 @@ public class MongoDBDataSource {
 
     private static final String DEFAULT_USER_DB = "admin";
 
-
-    public MongoDBDataSource() {
-    }
+    public MongoDBDataSource() {}
 
     public MongoDatabase getMongoDatabase() {
         return db;

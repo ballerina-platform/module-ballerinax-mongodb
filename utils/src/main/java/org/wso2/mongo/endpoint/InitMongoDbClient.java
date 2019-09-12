@@ -22,7 +22,6 @@ import org.wso2.mongo.MongoDBDataSource;
 
 public class InitMongoDbClient {
     public static HandleValue initClient(MapValue config) {
-
         String host = config.getStringValue("host");
         String dbName = config.getStringValue("dbName");
         String username = config.getStringValue("userName");
@@ -35,3 +34,4 @@ public class InitMongoDbClient {
         return new HandleValue(dataSource);
     }
 }
+
