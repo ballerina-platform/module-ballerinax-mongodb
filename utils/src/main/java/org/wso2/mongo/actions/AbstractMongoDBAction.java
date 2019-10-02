@@ -97,3 +97,4 @@ public class AbstractMongoDBAction {
         return dbDataSource.getMongoDatabase().getCollection(collectionName);
     }
 }
+

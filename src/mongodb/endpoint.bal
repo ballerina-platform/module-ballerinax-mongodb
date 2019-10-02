@@ -18,7 +18,6 @@
 // MongoDB Client Endpoint
 ///////////////////////////////
 
-
 import ballerinax/java;
 
 ///////////////////////////////
@@ -34,11 +33,6 @@ public type Client client object {
     # Gets called when the endpoint is being initialized during the package initialization.
     public function __init(ClientEndpointConfig config) returns error? {
         self.datasource = initClient(config);
-    }
-
-    # Stops the registered service.
-    public function stop() {
-
     }
 
     public remote function insert(string collectionName, json? queryString) returns json | error {
