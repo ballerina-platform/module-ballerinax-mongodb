@@ -16,30 +16,28 @@
 
 package org.wso2.mongo.actions;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.ballerinalang.jvm.values.HandleValue;
+import org.ballerinalang.jvm.values.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.wso2.mongo.MongoDBDataSource;
 
 /**
- * {@code ReplaceOne} replaces a single document within the collection based on the filter..
- *
+ * {@code Find} action select documents in a collection.
  */
 
-public class ReplaceOne extends AbstractMongoDBAction {
-    private static Log log = LogFactory.getLog(Insert.class);
+public class Find extends AbstractMongoDBAction {
+    private static Logger log = LoggerFactory.getLogger(Insert.class);
 
-    public static long replaceData(HandleValue datasource, String collectionName, Object filter, Object replacement,
-                                                                                                  boolean upsert) {
+    public static ArrayValue queryData(HandleValue datasource, String collectionName, Object queryString) {
         MongoDBDataSource mongoDataSource = (MongoDBDataSource) datasource.getValue();
         try {
-            long updatedCount = replaceOne(mongoDataSource, collectionName, filter, replacement, upsert);
+            StreamingJsonValue result = find(mongoDataSource, collectionName, queryString);
             log.info("Successfully retrieved data");
-            return updatedCount;
+            return result;
         } catch (Throwable e) {
             log.info("Error occured while retrieving data", e);
         }
-        return 0;
+        return null;
     }
 }
 

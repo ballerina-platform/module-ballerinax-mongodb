@@ -16,29 +16,28 @@
 
 package org.wso2.mongo.actions;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.ballerinalang.jvm.values.HandleValue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.wso2.mongo.MongoDBDataSource;
 
 /**
- * {@code Delete} action to delete documents in a collection.
- *
+ * {@code FindOne} action selects the first document that satisfies the given query criteria.
  */
 
-public class Delete extends AbstractMongoDBAction {
-    private static Log log = LogFactory.getLog(Insert.class);
+public class FindOne extends AbstractMongoDBAction {
+    private static Logger log = LoggerFactory.getLogger(Insert.class);
 
-    public static long deleteData(HandleValue datasource, String collectionName, Object filter, boolean isMultiple) {
+    public static String queryOne(HandleValue datasource, String collectionName, Object queryString) {
         MongoDBDataSource mongoDataSource = (MongoDBDataSource) datasource.getValue();
         try {
-            long deletedCount = delete(mongoDataSource, collectionName, filter, isMultiple);
+            String result = findOne(mongoDataSource, collectionName, queryString);
             log.info("Successfully retrieved data");
-            return deletedCount;
+            return result;
         } catch (Throwable e) {
             log.info("Error occured while retrieving data", e);
         }
-        return 0;
+        return null;
     }
 }
 

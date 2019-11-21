@@ -16,27 +16,29 @@
 
 package org.wso2.mongo.actions;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.ballerinalang.jvm.values.HandleValue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.wso2.mongo.MongoDBDataSource;
 
 /**
- * {@code Insert} action insert a document or documents into a collection.
- *
+ * {@code ReplaceOne} replaces a single document within the collection based on the filter..
  */
 
-public class Insert extends AbstractMongoDBAction {
-    private static Log log = LogFactory.getLog(Insert.class);
+public class ReplaceOne extends AbstractMongoDBAction {
+    private static Logger log = LoggerFactory.getLogger(Insert.class);
 
-    public static void insertData(HandleValue datasource, String collectionName, String document) {
+    public static long replaceData(HandleValue datasource, String collectionName, Object filter, Object replacement,
+                                                                                                  boolean upsert) {
         MongoDBDataSource mongoDataSource = (MongoDBDataSource) datasource.getValue();
         try {
-            insert(mongoDataSource, collectionName, document);
-            log.info("Successfully inserted data");
+            long updatedCount = replaceOne(mongoDataSource, collectionName, filter, replacement, upsert);
+            log.info("Successfully retrieved data");
+            return updatedCount;
         } catch (Throwable e) {
-            log.error("Error occured while inserting data", e);
+            log.info("Error occured while retrieving data", e);
         }
+        return 0;
     }
 }
 

@@ -16,29 +16,28 @@
 
 package org.wso2.mongo.actions;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.ballerinalang.jvm.values.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.ballerinalang.jvm.values.HandleValue;
 import org.wso2.mongo.MongoDBDataSource;
 
 /**
- * {@code Find} action select documents in a collection.
- *
+ * {@code Delete} action to delete documents in a collection.
  */
 
-public class Find extends AbstractMongoDBAction {
-    private static Log log = LogFactory.getLog(Insert.class);
+public class Delete extends AbstractMongoDBAction {
+    private static Logger log = LoggerFactory.getLogger(Insert.class);
 
-    public static ArrayValue queryData(HandleValue datasource, String collectionName, Object queryString) {
+    public static long deleteData(HandleValue datasource, String collectionName, Object filter, boolean isMultiple) {
         MongoDBDataSource mongoDataSource = (MongoDBDataSource) datasource.getValue();
         try {
-            StreamingJsonValue result = find(mongoDataSource, collectionName, queryString);
+            long deletedCount = delete(mongoDataSource, collectionName, filter, isMultiple);
             log.info("Successfully retrieved data");
-            return result;
+            return deletedCount;
         } catch (Throwable e) {
             log.info("Error occured while retrieving data", e);
         }
-        return null;
+        return 0;
     }
 }
 

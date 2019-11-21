@@ -16,29 +16,26 @@
 
 package org.wso2.mongo.actions;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.ballerinalang.jvm.values.HandleValue;
 import org.wso2.mongo.MongoDBDataSource;
 
 /**
- * {@code FindOne} action selects the first document that satisfies the given query criteria.
- *
+ * {@code Close} action is used to close the MongoDB connection pool.
  */
 
-public class FindOne extends AbstractMongoDBAction {
-    private static Log log = LogFactory.getLog(Insert.class);
+public class Close extends AbstractMongoDBAction {
+    private static Logger log = LoggerFactory.getLogger(Insert.class);
 
-    public static String queryOne(HandleValue datasource, String collectionName, Object queryString) {
+    public static void closeConnection(HandleValue datasource) {
         MongoDBDataSource mongoDataSource = (MongoDBDataSource) datasource.getValue();
         try {
-            String result = findOne(mongoDataSource, collectionName, queryString);
-            log.info("Successfully retrieved data");
-            return result;
+            close(mongoDataSource);
+            log.info("Successfully closed connection");
         } catch (Throwable e) {
-            log.info("Error occured while retrieving data", e);
+            log.error("Error occured while closing connection", e);
         }
-        return null;
     }
 }
 

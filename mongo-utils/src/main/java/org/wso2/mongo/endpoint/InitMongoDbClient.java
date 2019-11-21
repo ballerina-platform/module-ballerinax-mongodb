@@ -14,29 +14,28 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package org.wso2.mongo.actions;
+package org.wso2.mongo.endpoint;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.ballerinalang.jvm.values.HandleValue;
+import org.ballerinalang.jvm.values.MapValue;
 import org.wso2.mongo.MongoDBDataSource;
 
 /**
- * {@code Close} action is used to close the MongoDB connection pool.
- *
+ * {@code InitMongoDbClient} creates a MongoDbClient with provided configuration.
  */
 
-public class Close extends AbstractMongoDBAction {
-    private static Log log = LogFactory.getLog(Insert.class);
+public class InitMongoDbClient {
+    public static HandleValue initClient(MapValue config) {
+        String host = config.getStringValue("host");
+        String dbName = config.getStringValue("dbName");
+        String username = config.getStringValue("userName");
+        String password = config.getStringValue("password");
+        MapValue options = config.getMapValue("option");
 
-    public static void closeConnection(HandleValue datasource) {
-        MongoDBDataSource mongoDataSource = (MongoDBDataSource) datasource.getValue();
-        try {
-            close(mongoDataSource);
-            log.info("Successfully closed connection");
-        } catch (Throwable e) {
-            log.error("Error occured while closing connection", e);
-        }
+        MongoDBDataSource dataSource = new MongoDBDataSource();
+        dataSource.init(host, dbName, username, password, options);
+
+        return new HandleValue(dataSource);
     }
 }
 

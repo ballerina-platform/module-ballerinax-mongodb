@@ -72,7 +72,6 @@ public type Client client object {
     }
 };
 
-
 function initClient(ClientEndpointConfig config) returns handle = @java:Method {
     class: "org.wso2.mongo.endpoint.InitMongoDbClient"
 } external;
@@ -106,7 +105,6 @@ function deleteData(handle datasource, handle collectionName, handle? filter, bo
 function closeConnection(handle datasource)  = @java:Method {
     class: "org.wso2.mongo.actions.Close"
 } external;
-
 
 # The Client endpoint configuration for MongoDB.
 #

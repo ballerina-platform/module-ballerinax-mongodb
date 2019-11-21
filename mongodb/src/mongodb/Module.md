@@ -8,13 +8,12 @@ The Mongo DB connector allows you to connect to Mongo DB from Ballerina and perf
 
 |                             |       Version               |
 |:---------------------------:|:---------------------------:|
-| Ballerina Language          | 1.0.1                     |
-| Mongo DB                    | V4.2.0                          |
+| Ballerina Language          | 1.0.1                       |
+| Mongo DB                    | V4.2.0                      |
 
 ## Sample
 
-First, import the `wso2/mongodb` module into the Ballerina project.
-
+First, import the `wso2/mongodb` module into the ballerina project.
 
 ```ballerina
 import ballerina/config;
@@ -30,7 +29,6 @@ public function main() returns error?
     options: {sslEnabled: false, serverSelectionTimeout: 500}
 };
 
-   
 mongodb:Client mongoClient = check new (mongoConfig);
 
     json doc1 = { "name": "ballerina", "type": "src" };

@@ -14,29 +14,28 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package org.wso2.mongo.endpoint;
+package org.wso2.mongo.actions;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.ballerinalang.jvm.values.HandleValue;
-import org.ballerinalang.jvm.values.MapValue;
 import org.wso2.mongo.MongoDBDataSource;
 
 /**
- * {@code InitMongoDbClient} creates a MongoDbClient with provided configuration.
- *
+ * {@code Insert} action insert a document or documents into a collection.
  */
 
-public class InitMongoDbClient {
-    public static HandleValue initClient(MapValue config) {
-        String host = config.getStringValue("host");
-        String dbName = config.getStringValue("dbName");
-        String username = config.getStringValue("userName");
-        String password = config.getStringValue("password");
-        MapValue options = config.getMapValue("option");
+public class Insert extends AbstractMongoDBAction {
+    private static Logger log = LoggerFactory.getLogger(Insert.class);
 
-        MongoDBDataSource dataSource = new MongoDBDataSource();
-        dataSource.init(host, dbName, username, password, options);
-
-        return new HandleValue(dataSource);
+    public static void insertData(HandleValue datasource, String collectionName, String document) {
+        MongoDBDataSource mongoDataSource = (MongoDBDataSource) datasource.getValue();
+        try {
+            insert(mongoDataSource, collectionName, document);
+            log.info("Successfully inserted data");
+        } catch (Throwable e) {
+            log.error("Error occured while inserting data", e);
+        }
     }
 }
 

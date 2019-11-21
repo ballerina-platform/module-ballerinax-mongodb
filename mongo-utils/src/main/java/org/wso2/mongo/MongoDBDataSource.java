@@ -24,7 +24,6 @@ import org.ballerinalang.jvm.JSONGenerator;
 import org.ballerinalang.jvm.JSONParser;
 import org.ballerinalang.jvm.values.ArrayValue;
 import org.ballerinalang.jvm.values.MapValue;
-import org.ballerinalang.util.exceptions.BallerinaException;
 import org.bson.Document;
 
 import java.io.IOException;
@@ -105,7 +104,7 @@ public class MongoDBDataSource {
         try {
             return new MongoClient(new MongoClientURI(url));
         } catch (IllegalArgumentException e) {
-            throw new BallerinaException(url + " is not a valid MongoDB connection URI");
+            throw new BallerinaMongoDbException(url + " is not a valid MongoDB connection URI");
         }
     }
 
@@ -181,7 +180,7 @@ public class MongoDBDataSource {
         try {
             return AuthenticationMechanism.fromMechanismName(authMechanismParam.toUpperCase(Locale.ENGLISH));
         } catch (IllegalArgumentException e) {
-            throw new BallerinaException("Invalid authentication mechanism: " + authMechanismParam);
+            throw new BallerinaMongoDbException("Invalid authentication mechanism: " + authMechanismParam);
         }
     }
 
@@ -278,7 +277,7 @@ public class MongoDBDataSource {
             try {
                 port = Integer.parseInt(hostPort[1]);
             } catch (NumberFormatException e) {
-                throw new BallerinaException("the port of the host string must be an integer: " + hostStr, e);
+                throw new BallerinaMongoDbException("the port of the host string must be an integer: " + hostStr, e);
             }
         } else {
             port = ServerAddress.defaultPort();

@@ -21,17 +21,12 @@ import com.mongodb.client.MongoCursor;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
 import org.ballerinalang.jvm.JSONParser;
-import org.ballerinalang.jvm.values.ArrayValue;
 import org.ballerinalang.jvm.values.StreamingJsonValue;
 import org.bson.Document;
 import org.wso2.mongo.MongoDBDataSource;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * {@code AbstractMongoDBAction} is the base class for all MongoDB actions.
- *
  */
 
 public class AbstractMongoDBAction {

@@ -13,9 +13,14 @@
 # limitations under the License.
 
 script:
-  - wget https://product-dist.ballerina.io/downloads/1.0.0/ballerina-linux-installer-x64-1.0.0.deb
-  - sudo dpkg -i ballerina-linux-installer-x64-1.0.0.deb
+  - wget https://product-dist.ballerina.io/downloads/1.0.1/ballerina-linux-installer-x64-1.0.1.deb
+  - sudo dpkg -i ballerina-linux-installer-x64-1.0.1.deb
   - sudo apt-get install -f
-  - mvn clean install -DskipTests=true
-  - ballerina --version
-  - ballerina build -c --skip-tests mongodb
+  - wget https://repo1.maven.org/maven2/org/mongodb/mongodb-driver/3.8.2/mongodb-driver-3.8.2.jar
+  - sudo cp mongodb-driver-3.8.2.jar /usr/lib/ballerina/ballerina-1.0.1/distributions/jballerina-1.0.1/bre/lib/
+  - wget https://repo1.maven.org/maven2/org/mongodb/bson/3.8.2/bson-3.8.2.jar
+  - sudo cp bson-3.8.2.jar /usr/lib/ballerina/ballerina-1.0.1/distributions/jballerina-1.0.1/bre/lib/
+  - cd mongo-utils
+  - mvn clean install
+  - cd ../mongodb
+  - ballerina build -a -c --skip-tests
