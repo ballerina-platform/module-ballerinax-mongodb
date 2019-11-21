@@ -13,17 +13,13 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
-//import ballerina/config;
-//import ballerina/io;
-//import ballerina/test;
 
-import ballerina/io;
 import ballerina/log;
 import ballerina/test;
 
 ClientEndpointConfig mongoConfig = {
     host: "localhost",
-    dbName: "projectsTest1",
+    dbName: "moviecollection",
     username: "",
     password: "",
     options: {sslEnabled: false, serverSelectionTimeout: 500}
@@ -31,68 +27,45 @@ ClientEndpointConfig mongoConfig = {
 
 Client mongoClient = check new (mongoConfig);
 
-json doc1 = {"name": "ballerina", "type": "src"};
-json doc2 = {"name": "connectors", "type": "artifacts"};
-json doc3 = {"name": "docerina", "type": "src"};
-json doc4 = {"name": "test", "type": "artifacts"};
-
-json queryString = {name: "connectors"};
-json replaceFilter = {"type": "artifacts"};
-json doc5 = {"name": "main", "type": "artifacts"};
-boolean upsert = true;
+json doc = {"name": "The Lion King", "year": "2019", "rating" : 8};
 
 @test:Config {
 }
 public function testInsertData() {
     log:printInfo("------------------ Inserting Data -------------------");
 
-    var returned = mongoClient->insert("projects", doc1);
-
+    var returned = mongoClient->insert("moviedetails", doc);
     if (returned is error) {
-        io:println(" failed: ");
-        test:assertFalse(false, msg = "Assert False failed");
+        log:printInfo("Inserting data failed");
+        test:assertFalse(false, msg = "Inserting data failed");
     } else {
-        io:println(" success ");
+        log:printInfo("Successfully inserted document into collection");
     }
 }
 
 @test:Config {
     dependsOn: ["testInsertData"]
 }
-function testUpdate() {
+function testUpdateDocument() {
 
-    log:printInfo("------------------ Updating Data -------------------");
-    var jsonRet = mongoClient->find("projects", ());
+   log:printInfo("------------------ Updating Data -------------------");
 
-    json replaceFilter = {"type": "artifacts"};
-    json doc5 = {"name": "main", "type": "artifacts"};
+   json replaceFilter = {"name":"The Lion King"};
+   json replaceDoc = {"name": "The Lion King", "year": "2019", "rating" : 7};
 
-    int response = mongoClient->replace("projects", replaceFilter, doc5, true);
-    if (response > 0) {
-        log:printInfo("Modified count: ");
-        log:printInfo(response.toString());
-        test:assertEquals(response, 1, msg = "Assert failed");
-    } else {
-        test:assertFail(msg = response.toString());
-    }
+   int modifiedCount = mongoClient->replace("moviedetails", replaceFilter, replaceDoc, true);
+   log:printInfo("Modified count: " + modifiedCount.toString());
+   test:assertNotEquals(modifiedCount, 0, msg = "Document modification failed");
 }
 
 @test:Config {
-    dependsOn: ["testInsertData"]
+   dependsOn: ["testUpdateDocument"]
 }
 function testDelete() {
-
-    log:printInfo("------------------ Deleting Data -------------------");
-    json deleteFilter = {"name": "ballerina"};
-    var deleteRet = mongoClient->delete("projects", deleteFilter, true);
-
-    int response = mongoClient->replace("projects", replaceFilter, doc5, true);
-    if (response > 0) {
-        log:printInfo("Modified count: ");
-        log:printInfo(response.toString());
-        test:assertEquals(response, 1, msg = "Assert failed");
-    } else {
-        test:assertFail(msg = response.toString());
-    }
+   log:printInfo("------------------ Deleting Data -------------------");
+   json deleteFilter = {"name": "The Lion King"};
+   int deleteRet = mongoClient->delete("moviedetails", deleteFilter, true);
+   log:printInfo("Deleted count: " + deleteRet.toString());
+   test:assertNotEquals(deleteRet, 0, msg = "Document deletion failed");
 }
 

@@ -1,9 +1,9 @@
 org_name = "wso2"
-version = "0.9.0"
+version = "0.9.1"
 lockfile_version = "1.0.0"
-ballerina_version = "1.0.0"
+ballerina_version = "1.0.1"
 
-[[imports."wso2/mongodb:0.9.0"]]
+[[imports."wso2/mongodb:0.9.1"]]
 org_name = "ballerinax"
 name = "java"
 version = "0.0.0"
