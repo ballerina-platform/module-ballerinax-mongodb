@@ -29,15 +29,8 @@ public class FindOne extends AbstractMongoDBAction {
     private static Logger log = LoggerFactory.getLogger(Insert.class);
 
     public static String queryOne(HandleValue datasource, String collectionName, Object queryString) {
+        log.debug("Querying first document");
         MongoDBDataSource mongoDataSource = (MongoDBDataSource) datasource.getValue();
-        try {
-            String result = findOne(mongoDataSource, collectionName, queryString);
-            log.info("Successfully retrieved data");
-            return result;
-        } catch (Throwable e) {
-            log.info("Error occured while retrieving data", e);
-        }
-        return null;
+        return findOne(mongoDataSource, collectionName, queryString);
     }
 }
-

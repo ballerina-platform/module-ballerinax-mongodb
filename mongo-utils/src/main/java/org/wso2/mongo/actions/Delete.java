@@ -29,15 +29,8 @@ public class Delete extends AbstractMongoDBAction {
     private static Logger log = LoggerFactory.getLogger(Insert.class);
 
     public static long deleteData(HandleValue datasource, String collectionName, Object filter, boolean isMultiple) {
+        log.debug("Deleting documents in collection " + collectionName);
         MongoDBDataSource mongoDataSource = (MongoDBDataSource) datasource.getValue();
-        try {
-            long deletedCount = delete(mongoDataSource, collectionName, filter, isMultiple);
-            log.info("Successfully retrieved data");
-            return deletedCount;
-        } catch (Throwable e) {
-            log.info("Error occured while retrieving data", e);
-        }
-        return 0;
+        return delete(mongoDataSource, collectionName, filter, isMultiple);
     }
 }
-

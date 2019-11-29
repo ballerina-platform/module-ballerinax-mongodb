@@ -85,18 +85,18 @@ mongodb:Client mongoClient =  check new (mongoConfig);
 
 function handleInsert(json|error returned, string message) {
     if (returned is error) {
-        io:println(message + " failed: " , returned.reason());
+        log:printInfo(message + " failed: " , returned.reason());
     } else {
-        io:println(message + " success ");
+        log:printInfo(message + " success ");
     }
 }
 
 function handleFind(json|error returned) {
     if (returned is json) {
-        io:print("initial data:");
-        io:println(io:sprintf("%s", returned));
+        log:printInfo("initial data:");
+        log:printInfo(io:sprintf("%s", returned));
     } else {
-        io:println("find failed: " + returned.reason());
+        log:printInfo("find failed: " + returned.reason());
     }
 }```
 

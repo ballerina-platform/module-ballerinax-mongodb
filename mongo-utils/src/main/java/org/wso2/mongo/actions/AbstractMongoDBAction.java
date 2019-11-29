@@ -29,7 +29,7 @@ import org.wso2.mongo.MongoDBDataSource;
  * {@code AbstractMongoDBAction} is the base class for all MongoDB actions.
  */
 
-public class AbstractMongoDBAction {
+public abstract class AbstractMongoDBAction {
     protected static StreamingJsonValue find(MongoDBDataSource dbDataSource, String collectionName, Object query) {
         MongoCollection<Document> collection = getCollection(dbDataSource, collectionName);
         MongoCursor<Document> itr;

@@ -29,13 +29,8 @@ public class Close extends AbstractMongoDBAction {
     private static Logger log = LoggerFactory.getLogger(Insert.class);
 
     public static void closeConnection(HandleValue datasource) {
+        log.debug("Closing mongodb connection");
         MongoDBDataSource mongoDataSource = (MongoDBDataSource) datasource.getValue();
-        try {
-            close(mongoDataSource);
-            log.info("Successfully closed connection");
-        } catch (Throwable e) {
-            log.error("Error occured while closing connection", e);
-        }
+        close(mongoDataSource);
     }
 }
-

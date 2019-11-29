@@ -16,7 +16,8 @@
 
 package org.wso2.mongo.actions;
 
-import org.ballerinalang.jvm.values.*;
+import org.ballerinalang.jvm.values.ArrayValue;
+import org.ballerinalang.jvm.values.HandleValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.mongo.MongoDBDataSource;
@@ -29,15 +30,8 @@ public class Find extends AbstractMongoDBAction {
     private static Logger log = LoggerFactory.getLogger(Insert.class);
 
     public static ArrayValue queryData(HandleValue datasource, String collectionName, Object queryString) {
+        log.debug("Querying data from collection " + collectionName);
         MongoDBDataSource mongoDataSource = (MongoDBDataSource) datasource.getValue();
-        try {
-            StreamingJsonValue result = find(mongoDataSource, collectionName, queryString);
-            log.info("Successfully retrieved data");
-            return result;
-        } catch (Throwable e) {
-            log.info("Error occured while retrieving data", e);
-        }
-        return null;
+        return find(mongoDataSource, collectionName, queryString);
     }
 }
-

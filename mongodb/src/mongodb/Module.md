@@ -20,16 +20,14 @@ import ballerina/config;
 import ballerina/log;
 import wso2/mongodb;
 
-public function main() returns error?
-{
+public function main() returns error? {
     host: config:getAsString("MONGO_HOST"),
     dbName: config:getAsString("MONGO_DB_NAME"),
     username: config:getAsString("MONGO_USERNAME"),
     password: config:getAsString("MONGO_PASSWORD"),
     options: {sslEnabled: false, serverSelectionTimeout: 500}
-};
 
-mongodb:Client mongoClient = check new (mongoConfig);
+    mongodb:Client mongoClient = check new (mongoConfig);
 
     json doc1 = { "name": "ballerina", "type": "src" };
     json doc2 = { "name": "connectors", "type": "artifacts" };

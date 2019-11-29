@@ -30,15 +30,8 @@ public class ReplaceOne extends AbstractMongoDBAction {
 
     public static long replaceData(HandleValue datasource, String collectionName, Object filter, Object replacement,
                                                                                                   boolean upsert) {
+        log.debug("Replacing data in collection " + collectionName);
         MongoDBDataSource mongoDataSource = (MongoDBDataSource) datasource.getValue();
-        try {
-            long updatedCount = replaceOne(mongoDataSource, collectionName, filter, replacement, upsert);
-            log.info("Successfully retrieved data");
-            return updatedCount;
-        } catch (Throwable e) {
-            log.info("Error occured while retrieving data", e);
-        }
-        return 0;
+        return replaceOne(mongoDataSource, collectionName, filter, replacement, upsert);
     }
 }
-

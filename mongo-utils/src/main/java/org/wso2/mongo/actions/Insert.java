@@ -29,13 +29,8 @@ public class Insert extends AbstractMongoDBAction {
     private static Logger log = LoggerFactory.getLogger(Insert.class);
 
     public static void insertData(HandleValue datasource, String collectionName, String document) {
+        log.debug("Inserting data in to collection " + collectionName);
         MongoDBDataSource mongoDataSource = (MongoDBDataSource) datasource.getValue();
-        try {
-            insert(mongoDataSource, collectionName, document);
-            log.info("Successfully inserted data");
-        } catch (Throwable e) {
-            log.error("Error occured while inserting data", e);
-        }
+        insert(mongoDataSource, collectionName, document);
     }
 }
-
