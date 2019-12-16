@@ -1,37 +1,33 @@
-[![Build Status](https://travis-ci.org/wso2-ballerina/module-mongodb.svg?branch=master)](https://travis-ci.org/wso2-ballerina/module-mongodb)
+Connects to Mongo DB from Ballerina.
 
-Ballerina MongoDB Client is used to connect Ballerina with MongoDB data source.<br/> <br/>
- With the Ballerina MongoDB client following operations are supported.
+# Module Overview
 
-1. insert - To insert document to a given collection <br/>
-2. find - To select document from a given collection according to given query. <br/>
-3. findOne - To select the first document match with the query.<br/>
-4. update - To update documents that matches to the given filter. <br/>
-5. delete - To delete documents that matches to the given filter.
-Steps to Configure <br/>
+The Mongo DB connector allows you to connect to Mongo DB from Ballerina and perform `insert`, `find`, `findOne`, `replaceOne`, `delete` operations.
 
-## Samples
+## Compatibility
 
-### Performing CRUD operations with MongoDB client
+|                             |       Version               |
+|:---------------------------:|:---------------------------:|
+| Ballerina Language          | 1.0.1                       |
+| Mongo DB                    | V4.2.0                      |
 
-Following is a simple Ballerina program that can be used to perform CRUD operations.
+## Sample
+
+First, import the `wso2/mongodb` module into the ballerina project.
 
 ```ballerina
-import ballerina/io;
-import wso2/mongodb;
+import ballerina/config;
 import ballerina/log;
-
-mongodb:ClientEndpointConfig mongoConfig = {
-    host: "localhost",
-    dbName: "projectsTest1",
-    username: "",
-    password: "",
-    options: {sslEnabled: false, serverSelectionTimeout: 500}
-};
+import wso2/mongodb;
 
 public function main() returns error? {
-   
-mongodb:Client mongoClient =  check new (mongoConfig);
+    host: config:getAsString("MONGO_HOST"),
+    dbName: config:getAsString("MONGO_DB_NAME"),
+    username: config:getAsString("MONGO_USERNAME"),
+    password: config:getAsString("MONGO_PASSWORD"),
+    options: {sslEnabled: false, serverSelectionTimeout: 500}
+
+    mongodb:Client mongoClient = check new (mongoConfig);
 
     json doc1 = { "name": "ballerina", "type": "src" };
     json doc2 = { "name": "connectors", "type": "artifacts" };
@@ -39,12 +35,12 @@ mongodb:Client mongoClient =  check new (mongoConfig);
     json doc4 = { "name": "test", "type": "artifacts" };
 
     log:printInfo("------------------ Inserting Data -------------------");
-    var ret = mongoClient->insert("projects", doc1);
-    handleInsert(ret, "Insert to projects");
-    ret = mongoClient->insert("projects", doc2);
-    handleInsert(ret, "Insert to projects");
-    ret = mongoClient->insert("projects", doc3);
-    handleInsert(ret, "Insert to projects");
+    var result = mongoClient->insert("projects", doc1);
+    handleInsert(result);
+    result = mongoClient->insert("projects", doc2);
+    handleInsert(result);
+    result = mongoClient->insert("projects", doc3);
+    handleInsert(result);
   
     log:printInfo("------------------ Querying Data -------------------");
     var jsonRet = mongoClient->find("projects", ());
@@ -83,20 +79,19 @@ mongodb:Client mongoClient =  check new (mongoConfig);
      mongoClient.stop();
 }
 
-function handleInsert(json|error returned, string message) {
-    if (returned is error) {
-        log:printInfo(message + " failed: " , returned.reason());
+function handleInsert(json|error returned) {
+    if (returned is json) {
+        log:printInfo("Successfully inserted data to mongo db");
     } else {
-        log:printInfo(message + " success ");
+        log:printError(returned.reason());
     }
 }
 
 function handleFind(json|error returned) {
     if (returned is json) {
-        log:printInfo("initial data:");
-        log:printInfo(io:sprintf("%s", returned));
+        log:printInfo("Find operation failed");
     } else {
-        log:printInfo("find failed: " + returned.reason());
+        log:printError(returned.reason());
     }
-}```
-
+}
+```
