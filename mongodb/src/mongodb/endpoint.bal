@@ -70,14 +70,14 @@ public type Client client object {
         return deleteData(self.datasource, java:fromString(collectionName), java:fromString(jsonStringFilter),
                                                                        isMultiple);
     }
+
+    public function stop() {
+        closeConnection(self.datasource);
+    }
 };
 
 function initClient(ClientEndpointConfig config) returns handle = @java:Method {
     class: "org.wso2.mongo.endpoint.InitMongoDbClient"
-} external;
-
-function getMongoClient(handle datasource) returns handle = @java:Method {
-    class: "org.wso2.mongo.MongoDBDataSource"
 } external;
 
 function insertData(handle datasource, handle collectionName, handle queryString) = @java:Method {
