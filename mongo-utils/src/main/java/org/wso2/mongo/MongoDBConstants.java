@@ -16,17 +16,13 @@
 
 package org.wso2.mongo;
 
-import org.ballerinalang.jvm.util.exceptions.BallerinaException;
+public class MongoDBConstants {
+    public static final String ORGANIZATION_NAME = "wso2";
+    public static final String MODULE_NAME = "mongodb";
+    public static final String MODULE_VERSION = "0.9.2";
+    public static final String ERROR_DATAIL_RECORD_TYPE_NAME = "ErrorDetail";
 
-/**
- * Exception class for mongo
- */
-public class BallerinaMongoDbException extends BallerinaException {
-    public BallerinaMongoDbException(String message) {
-        super(message);
-    }
-
-    public BallerinaMongoDbException(String message, Throwable cause) {
-        super(message, cause);
-    }
+    //Error reasons
+    public static final String SERVER_ERROR_REASON = "{wso2/mongodb}ServerError";
+    public static final String CLIENT_ERROR_REASON = "{wso2/mongodb}ClientError";
 }

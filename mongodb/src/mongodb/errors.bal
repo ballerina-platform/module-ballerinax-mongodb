@@ -14,19 +14,22 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package org.wso2.mongo;
+# Holds the details of an MongoDB error
+#
+# + message - Specific error message for the error
+# + cause - Cause of the error
+# + detail - Error detail
+public type ErrorDetail record {
+    string message;
+    error cause?;
+    string detail?;
+};
 
-import org.ballerinalang.jvm.util.exceptions.BallerinaException;
+// Error reasons
+public const SERVER_ERROR_REASON = "{wso2/mongodb}ServerError";
+public const CLIENT_ERROR_REASON = "{wso2/mongodb}ClientError";
 
-/**
- * Exception class for mongo
- */
-public class BallerinaMongoDbException extends BallerinaException {
-    public BallerinaMongoDbException(String message) {
-        super(message);
-    }
+public type ServerError error<SERVER_ERROR_REASON, ErrorDetail>;
+public type ClientError error<CLIENT_ERROR_REASON, ErrorDetail>;
 
-    public BallerinaMongoDbException(String message, Throwable cause) {
-        super(message, cause);
-    }
-}
+public type ConnectorError ClientError|ServerError;

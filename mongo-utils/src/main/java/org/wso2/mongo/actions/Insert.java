@@ -16,21 +16,37 @@
 
 package org.wso2.mongo.actions;
 
+import org.ballerinalang.jvm.values.HandleValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.ballerinalang.jvm.values.HandleValue;
+import org.wso2.mongo.BallerinaMongoDbException;
 import org.wso2.mongo.MongoDBDataSource;
+import org.wso2.mongo.MongoDBUtils;
 
 /**
  * {@code Insert} action insert a document or documents into a collection.
  */
 
 public class Insert extends AbstractMongoDBAction {
+
     private static Logger log = LoggerFactory.getLogger(Insert.class);
 
-    public static void insertData(HandleValue datasource, String collectionName, String document) {
+    /**
+     * Inserts the provided document.
+     *
+     * @param datasource datasource
+     * @param collectionName name of the collection
+     * @param document the document to insert
+     * @return the result of the insert operation
+     */
+    public static Object insertData(HandleValue datasource, String collectionName, String document) {
         log.debug("Inserting data in to collection " + collectionName);
         MongoDBDataSource mongoDataSource = (MongoDBDataSource) datasource.getValue();
-        insert(mongoDataSource, collectionName, document);
+        try {
+            insert(mongoDataSource, collectionName, document);
+        } catch (BallerinaMongoDbException e) {
+            return MongoDBUtils.createBallerinaServerError(e);
+        }
+        return null;
     }
 }

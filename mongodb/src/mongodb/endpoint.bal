@@ -35,12 +35,12 @@ public type Client client object {
         self.datasource = initClient(config);
     }
 
-    public remote function insert(string collectionName, json? queryString) returns json | error {
+    public remote function insert(string collectionName, json? queryString) returns ServerError? {
         string jsonString = queryString.toJsonString();
         return insertData(self.datasource, java:fromString(collectionName), java:fromString(jsonString));
     }
 
-    public remote function find(string collectionName, json? queryString) returns json[] {
+    public remote function find(string collectionName, json? queryString) returns json[]|ServerError {
         if (queryString is ()) {
             return queryData(self.datasource, java:fromString(collectionName), ());
         }
@@ -48,7 +48,7 @@ public type Client client object {
         return queryData(self.datasource, java:fromString(collectionName), java:fromString(jsonString));
     }
 
-    public remote function findOne(string collectionName, json? queryString) returns json {
+    public remote function findOne(string collectionName, json? queryString) returns json|ServerError {
         if (queryString is ()) {
             return java:toString(queryOne(self.datasource, java:fromString(collectionName), ()));
         }
@@ -58,14 +58,14 @@ public type Client client object {
         return jsonValue;
     }
 
-    public remote function replace(string collectionName, json? filter, json? replacement, boolean upsert) returns int {
+    public remote function replace(string collectionName, json? filter, json? replacement) returns int|ServerError {
         string jsonStringFilter = filter.toJsonString();
         string jsonStringReplacement = replacement.toJsonString();
         return replaceData(self.datasource, java:fromString(collectionName), java:fromString(jsonStringFilter),
-                                                                      java:fromString(jsonStringReplacement), upsert);
+                                                                      java:fromString(jsonStringReplacement));
     }
 
-    public remote function delete(string collectionName, json? filter, boolean isMultiple) returns int {
+    public remote function delete(string collectionName, json? filter, boolean isMultiple) returns int|ServerError {
         string jsonStringFilter = filter.toJsonString();
         return deleteData(self.datasource, java:fromString(collectionName), java:fromString(jsonStringFilter),
                                                                        isMultiple);
@@ -80,11 +80,12 @@ function getMongoClient(handle datasource) returns handle = @java:Method {
     class: "org.wso2.mongo.MongoDBDataSource"
 } external;
 
-function insertData(handle datasource, handle collectionName, handle queryString) = @java:Method {
+function insertData(handle datasource, handle collectionName, handle queryString) returns ServerError? = @java:Method {
     class: "org.wso2.mongo.actions.Insert"
 } external;
 
-function queryData(handle datasource, handle collectionName, handle? queryString) returns json[] = @java:Method {
+function queryData(handle datasource, handle collectionName, handle? queryString)
+                                                                            returns json[]|ServerError = @java:Method {
     class: "org.wso2.mongo.actions.Find"
 } external;
 
@@ -92,13 +93,13 @@ function queryOne(handle datasource, handle collectionName, handle? queryString)
     class: "org.wso2.mongo.actions.FindOne"
 } external;
 
-function replaceData(handle datasource, handle collectionName, handle? filter, handle? document, boolean upsert)
-                                                                                          returns int = @java:Method {
+function replaceData(handle datasource, handle collectionName, handle? filter, handle? document)
+                                                                               returns int|ServerError = @java:Method {
     class: "org.wso2.mongo.actions.ReplaceOne"
 } external;
 
 function deleteData(handle datasource, handle collectionName, handle? filter, boolean isMultiple)
-                                                                                            returns int = @java:Method {
+                                                                               returns int|ServerError = @java:Method {
     class: "org.wso2.mongo.actions.Delete"
 } external;
 
