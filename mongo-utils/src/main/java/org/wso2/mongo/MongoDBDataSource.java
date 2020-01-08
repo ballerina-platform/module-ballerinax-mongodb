@@ -31,7 +31,10 @@ import com.mongodb.client.MongoDatabase;
 import org.ballerinalang.jvm.JSONDataSource;
 import org.ballerinalang.jvm.JSONGenerator;
 import org.ballerinalang.jvm.JSONParser;
+import org.ballerinalang.jvm.types.BArrayType;
+import org.ballerinalang.jvm.types.BTypes;
 import org.ballerinalang.jvm.values.ArrayValue;
+import org.ballerinalang.jvm.values.ArrayValueImpl;
 import org.ballerinalang.jvm.values.MapValue;
 import org.bson.Document;
 
@@ -326,7 +329,7 @@ public class MongoDBDataSource {
 
         @Override
         public Object build() {
-            ArrayValue values = new ArrayValue();
+            ArrayValue values = new ArrayValueImpl(new BArrayType(BTypes.typeJSON));
             while (this.hasNext()) {
                 values.append(this.next());
             }

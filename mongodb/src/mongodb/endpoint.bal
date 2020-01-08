@@ -50,10 +50,10 @@ public type Client client object {
 
     public remote function findOne(string collectionName, json? queryString) returns json {
         if (queryString is ()) {
-            return queryOne(self.datasource, java:fromString(collectionName), ());
+            return java:toString(queryOne(self.datasource, java:fromString(collectionName), ()));
         }
         string jsonString = queryString.toJsonString();
-        json jsonValue = queryOne(self.datasource, java:fromString(collectionName), java:fromString(jsonString)).
+        json jsonValue = java:toString(queryOne(self.datasource, java:fromString(collectionName), java:fromString(jsonString))).
                                                                                                       toJsonString();
         return jsonValue;
     }
@@ -88,7 +88,7 @@ function queryData(handle datasource, handle collectionName, handle? queryString
     class: "org.wso2.mongo.actions.Find"
 } external;
 
-function queryOne(handle datasource, handle collectionName, handle? queryString) returns string = @java:Method {
+function queryOne(handle datasource, handle collectionName, handle? queryString) returns handle = @java:Method {
     class: "org.wso2.mongo.actions.FindOne"
 } external;
 
@@ -144,8 +144,4 @@ public type ConnectionProperties record {|
     int waitQueueTimeout = -1;
     int localThreshold = -1;
     int heartbeatFrequency = -1;
-|};
-
-public type DatabaseErrorData record {|
-    string message;
 |};
