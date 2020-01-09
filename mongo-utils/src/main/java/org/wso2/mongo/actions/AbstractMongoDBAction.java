@@ -41,7 +41,7 @@ public abstract class AbstractMongoDBAction {
         return new StreamingJsonValue(new MongoDBDataSource.MongoJSONDataSource(itr));
     }
 
-    protected static String findOne(MongoDBDataSource dbDataSource, String collectionName, Object query) {
+    protected static Object findOne(MongoDBDataSource dbDataSource, String collectionName, Object query) {
         MongoCollection<Document> collection = getCollection(dbDataSource, collectionName);
         Document doc;
         if (query != null) {
@@ -52,7 +52,7 @@ public abstract class AbstractMongoDBAction {
         if (doc == null) {
             return null;
         } else {
-            return JSONParser.parse(doc.toJson()).toString();
+            return JSONParser.parse(doc.toJson());
         }
     }
 
