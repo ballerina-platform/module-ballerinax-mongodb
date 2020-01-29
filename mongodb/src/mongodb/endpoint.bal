@@ -35,7 +35,7 @@ public type Client client object {
         self.datasource = initClient(config);
     }
 
-    public remote function insert(string collectionName, json? queryString) returns json | error {
+    public remote function insert(string collectionName, json? queryString) returns error? {
         string jsonString = queryString.toJsonString();
         return insertData(self.datasource, java:fromString(collectionName), java:fromString(jsonString));
     }
@@ -70,14 +70,14 @@ public type Client client object {
         return deleteData(self.datasource, java:fromString(collectionName), java:fromString(jsonStringFilter),
                                                                        isMultiple);
     }
+
+    public function stop() {
+        closeConnection(self.datasource);
+    }
 };
 
 function initClient(ClientEndpointConfig config) returns handle = @java:Method {
     class: "org.wso2.mongo.endpoint.InitMongoDbClient"
-} external;
-
-function getMongoClient(handle datasource) returns handle = @java:Method {
-    class: "org.wso2.mongo.MongoDBDataSource"
 } external;
 
 function insertData(handle datasource, handle collectionName, handle queryString) = @java:Method {
@@ -88,7 +88,7 @@ function queryData(handle datasource, handle collectionName, handle? queryString
     class: "org.wso2.mongo.actions.Find"
 } external;
 
-function queryOne(handle datasource, handle collectionName, handle? queryString) returns string = @java:Method {
+function queryOne(handle datasource, handle collectionName, handle? queryString) returns json = @java:Method {
     class: "org.wso2.mongo.actions.FindOne"
 } external;
 

@@ -28,7 +28,7 @@ import org.wso2.mongo.MongoDBDataSource;
 public class FindOne extends AbstractMongoDBAction {
     private static Logger log = LoggerFactory.getLogger(Insert.class);
 
-    public static String queryOne(HandleValue datasource, String collectionName, Object queryString) {
+    public static Object queryOne(HandleValue datasource, String collectionName, Object queryString) {
         log.debug("Querying first document");
         MongoDBDataSource mongoDataSource = (MongoDBDataSource) datasource.getValue();
         return findOne(mongoDataSource, collectionName, queryString);
