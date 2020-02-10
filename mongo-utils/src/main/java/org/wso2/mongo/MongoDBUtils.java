@@ -43,7 +43,6 @@ public class MongoDBUtils {
     private static MapValue createRecordValue(BallerinaMongoDbException e) {
         BPackage bpackage = new BPackage(ORGANIZATION_NAME, MODULE_NAME, MODULE_VERSION);
         MapValue recordValue = BallerinaValues.createRecordValue(bpackage, ERROR_DATAIL_RECORD_TYPE_NAME);
-        return BallerinaValues.createRecord(recordValue, e.getMessage(), e.getCause().toString(),
-                                                       e.getDetail());
+        return BallerinaValues.createRecord(recordValue, e.getMessage(), e.getCause(), e.getDetail());
     }
 }

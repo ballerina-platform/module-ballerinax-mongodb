@@ -78,7 +78,11 @@ public class MongoDBDataSource {
             this.client = createMongoClient(serverAddress);
         }
 
-        this.db = this.client.getDatabase(dbName);
+        try {
+            this.db = this.client.getDatabase(dbName);
+        } catch (IllegalArgumentException e) {
+            throw new BallerinaMongoDbException("Invalid dbName found.", e);
+        }
         return true;
     }
 
@@ -128,7 +132,11 @@ public class MongoDBDataSource {
      * @return
      */
     private MongoClient createMongoClient(ServerAddress serverAddress) {
-        return new MongoClient(serverAddress);
+        try {
+            return new MongoClient(serverAddress);
+        } catch (Exception e) {
+            throw new BallerinaMongoDbException(e.getMessage());
+        }
     }
 
     /**
