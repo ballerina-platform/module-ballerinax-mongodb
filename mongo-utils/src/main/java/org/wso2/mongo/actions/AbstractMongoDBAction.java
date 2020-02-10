@@ -56,7 +56,7 @@ public abstract class AbstractMongoDBAction {
             if (doc == null) {
                 return null;
             } else {
-                return JSONParser.parse(doc.toJson()).toString();
+                return JSONParser.parse(doc.toJson());
             }
         } catch(Exception e) {
             throw new BallerinaMongoDbException("Error occurred while finding document in the collection.", e);

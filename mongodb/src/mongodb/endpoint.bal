@@ -31,8 +31,13 @@ public type Client client object {
     handle datasource;
 
     # Gets called when the endpoint is being initialized during the package initialization.
-    public function __init(ClientEndpointConfig config) returns error? {
-        self.datasource = initClient(config);
+    public function __init(ClientEndpointConfig config) returns ClientError? {
+        handle | ClientError? result = initClient(config);
+        if (result is ClientError?) {
+            return result;
+        } else {
+            self.datasource = result;
+        }
     }
 
     public remote function insert(string collectionName, json? queryString) returns ServerError? {
@@ -50,11 +55,10 @@ public type Client client object {
 
     public remote function findOne(string collectionName, json? queryString) returns json|ServerError {
         if (queryString is ()) {
-            return java:toString(queryOne(self.datasource, java:fromString(collectionName), ()));
+            return queryOne(self.datasource, java:fromString(collectionName), ());
         }
         string jsonString = queryString.toJsonString();
-        json jsonValue = java:toString(queryOne(self.datasource, java:fromString(collectionName), java:fromString(jsonString))).
-                                                                                                      toJsonString();
+        json|ServerError jsonValue = queryOne(self.datasource, java:fromString(collectionName), java:fromString(jsonString));
         return jsonValue;
     }
 
@@ -76,7 +80,7 @@ public type Client client object {
     }
 };
 
-function initClient(ClientEndpointConfig config) returns handle = @java:Method {
+function initClient(ClientEndpointConfig config) returns handle|ClientError? = @java:Method {
     class: "org.wso2.mongo.endpoint.InitMongoDbClient"
 } external;
 
@@ -89,7 +93,7 @@ function queryData(handle datasource, handle collectionName, handle? queryString
     class: "org.wso2.mongo.actions.Find"
 } external;
 
-function queryOne(handle datasource, handle collectionName, handle? queryString) returns handle = @java:Method {
+function queryOne(handle datasource, handle collectionName, handle? queryString) returns json|ServerError = @java:Method {
     class: "org.wso2.mongo.actions.FindOne"
 } external;
 
