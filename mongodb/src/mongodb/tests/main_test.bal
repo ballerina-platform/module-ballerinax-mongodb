@@ -142,13 +142,38 @@ function testUpdateDocument() {
 
     Client|error mongoClient = new(mongoConfig);
     if (mongoClient is Client) {
-        var modifiedCount = mongoClient->replace("moviedetails", replaceFilter, replaceDoc);
+        var modifiedCount = mongoClient->replace("moviedetails", replaceFilter, replaceDoc, false);
         if (modifiedCount is int) {
             log:printInfo("Modified count: " + modifiedCount.toString());
             test:assertNotEquals(modifiedCount, 0, msg = "Document modification failed");
         } else {
             log:printInfo("Replacing data failed");
             test:assertFalse(true, msg = modifiedCount.detail()?.message);
+        }
+    } else {
+        log:printInfo("Error occured during client initialization");
+        test:assertFail(<string>mongoClient.detail()?.message);
+    }
+}
+
+
+@test:Config {
+    dependsOn: ["testUpdateDocument"]
+}
+function testUpdateDocumentUpsertTrue() {
+    log:printInfo("------------------ Updating Data (Upsert) -------------------");
+    json replaceFilter = {"name":"The Lion King 2"};
+    json replaceDoc = {"name": "The Lion King 2", "year": "2019", "rating" : 7};
+
+    Client|error mongoClient = new(mongoConfig);
+    if (mongoClient is Client) {
+        var modifiedCount = mongoClient->replace("moviedetails", replaceFilter, replaceDoc, true);
+        if (modifiedCount is int) {
+            log:printInfo("Modified count: " + modifiedCount.toString());
+            test:assertNotEquals(modifiedCount, 1, msg = "Document modification failed");
+        } else {
+            log:printInfo("Replacing data failed");
+            test:assertFail(msg = modifiedCount.detail()?.message);
         }
     } else {
         log:printInfo("Error occured during client initialization");

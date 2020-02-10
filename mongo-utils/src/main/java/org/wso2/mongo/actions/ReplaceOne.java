@@ -39,11 +39,12 @@ public class ReplaceOne extends AbstractMongoDBAction {
      * @param replacement the replacement document
      * @return the result of the replace operation
      */
-    public static Object replaceData(HandleValue datasource, String collectionName, Object filter, Object replacement) {
+    public static Object replaceData(HandleValue datasource, String collectionName, Object filter, Object replacement,
+                                     boolean upsert) {
         log.debug("Replacing data in collection " + collectionName);
         MongoDBDataSource mongoDataSource = (MongoDBDataSource) datasource.getValue();
         try {
-            return replaceOne(mongoDataSource, collectionName, filter, replacement);
+            return replaceOne(mongoDataSource, collectionName, filter, replacement, upsert);
         } catch (BallerinaMongoDbException e) {
             return MongoDBUtils.createBallerinaServerError(e);
         }

@@ -18,6 +18,7 @@ package org.wso2.mongo.actions;
 
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
+import com.mongodb.client.model.ReplaceOptions;
 import org.ballerinalang.jvm.JSONParser;
 import org.ballerinalang.jvm.values.StreamingJsonValue;
 import org.bson.Document;
@@ -87,9 +88,13 @@ public abstract class AbstractMongoDBAction {
     }
 
     protected static long replaceOne(MongoDBDataSource dbDataSource, String collectionName, Object filter,
-                                                                                  Object document) {
+                                     Object document, boolean upsert) {
         try {
             MongoCollection<Document> collection = getCollection(dbDataSource, collectionName);
+            if (upsert) {
+                ReplaceOptions replaceOptions = new ReplaceOptions().upsert(true);
+                return collection.replaceOne(jsonToDoc(filter), jsonToDoc(document), replaceOptions).getModifiedCount();
+            }
             return collection.replaceOne(jsonToDoc(filter), jsonToDoc(document)).getModifiedCount();
         } catch (Exception e) {
             throw new BallerinaMongoDbException("Error occurred while replacing data in collection.", e);

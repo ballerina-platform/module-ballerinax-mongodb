@@ -62,11 +62,11 @@ public type Client client object {
         return jsonValue;
     }
 
-    public remote function replace(string collectionName, json? filter, json? replacement) returns int|ServerError {
+    public remote function replace(string collectionName, json? filter, json? replacement, boolean upsert) returns int|ServerError {
         string jsonStringFilter = filter.toJsonString();
         string jsonStringReplacement = replacement.toJsonString();
         return replaceData(self.datasource, java:fromString(collectionName), java:fromString(jsonStringFilter),
-                                                                      java:fromString(jsonStringReplacement));
+                                                                      java:fromString(jsonStringReplacement), upsert);
     }
 
     public remote function delete(string collectionName, json? filter, boolean isMultiple) returns int|ServerError {
@@ -97,7 +97,7 @@ function queryOne(handle datasource, handle collectionName, handle? queryString)
     class: "org.wso2.mongo.actions.FindOne"
 } external;
 
-function replaceData(handle datasource, handle collectionName, handle? filter, handle? document)
+function replaceData(handle datasource, handle collectionName, handle? filter, handle? document, boolean upsert)
                                                                                returns int|ServerError = @java:Method {
     class: "org.wso2.mongo.actions.ReplaceOne"
 } external;
