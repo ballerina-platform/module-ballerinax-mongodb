@@ -25,7 +25,44 @@ ClientEndpointConfig mongoConfig = {
     options: {sslEnabled: false, serverSelectionTimeout: 500}
 };
 
+ClientEndpointConfig mongoConfigError = {
+    host: "",
+    dbName: "",
+    username: "",
+    password: ""
+};
+
 @test:Config {
+}
+public function initaliseInValidClient() {
+    log:printInfo("Start initalisation test failure");
+    Client|ClientError mongoClient = new(mongoConfigError);
+    if (mongoClient is ClientError) {
+        log:printInfo("Creating client failed");
+        test:assertTrue(true, mongoClient.reason());
+    } else {
+        log:printInfo("Creating client passed");
+        test:assertFail("Error expected when dBName in the config is null.");
+    }
+}
+
+@test:Config {
+        dependsOn: ["initaliseInValidClient"]
+}
+public function initaliseValidClient() {
+    log:printInfo("Start initalisation test failure");
+    Client|ClientError mongoClient = new(mongoConfig);
+    if (mongoClient is ClientError) {
+        log:printInfo("Creating client failed");
+        test:assertFalse(true, mongoClient.reason());
+    } else {
+        log:printInfo("Creating client passed");
+        test:assertTrue(true);
+    }
+}
+
+@test:Config {
+    dependsOn: ["initaliseValidClient"]
 }
 public function testInsertData() {
     log:printInfo("------------------ Inserting Data ------------------");
@@ -63,7 +100,7 @@ public function testFindData() {
        var returned = mongoClient->find("moviedetails", findDoc);
        if (returned is json[]) {
            test:assertEquals(returned.length(), 2, msg = "Querying all data failed");
-       }else {
+       } else {
            log:printInfo("Finding data failed");
            test:assertFalse(true, msg = returned.detail()?.message);
        }
