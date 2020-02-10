@@ -170,7 +170,18 @@ function testUpdateDocumentUpsertTrue() {
         var modifiedCount = mongoClient->replace("moviedetails", replaceFilter, replaceDoc, true);
         if (modifiedCount is int) {
             log:printInfo("Modified count: " + modifiedCount.toString());
-            test:assertNotEquals(modifiedCount, 1, msg = "Document modification failed");
+            test:assertEquals(modifiedCount, 0, msg = "Document modification failed");
+
+            json findOneDoc = { "name":"The Lion King 2" };
+            var returned = mongoClient->findOne("moviedetails", findOneDoc);
+            if (returned is json) {
+                log:printInfo("Queried data " + returned.toString());
+                test:assertNotEquals(returned.toString(), "null", "Querying one data failed");
+            } else {
+                log:printInfo("Finding data failed");
+                test:assertFalse(true, msg = returned.detail()?.message);
+            }
+
         } else {
             log:printInfo("Replacing data failed");
             test:assertFail(msg = modifiedCount.detail()?.message);
@@ -182,7 +193,7 @@ function testUpdateDocumentUpsertTrue() {
 }
 
 @test:Config {
-    dependsOn: ["testUpdateDocument"]
+    dependsOn: ["testUpdateDocumentUpsertTrue"]
 }
 function testDelete() {
     log:printInfo("------------------ Deleting Data -------------------");
