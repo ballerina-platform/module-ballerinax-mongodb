@@ -25,73 +25,116 @@ ClientEndpointConfig mongoConfig = {
     options: {sslEnabled: false, serverSelectionTimeout: 500}
 };
 
-Client mongoClient = check new (mongoConfig);
-
 @test:Config {
 }
 public function testInsertData() {
     log:printInfo("------------------ Inserting Data ------------------");
-
     json insertDocument = { name : "The Lion King", year : "2019", rating : 8 };
-    var returned = mongoClient->insert("moviedetails", insertDocument);
-    if (returned is error) {
-        log:printInfo("Inserting data failed");
-        test:assertFalse(false, msg = "Inserting data failed");
+    Client|error mongoClient = new(mongoConfig);
+    if (mongoClient is Client) {
+        var returned = mongoClient->insert("moviedetails", insertDocument);
+        if (returned is ConnectorError) {
+            log:printInfo("Inserting data failed");
+            test:assertFalse(true, msg = <string>returned.detail()?.message);
+        } else {
+            log:printInfo("Successfully inserted document into collection");
+            test:assertTrue(true);
+        }
     } else {
-        log:printInfo("Successfully inserted document into collection");
+        log:printInfo("Inserting data failed");
+        test:assertFalse(true, msg = <string>mongoClient.detail()?.message);
     }
 }
 
 @test:Config {
-    dependsOn: ["testInsertData"]
+   dependsOn: ["testInsertData"]
 }
 public function testFindData() {
-    log:printInfo("----------------- Querying All Data ----------------");
+   log:printInfo("----------------- Querying All Data ----------------");
 
-    json insertDocument1 = { name : "Joker", year : "2019", rating : 7 };
-    json insertDocument2 = { name : "Black Panther", year : "2018", rating : 7 };
-    var returned1 = mongoClient->insert("moviedetails", insertDocument1);
-    var returned2 = mongoClient->insert("moviedetails", insertDocument2);
+   json insertDocument1 = { name : "Joker", year : "2019", rating : 7 };
+   json insertDocument2 = { name : "Black Panther", year : "2018", rating : 7 };
+   Client|error mongoClient = new(mongoConfig);
+   if (mongoClient is Client) {
+       var returned1 = mongoClient->insert("moviedetails", insertDocument1);
+       var returned2 = mongoClient->insert("moviedetails", insertDocument2);
 
-    json findDoc = { year : "2019" };
-    json[] returned = mongoClient->find("moviedetails", findDoc);
-    test:assertEquals(returned.length(), 2, msg = "Querying all data failed");
+       json findDoc = { year : "2019" };
+       var returned = mongoClient->find("moviedetails", findDoc);
+       if (returned is json[]) {
+           test:assertEquals(returned.length(), 2, msg = "Querying all data failed");
+       }else {
+           log:printInfo("Finding data failed");
+           test:assertFalse(true, msg = returned.detail()?.message);
+       }
+   } else {
+       log:printInfo("Error occured during client initialization");
+       test:assertFail(<string>mongoClient.detail()?.message);
+   }
 }
 
 @test:Config {
-    dependsOn: ["testFindData"]
+   dependsOn: ["testFindData"]
 }
-public function testFindOneData() {
+public function testFindOneData() { 
     log:printInfo("----------------- Querying One Data ----------------");
 
     json findOneDoc = { year : "2019" };
-    json returned = mongoClient->findOne("moviedetails", findOneDoc);
-    test:assertNotEquals(returned.toString(), "null", "Querying one data failed");
+    Client|error mongoClient = new(mongoConfig);
+    if (mongoClient is Client) {
+        var returned = mongoClient->findOne("moviedetails", findOneDoc);
+        if (returned is json) {
+            test:assertNotEquals(returned.toString(), "null", "Querying one data failed");
+        } else {
+            log:printInfo("Finding data failed");
+            test:assertFalse(true, msg = returned.detail()?.message);
+        }
+    } else {
+        log:printInfo("Error occured during client initialization");
+        test:assertFail(<string>mongoClient.detail()?.message);
+    }
 }
 
 @test:Config {
     dependsOn: ["testFindOneData"]
 }
 function testUpdateDocument() {
+    log:printInfo("------------------ Updating Data -------------------");
+    json replaceFilter = {"name":"The Lion King"};
+    json replaceDoc = {"name": "The Lion King", "year": "2019", "rating" : 7};
 
-   log:printInfo("------------------ Updating Data -------------------");
-
-   json replaceFilter = {"name":"The Lion King"};
-   json replaceDoc = {"name": "The Lion King", "year": "2019", "rating" : 7};
-
-   int modifiedCount = mongoClient->replace("moviedetails", replaceFilter, replaceDoc, true);
-   log:printInfo("Modified count: " + modifiedCount.toString());
-   test:assertNotEquals(modifiedCount, 0, msg = "Document modification failed");
+    Client|error mongoClient = new(mongoConfig);
+    if (mongoClient is Client) {
+        var modifiedCount = mongoClient->replace("moviedetails", replaceFilter, replaceDoc);
+        if (modifiedCount is int) {
+            log:printInfo("Modified count: " + modifiedCount.toString());
+            test:assertNotEquals(modifiedCount, 0, msg = "Document modification failed");
+        } else {
+            log:printInfo("Replacing data failed");
+            test:assertFalse(true, msg = modifiedCount.detail()?.message);
+        }
+    } else {
+        log:printInfo("Error occured during client initialization");
+        test:assertFail(<string>mongoClient.detail()?.message);
+    }
 }
 
 @test:Config {
-   dependsOn: ["testUpdateDocument"]
+    dependsOn: ["testUpdateDocument"]
 }
 function testDelete() {
-   log:printInfo("------------------ Deleting Data -------------------");
-   json deleteFilter = {"rating": 7};
-   int deleteRet = mongoClient->delete("moviedetails", deleteFilter, true);
-   log:printInfo("Deleted count: " + deleteRet.toString());
-   test:assertNotEquals(deleteRet, 0, msg = "Document deletion failed");
-}
+    log:printInfo("------------------ Deleting Data -------------------");
+    json deleteFilter = {"rating": 7};
 
+    Client|error mongoClient = new(mongoConfig);
+    if (mongoClient is Client) {
+        var deleteRet = mongoClient->delete("moviedetails", deleteFilter, true);
+        if (deleteRet is int) {
+            log:printInfo("Deleted count: " + deleteRet.toString());
+            test:assertNotEquals(deleteRet, 0, msg = "Document deletion failed");
+        } else {
+            log:printInfo("Deleting data failed");
+            test:assertFalse(true, msg = deleteRet.detail()?.message);
+        } 
+    }
+}

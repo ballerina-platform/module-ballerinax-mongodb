@@ -19,7 +19,9 @@ package org.wso2.mongo.actions;
 import org.ballerinalang.jvm.values.HandleValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.wso2.mongo.BallerinaMongoDbException;
 import org.wso2.mongo.MongoDBDataSource;
+import org.wso2.mongo.MongoDBUtils;
 
 /**
  * {@code ReplaceOne} replaces a single document within the collection based on the filter..
@@ -28,10 +30,22 @@ import org.wso2.mongo.MongoDBDataSource;
 public class ReplaceOne extends AbstractMongoDBAction {
     private static Logger log = LoggerFactory.getLogger(Insert.class);
 
-    public static long replaceData(HandleValue datasource, String collectionName, Object filter, Object replacement,
-                                                                                                  boolean upsert) {
+    /**
+     * Replace a document in the collection according to the specified arguments.
+     *
+     * @param datasource datasource
+     * @param collectionName name of the collection
+     * @param filter the query filter to apply the the replace operation
+     * @param replacement the replacement document
+     * @return the result of the replace operation
+     */
+    public static Object replaceData(HandleValue datasource, String collectionName, Object filter, Object replacement) {
         log.debug("Replacing data in collection " + collectionName);
         MongoDBDataSource mongoDataSource = (MongoDBDataSource) datasource.getValue();
-        return replaceOne(mongoDataSource, collectionName, filter, replacement, upsert);
+        try {
+            return replaceOne(mongoDataSource, collectionName, filter, replacement);
+        } catch (BallerinaMongoDbException e) {
+            return MongoDBUtils.createBallerinaServerError(e);
+        }
     }
 }

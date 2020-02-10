@@ -177,7 +177,7 @@ public class MongoDBDataSource {
                     throw new UnsupportedOperationException("Functionality for \"" + authMechanism
                                                             + "\" authentication mechanism is not implemented yet");
             }
-        } else if (!username.isEmpty() && !password.isEmpty()) {
+        } else if (username != null && !username.isEmpty() && password != null && !password.isEmpty()) {
             mongoCredential = MongoCredential.createCredential(username, authSource, password.toCharArray());
         }
         return mongoCredential;

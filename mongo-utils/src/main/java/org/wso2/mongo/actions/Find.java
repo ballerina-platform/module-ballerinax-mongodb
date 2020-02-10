@@ -16,11 +16,12 @@
 
 package org.wso2.mongo.actions;
 
-import org.ballerinalang.jvm.values.ArrayValue;
 import org.ballerinalang.jvm.values.HandleValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.wso2.mongo.BallerinaMongoDbException;
 import org.wso2.mongo.MongoDBDataSource;
+import org.wso2.mongo.MongoDBUtils;
 
 /**
  * {@code Find} action select documents in a collection.
@@ -29,9 +30,21 @@ import org.wso2.mongo.MongoDBDataSource;
 public class Find extends AbstractMongoDBAction {
     private static Logger log = LoggerFactory.getLogger(Insert.class);
 
-    public static ArrayValue queryData(HandleValue datasource, String collectionName, Object queryString) {
+    /**
+     * Finds all documents in the collection.
+     *
+     * @param datasource datasource
+     * @param collectionName name of the collection
+     * @param queryString the query to find documents
+     * @return the result of the find data operation
+     */
+    public static Object queryData(HandleValue datasource, String collectionName, Object queryString) {
         log.debug("Querying data from collection " + collectionName);
         MongoDBDataSource mongoDataSource = (MongoDBDataSource) datasource.getValue();
-        return find(mongoDataSource, collectionName, queryString);
+        try {
+            return find(mongoDataSource, collectionName, queryString);
+        } catch (BallerinaMongoDbException e) {
+            return MongoDBUtils.createBallerinaServerError(e);
+        }
     }
 }
