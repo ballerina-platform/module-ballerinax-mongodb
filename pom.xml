@@ -61,12 +61,6 @@
                 <scope>test</scope>
             </dependency>
             <dependency>
-                <groupId>org.ballerinalang</groupId>
-                <artifactId>ballerina-runtime</artifactId>
-                <version>${ballerina.version}</version>
-                <scope>compile</scope>
-            </dependency>
-            <dependency>
                 <groupId>org.testng</groupId>
                 <artifactId>testng</artifactId>
                 <scope>test</scope>
