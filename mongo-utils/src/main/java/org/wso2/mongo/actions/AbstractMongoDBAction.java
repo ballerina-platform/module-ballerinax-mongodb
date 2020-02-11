@@ -40,7 +40,7 @@ public abstract class AbstractMongoDBAction {
                 itr = collection.find().iterator();
             }
             return new StreamingJsonValue(new MongoDBDataSource.MongoJSONDataSource(itr));
-        } catch(Exception e) {
+        } catch (Exception e) {
             throw new BallerinaMongoDbException("Error occurred while finding all documents in the collection.", e);
         }
     }

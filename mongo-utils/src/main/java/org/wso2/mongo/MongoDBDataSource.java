@@ -45,12 +45,12 @@ import java.util.List;
 import java.util.Locale;
 
 public class MongoDBDataSource {
+    private static final String DEFAULT_USER_DB = "admin";
     private MongoDatabase db;
     private MongoClient client;
 
-    private static final String DEFAULT_USER_DB = "admin";
-
-    public MongoDBDataSource() {}
+    public MongoDBDataSource() {
+    }
 
     public MongoDatabase getMongoDatabase() {
         return db;
