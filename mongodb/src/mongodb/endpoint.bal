@@ -32,11 +32,11 @@ public type Client client object {
 
     # Gets called when the endpoint is being initialized during the package initialization.
     public function __init(ClientEndpointConfig config) returns ClientError? {
-        handle | ClientError? result = initClient(config);
-        if (result is ClientError?) {
-            return result;
-        } else {
+        handle? result = check initClient(config);
+        if (result is handle) {
             self.datasource = result;
+        } else {
+            return result;
         }
     }
 
