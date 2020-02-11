@@ -32,12 +32,7 @@ public type Client client object {
 
     # Gets called when the endpoint is being initialized during the package initialization.
     public function __init(ClientEndpointConfig config) returns ClientError? {
-        handle? result = check initClient(config);
-        if (result is handle) {
-            self.datasource = result;
-        } else {
-            return result;
-        }
+        self.datasource = check initClient(config);
     }
 
     public remote function insert(string collectionName, json? queryString) returns ServerError? {
@@ -80,7 +75,7 @@ public type Client client object {
     }
 };
 
-function initClient(ClientEndpointConfig config) returns handle|ClientError? = @java:Method {
+function initClient(ClientEndpointConfig config) returns handle|ClientError = @java:Method {
     class: "org.wso2.mongo.endpoint.InitMongoDbClient"
 } external;
 
