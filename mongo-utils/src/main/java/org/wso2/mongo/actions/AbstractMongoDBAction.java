@@ -59,7 +59,7 @@ public abstract class AbstractMongoDBAction {
             } else {
                 return JSONParser.parse(doc.toJson());
             }
-        } catch(Exception e) {
+        } catch (Exception e) {
             throw new BallerinaMongoDbException("Error occurred while finding document in the collection.", e);
         }
     }
@@ -117,4 +117,3 @@ public abstract class AbstractMongoDBAction {
         }
     }
 }
-
