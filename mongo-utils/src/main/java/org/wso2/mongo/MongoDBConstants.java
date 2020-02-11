@@ -16,6 +16,9 @@
 
 package org.wso2.mongo;
 
+/**
+ * Constants used in the module-mongodb.
+ */
 public class MongoDBConstants {
     public static final String ORGANIZATION_NAME = "wso2";
     public static final String MODULE_NAME = "mongodb";

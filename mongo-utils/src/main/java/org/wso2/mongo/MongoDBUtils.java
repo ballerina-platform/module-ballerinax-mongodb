@@ -29,6 +29,9 @@ import static org.wso2.mongo.MongoDBConstants.MODULE_VERSION;
 import static org.wso2.mongo.MongoDBConstants.ORGANIZATION_NAME;
 import static org.wso2.mongo.MongoDBConstants.SERVER_ERROR_REASON;
 
+/**
+ * Util class.
+ */
 public class MongoDBUtils {
     public static ErrorValue createBallerinaServerError(BallerinaMongoDbException e) {
         MapValue record = createRecordValue(e);

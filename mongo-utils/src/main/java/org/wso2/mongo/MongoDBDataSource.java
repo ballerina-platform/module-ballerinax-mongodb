@@ -44,6 +44,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * Java implementation of MongoDB datasource.
+ */
 public class MongoDBDataSource {
     private static final String DEFAULT_USER_DB = "admin";
     private MongoDatabase db;
