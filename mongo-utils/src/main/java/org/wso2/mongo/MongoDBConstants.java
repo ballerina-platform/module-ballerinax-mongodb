@@ -22,7 +22,7 @@ package org.wso2.mongo;
 public class MongoDBConstants {
     public static final String ORGANIZATION_NAME = "wso2";
     public static final String MODULE_NAME = "mongodb";
-    public static final String MODULE_VERSION = "0.9.2";
+    public static final String MODULE_VERSION = "0.10.0";
     public static final String ERROR_DATAIL_RECORD_TYPE_NAME = "ErrorDetail";
 
     //Error reasons
