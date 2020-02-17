@@ -16,10 +16,12 @@
 
 package org.wso2.mongo.actions;
 
+import org.ballerinalang.jvm.values.HandleValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.ballerinalang.jvm.values.HandleValue;
+import org.wso2.mongo.BallerinaMongoDbException;
 import org.wso2.mongo.MongoDBDataSource;
+import org.wso2.mongo.MongoDBUtils;
 
 /**
  * {@code Delete} action to delete documents in a collection.
@@ -28,9 +30,23 @@ import org.wso2.mongo.MongoDBDataSource;
 public class Delete extends AbstractMongoDBAction {
     private static Logger log = LoggerFactory.getLogger(Insert.class);
 
-    public static long deleteData(HandleValue datasource, String collectionName, Object filter, boolean isMultiple) {
+    /**
+     * Removes documents from the collection that match the given query filter.  If no documents match, the collection
+     * is not modified.
+     *
+     * @param datasource datasource
+     * @param collectionName name of the collection
+     * @param filter the query filter to apply the the delete operation
+     * @param isMultiple true if more than one document should be deleted else false
+     * @return the result of the remove operation
+     */
+    public static Object deleteData(HandleValue datasource, String collectionName, Object filter, boolean isMultiple) {
         log.debug("Deleting documents in collection " + collectionName);
         MongoDBDataSource mongoDataSource = (MongoDBDataSource) datasource.getValue();
-        return delete(mongoDataSource, collectionName, filter, isMultiple);
+        try {
+            return delete(mongoDataSource, collectionName, filter, isMultiple);
+        } catch (BallerinaMongoDbException e) {
+            return MongoDBUtils.createBallerinaDatabaseError(e);
+        }
     }
 }

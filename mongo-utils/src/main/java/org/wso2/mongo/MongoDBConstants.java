@@ -1,4 +1,4 @@
-// Copyright (c) 2019 WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+// Copyright (c) 2020 WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
 //
 // WSO2 Inc. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -16,17 +16,16 @@
 
 package org.wso2.mongo;
 
-import org.ballerinalang.jvm.util.exceptions.BallerinaException;
-
 /**
- * Exception class for mongo
+ * Constants used in the module-mongodb.
  */
-public class BallerinaMongoDbException extends BallerinaException {
-    public BallerinaMongoDbException(String message) {
-        super(message);
-    }
+public class MongoDBConstants {
+    public static final String ORGANIZATION_NAME = "wso2";
+    public static final String MODULE_NAME = "mongodb";
+    public static final String MODULE_VERSION = "0.10.0";
+    public static final String ERROR_DETAIL_RECORD_TYPE_NAME = "ErrorDetail";
 
-    public BallerinaMongoDbException(String message, Throwable cause) {
-        super(message, cause);
-    }
+    //Error reasons
+    public static final String DATABASE_ERROR_REASON = "{wso2/mongodb}DatabaseError";
+    public static final String APPLICATION_ERROR_REASON = "{wso2/mongodb}ApplicationError";
 }

@@ -44,13 +44,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * Java implementation of MongoDB datasource.
+ */
 public class MongoDBDataSource {
+    private static final String DEFAULT_USER_DB = "admin";
     private MongoDatabase db;
     private MongoClient client;
 
-    private static final String DEFAULT_USER_DB = "admin";
-
-    public MongoDBDataSource() {}
+    public MongoDBDataSource() {
+    }
 
     public MongoDatabase getMongoDatabase() {
         return db;
@@ -78,7 +81,11 @@ public class MongoDBDataSource {
             this.client = createMongoClient(serverAddress);
         }
 
-        this.db = this.client.getDatabase(dbName);
+        try {
+            this.db = this.client.getDatabase(dbName);
+        } catch (IllegalArgumentException e) {
+            throw new BallerinaMongoDbException("Invalid dbName found.", e);
+        }
         return true;
     }
 
@@ -128,7 +135,11 @@ public class MongoDBDataSource {
      * @return
      */
     private MongoClient createMongoClient(ServerAddress serverAddress) {
-        return new MongoClient(serverAddress);
+        try {
+            return new MongoClient(serverAddress);
+        } catch (Exception e) {
+            throw new BallerinaMongoDbException(e.getMessage());
+        }
     }
 
     /**
@@ -177,7 +188,7 @@ public class MongoDBDataSource {
                     throw new UnsupportedOperationException("Functionality for \"" + authMechanism
                                                             + "\" authentication mechanism is not implemented yet");
             }
-        } else if (!username.isEmpty() && !password.isEmpty()) {
+        } else if (username != null && !username.isEmpty() && password != null && !password.isEmpty()) {
             mongoCredential = MongoCredential.createCredential(username, authSource, password.toCharArray());
         }
         return mongoCredential;

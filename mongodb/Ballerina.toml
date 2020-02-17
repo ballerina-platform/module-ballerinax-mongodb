@@ -1,6 +1,6 @@
 [project]
 org-name= "wso2"
-version= "0.9.1"
+version= "0.10.0"
 
 [dependencies]
 
@@ -9,7 +9,7 @@ target = "java8"
 
     [[platform.libraries]]
     module = "mongodb"
-    path = "../mongo-utils/target/mongo-utils-0.9.1.jar"
+    path = "../mongo-utils/target/mongo-utils-0.10.0.jar"
     artafactId = "mongo-utils"
-    version = "0.9.1"
+    version = "0.10.0"
     groupId = "org.wso2.ei"

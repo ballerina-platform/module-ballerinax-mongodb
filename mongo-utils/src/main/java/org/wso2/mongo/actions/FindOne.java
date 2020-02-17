@@ -19,7 +19,9 @@ package org.wso2.mongo.actions;
 import org.ballerinalang.jvm.values.HandleValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.wso2.mongo.BallerinaMongoDbException;
 import org.wso2.mongo.MongoDBDataSource;
+import org.wso2.mongo.MongoDBUtils;
 
 /**
  * {@code FindOne} action selects the first document that satisfies the given query criteria.
@@ -28,9 +30,21 @@ import org.wso2.mongo.MongoDBDataSource;
 public class FindOne extends AbstractMongoDBAction {
     private static Logger log = LoggerFactory.getLogger(Insert.class);
 
+    /**
+     * Finds first document in the collection that matches the given query.
+     *
+     * @param datasource datasource
+     * @param collectionName name of the collection
+     * @param queryString the query to find document
+     * @return the result of the find one data operation
+     */
     public static Object queryOne(HandleValue datasource, String collectionName, Object queryString) {
         log.debug("Querying first document");
         MongoDBDataSource mongoDataSource = (MongoDBDataSource) datasource.getValue();
-        return findOne(mongoDataSource, collectionName, queryString);
+        try {
+            return findOne(mongoDataSource, collectionName, queryString);
+        } catch (BallerinaMongoDbException e) {
+            return MongoDBUtils.createBallerinaDatabaseError(e);
+        }
     }
 }

@@ -5,7 +5,7 @@
     <parent>
         <artifactId>module-mongo</artifactId>
         <groupId>org.wso2.ei</groupId>
-        <version>0.9.1</version>
+        <version>0.10.0</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -19,10 +19,6 @@
         <dependency>
             <groupId>org.mongodb</groupId>
             <artifactId>mongo-java-driver</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.mongodb</groupId>
-            <artifactId>mongodb-driver-core</artifactId>
         </dependency>
         <dependency>
             <groupId>org.mongodb</groupId>
