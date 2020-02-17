@@ -46,7 +46,7 @@ public class Delete extends AbstractMongoDBAction {
         try {
             return delete(mongoDataSource, collectionName, filter, isMultiple);
         } catch (BallerinaMongoDbException e) {
-            return MongoDBUtils.createBallerinaServerError(e);
+            return MongoDBUtils.createBallerinaDatabaseError(e);
         }
     }
 }

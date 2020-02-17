@@ -26,10 +26,10 @@ public type ErrorDetail record {
 };
 
 // Error reasons
-public const SERVER_ERROR_REASON = "{wso2/mongodb}ServerError";
-public const CLIENT_ERROR_REASON = "{wso2/mongodb}ClientError";
+public const DATABASE_ERROR_REASON = "{wso2/mongodb}DatabaseError";
+public const APPLICATION_ERROR_REASON = "{wso2/mongodb}ApplicationError";
 
-public type ServerError error<SERVER_ERROR_REASON, ErrorDetail>;
-public type ClientError error<CLIENT_ERROR_REASON, ErrorDetail>;
+public type DatabaseError error<DATABASE_ERROR_REASON, ErrorDetail>;
+public type ApplicationError error<APPLICATION_ERROR_REASON, ErrorDetail>;
 
-public type ConnectorError ClientError|ServerError;
+public type ConnectorError DatabaseError|ApplicationError;

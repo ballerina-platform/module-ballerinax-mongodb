@@ -45,7 +45,7 @@ public class Insert extends AbstractMongoDBAction {
         try {
             insert(mongoDataSource, collectionName, document);
         } catch (BallerinaMongoDbException e) {
-            return MongoDBUtils.createBallerinaServerError(e);
+            return MongoDBUtils.createBallerinaDatabaseError(e);
         }
         return null;
     }

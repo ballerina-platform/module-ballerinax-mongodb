@@ -46,7 +46,7 @@ public class ReplaceOne extends AbstractMongoDBAction {
         try {
             return replaceOne(mongoDataSource, collectionName, filter, replacement, upsert);
         } catch (BallerinaMongoDbException e) {
-            return MongoDBUtils.createBallerinaServerError(e);
+            return MongoDBUtils.createBallerinaDatabaseError(e);
         }
     }
 }

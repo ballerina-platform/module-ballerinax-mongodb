@@ -39,7 +39,7 @@ public class InitMongoDbClient {
             dataSource.init(host, dbName, username, password, options);
             return new HandleValue(dataSource);
         } catch (BallerinaMongoDbException e) {
-            return MongoDBUtils.createBallerinaClientError(e);
+            return MongoDBUtils.createBallerinaApplicationError(e);
         }
     }
 }

@@ -44,7 +44,7 @@ public class FindOne extends AbstractMongoDBAction {
         try {
             return findOne(mongoDataSource, collectionName, queryString);
         } catch (BallerinaMongoDbException e) {
-            return MongoDBUtils.createBallerinaServerError(e);
+            return MongoDBUtils.createBallerinaDatabaseError(e);
         }
     }
 }

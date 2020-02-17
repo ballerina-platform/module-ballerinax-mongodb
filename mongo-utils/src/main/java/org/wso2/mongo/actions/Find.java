@@ -44,7 +44,7 @@ public class Find extends AbstractMongoDBAction {
         try {
             return find(mongoDataSource, collectionName, queryString);
         } catch (BallerinaMongoDbException e) {
-            return MongoDBUtils.createBallerinaServerError(e);
+            return MongoDBUtils.createBallerinaDatabaseError(e);
         }
     }
 }

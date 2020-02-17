@@ -22,30 +22,30 @@ import org.ballerinalang.jvm.types.BPackage;
 import org.ballerinalang.jvm.values.ErrorValue;
 import org.ballerinalang.jvm.values.MapValue;
 
-import static org.wso2.mongo.MongoDBConstants.CLIENT_ERROR_REASON;
-import static org.wso2.mongo.MongoDBConstants.ERROR_DATAIL_RECORD_TYPE_NAME;
+import static org.wso2.mongo.MongoDBConstants.APPLICATION_ERROR_REASON;
+import static org.wso2.mongo.MongoDBConstants.DATABASE_ERROR_REASON;
+import static org.wso2.mongo.MongoDBConstants.ERROR_DETAIL_RECORD_TYPE_NAME;
 import static org.wso2.mongo.MongoDBConstants.MODULE_NAME;
 import static org.wso2.mongo.MongoDBConstants.MODULE_VERSION;
 import static org.wso2.mongo.MongoDBConstants.ORGANIZATION_NAME;
-import static org.wso2.mongo.MongoDBConstants.SERVER_ERROR_REASON;
 
 /**
  * Util class.
  */
 public class MongoDBUtils {
-    public static ErrorValue createBallerinaServerError(BallerinaMongoDbException e) {
+    public static ErrorValue createBallerinaDatabaseError(BallerinaMongoDbException e) {
         MapValue record = createRecordValue(e);
-        return BallerinaErrors.createError(SERVER_ERROR_REASON, record);
+        return BallerinaErrors.createError(DATABASE_ERROR_REASON, record);
     }
 
-    public static ErrorValue createBallerinaClientError(BallerinaMongoDbException e) {
+    public static ErrorValue createBallerinaApplicationError(BallerinaMongoDbException e) {
         MapValue record = createRecordValue(e);
-        return BallerinaErrors.createError(CLIENT_ERROR_REASON, record);
+        return BallerinaErrors.createError(APPLICATION_ERROR_REASON, record);
     }
 
     private static MapValue createRecordValue(BallerinaMongoDbException e) {
         BPackage bpackage = new BPackage(ORGANIZATION_NAME, MODULE_NAME, MODULE_VERSION);
-        MapValue recordValue = BallerinaValues.createRecordValue(bpackage, ERROR_DATAIL_RECORD_TYPE_NAME);
+        MapValue recordValue = BallerinaValues.createRecordValue(bpackage, ERROR_DETAIL_RECORD_TYPE_NAME);
         return BallerinaValues.createRecord(recordValue, e.getMessage(), e.getCause(), e.getDetail());
     }
 }

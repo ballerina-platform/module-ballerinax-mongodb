@@ -31,16 +31,16 @@ public type Client client object {
     handle datasource;
 
     # Gets called when the endpoint is being initialized during the package initialization.
-    public function __init(ClientEndpointConfig config) returns ClientError? {
+    public function __init(ClientEndpointConfig config) returns ApplicationError? {
         self.datasource = check initClient(config);
     }
 
-    public remote function insert(string collectionName, json? queryString) returns ServerError? {
+    public remote function insert(string collectionName, json? queryString) returns DatabaseError? {
         string jsonString = queryString.toJsonString();
         return insertData(self.datasource, java:fromString(collectionName), java:fromString(jsonString));
     }
 
-    public remote function find(string collectionName, json? queryString) returns json[]|ServerError {
+    public remote function find(string collectionName, json? queryString) returns json[]|DatabaseError {
         if (queryString is ()) {
             return queryData(self.datasource, java:fromString(collectionName), ());
         }
@@ -48,23 +48,23 @@ public type Client client object {
         return queryData(self.datasource, java:fromString(collectionName), java:fromString(jsonString));
     }
 
-    public remote function findOne(string collectionName, json? queryString) returns json|ServerError {
+    public remote function findOne(string collectionName, json? queryString) returns json|DatabaseError {
         if (queryString is ()) {
             return queryOne(self.datasource, java:fromString(collectionName), ());
         }
         string jsonString = queryString.toJsonString();
-        json|ServerError jsonValue = queryOne(self.datasource, java:fromString(collectionName), java:fromString(jsonString));
+        json|DatabaseError jsonValue = queryOne(self.datasource, java:fromString(collectionName), java:fromString(jsonString));
         return jsonValue;
     }
 
-    public remote function replace(string collectionName, json? filter, json? replacement, boolean upsert) returns int|ServerError {
+    public remote function replace(string collectionName, json? filter, json? replacement, boolean upsert) returns int|DatabaseError {
         string jsonStringFilter = filter.toJsonString();
         string jsonStringReplacement = replacement.toJsonString();
         return replaceData(self.datasource, java:fromString(collectionName), java:fromString(jsonStringFilter),
                                                                       java:fromString(jsonStringReplacement), upsert);
     }
 
-    public remote function delete(string collectionName, json? filter, boolean isMultiple) returns int|ServerError {
+    public remote function delete(string collectionName, json? filter, boolean isMultiple) returns int|DatabaseError {
         string jsonStringFilter = filter.toJsonString();
         return deleteData(self.datasource, java:fromString(collectionName), java:fromString(jsonStringFilter),
                                                                        isMultiple);
@@ -75,30 +75,30 @@ public type Client client object {
     }
 };
 
-function initClient(ClientEndpointConfig config) returns handle|ClientError = @java:Method {
+function initClient(ClientEndpointConfig config) returns handle|ApplicationError = @java:Method {
     class: "org.wso2.mongo.endpoint.InitMongoDbClient"
 } external;
 
-function insertData(handle datasource, handle collectionName, handle queryString) returns ServerError? = @java:Method {
+function insertData(handle datasource, handle collectionName, handle queryString) returns DatabaseError? = @java:Method {
     class: "org.wso2.mongo.actions.Insert"
 } external;
 
 function queryData(handle datasource, handle collectionName, handle? queryString)
-                                                                            returns json[]|ServerError = @java:Method {
+                                                                            returns json[]|DatabaseError = @java:Method {
     class: "org.wso2.mongo.actions.Find"
 } external;
 
-function queryOne(handle datasource, handle collectionName, handle? queryString) returns json|ServerError = @java:Method {
+function queryOne(handle datasource, handle collectionName, handle? queryString) returns json|DatabaseError = @java:Method {
     class: "org.wso2.mongo.actions.FindOne"
 } external;
 
 function replaceData(handle datasource, handle collectionName, handle? filter, handle? document, boolean upsert)
-                                                                               returns int|ServerError = @java:Method {
+                                                                               returns int|DatabaseError = @java:Method {
     class: "org.wso2.mongo.actions.ReplaceOne"
 } external;
 
 function deleteData(handle datasource, handle collectionName, handle? filter, boolean isMultiple)
-                                                                               returns int|ServerError = @java:Method {
+                                                                               returns int|DatabaseError = @java:Method {
     class: "org.wso2.mongo.actions.Delete"
 } external;
 

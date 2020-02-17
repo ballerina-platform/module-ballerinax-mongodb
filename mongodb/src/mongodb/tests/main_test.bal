@@ -36,8 +36,8 @@ ClientEndpointConfig mongoConfigError = {
 }
 public function initaliseInValidClient() {
     log:printInfo("Start initalisation test failure");
-    Client|ClientError mongoClient = new(mongoConfigError);
-    if (mongoClient is ClientError) {
+    Client|ApplicationError mongoClient = new(mongoConfigError);
+    if (mongoClient is ApplicationError) {
         log:printInfo("Creating client failed");
         test:assertTrue(true, mongoClient.reason());
     } else {
@@ -51,8 +51,8 @@ public function initaliseInValidClient() {
 }
 public function initaliseValidClient() {
     log:printInfo("Start initalisation test failure");
-    Client|ClientError mongoClient = new(mongoConfig);
-    if (mongoClient is ClientError) {
+    Client|ApplicationError mongoClient = new(mongoConfig);
+    if (mongoClient is ApplicationError) {
         log:printInfo("Creating client failed");
         test:assertFalse(true, mongoClient.reason());
     } else {

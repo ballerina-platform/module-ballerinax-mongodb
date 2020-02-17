@@ -23,9 +23,9 @@ public class MongoDBConstants {
     public static final String ORGANIZATION_NAME = "wso2";
     public static final String MODULE_NAME = "mongodb";
     public static final String MODULE_VERSION = "0.10.0";
-    public static final String ERROR_DATAIL_RECORD_TYPE_NAME = "ErrorDetail";
+    public static final String ERROR_DETAIL_RECORD_TYPE_NAME = "ErrorDetail";
 
     //Error reasons
-    public static final String SERVER_ERROR_REASON = "{wso2/mongodb}ServerError";
-    public static final String CLIENT_ERROR_REASON = "{wso2/mongodb}ClientError";
+    public static final String DATABASE_ERROR_REASON = "{wso2/mongodb}DatabaseError";
+    public static final String APPLICATION_ERROR_REASON = "{wso2/mongodb}ApplicationError";
 }
