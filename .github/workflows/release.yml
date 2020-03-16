@@ -1,0 +1,28 @@
+
+name: Deployment
+
+on: [release]
+
+jobs:
+    build:
+
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v2
+            -  run: mvn clean install -pl mongo-utils
+            -  run: cd mongodb
+            - name: Ballerina Build
+              uses: ballerina-platform/ballerina-action/@master
+              with:
+                  args:
+                      build -a -c --skip-tests
+                  
+            - name: Ballerina Push
+              uses: ballerina-platform/ballerina-action/@master
+              with:
+                  args:
+                      push -a
+              env:
+                  WORKING_DIR: ./mongodb
+                  BALLERINA_CENTRAL_ACCESS_TOKEN: ${{ secrets.BALLERINA_CENTRAL_ACCESS_TOKEN }}

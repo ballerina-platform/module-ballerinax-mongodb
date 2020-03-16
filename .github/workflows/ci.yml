@@ -1,0 +1,20 @@
+name: CI
+
+on: [push]
+
+jobs:
+    build:
+
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v2
+            -  run: mvn clean install -pl mongo-utils
+            -  run: cd mongodb
+            - name: Ballerina Build
+              uses: ballerina-platform/ballerina-action/@master
+              with:
+                  args:
+                      build -a -c --skip-tests
+
+
