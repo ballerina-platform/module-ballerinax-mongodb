@@ -8,7 +8,7 @@ The Mongo DB connector allows you to connect to Mongo DB from Ballerina and perf
 
 |                             |       Version               |
 |:---------------------------:|:---------------------------:|
-| Ballerina Language          | 1.1.x                       |
+| Ballerina Language          | 1.2.0                       |
 | Mongo DB                    | V4.2.0                      |
 
 ## Sample

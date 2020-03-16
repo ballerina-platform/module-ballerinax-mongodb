@@ -13,8 +13,8 @@
 # limitations under the License.
 
 script:
-  - wget https://product-dist.ballerina.io/downloads/1.1.0/ballerina-linux-installer-x64-1.1.0.deb
-  - sudo dpkg -i ballerina-linux-installer-x64-1.1.0.deb
+  - wget https://product-dist.ballerina.io/downloads/1.2.0/ballerina-linux-installer-x64-1.2.0.deb
+  - sudo dpkg -i ballerina-linux-installer-x64-1.2.0.deb
   - sudo apt-get install -f
   - cd mongo-utils
   - mvn clean install
