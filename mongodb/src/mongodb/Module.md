@@ -8,7 +8,7 @@ The Mongo DB connector allows you to connect to Mongo DB from Ballerina and perf
 
 |                             |       Version               |
 |:---------------------------:|:---------------------------:|
-| Ballerina Language          | 1.1.1                       |
+| Ballerina Language          | 1.1.x                       |
 | Mongo DB                    | V4.2.0                      |
 
 ## Sample
@@ -75,7 +75,7 @@ public function main() returns error? {
     } else {
         log:printInfo("Error in replacing data");
     }
-    
+
      mongoClient.stop();
 }
 
