@@ -27,7 +27,7 @@
     <groupId>org.wso2.ei</groupId>
     <artifactId>module-mongo</artifactId>
     <packaging>pom</packaging>
-    <version>0.10.0</version>
+    <version>0.9.0</version>
     <name>Ballerina MongoDB Module</name>
 
     <modules>
@@ -81,7 +81,7 @@
     <properties>
         <project-home>${project.basedir}</project-home>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <ballerina.version>1.1.1</ballerina.version>
+        <ballerina.version>1.1.4</ballerina.version>
         <maven.checkstyleplugin.excludes>**/generated/**</maven.checkstyleplugin.excludes>
         <maven.spotbugsplugin.exclude.file>spotbugs-exclude.xml</maven.spotbugsplugin.exclude.file>
         <slf4j.version>1.7.21</slf4j.version>
