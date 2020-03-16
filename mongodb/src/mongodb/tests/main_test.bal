@@ -22,7 +22,7 @@ ClientEndpointConfig mongoConfig = {
     dbName: "moviecollection",
     username: "",
     password: "",
-    options: {sslEnabled: false, serverSelectionTimeout: 500}
+    options: {sslEnabled: false, serverSelectionTimeout: 5000}
 };
 
 ClientEndpointConfig mongoConfigError = {
