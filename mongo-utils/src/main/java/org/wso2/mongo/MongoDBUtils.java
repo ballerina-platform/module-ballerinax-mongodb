@@ -26,7 +26,6 @@ import static org.wso2.mongo.MongoDBConstants.APPLICATION_ERROR_REASON;
 import static org.wso2.mongo.MongoDBConstants.DATABASE_ERROR_REASON;
 import static org.wso2.mongo.MongoDBConstants.ERROR_DETAIL_RECORD_TYPE_NAME;
 import static org.wso2.mongo.MongoDBConstants.MODULE_NAME;
-import static org.wso2.mongo.MongoDBConstants.MODULE_VERSION;
 import static org.wso2.mongo.MongoDBConstants.ORGANIZATION_NAME;
 
 /**
@@ -44,7 +43,7 @@ public class MongoDBUtils {
     }
 
     private static MapValue createRecordValue(BallerinaMongoDbException e) {
-        BPackage bpackage = new BPackage(ORGANIZATION_NAME, MODULE_NAME, MODULE_VERSION);
+        BPackage bpackage = new BPackage(ORGANIZATION_NAME, MODULE_NAME);
         MapValue recordValue = BallerinaValues.createRecordValue(bpackage, ERROR_DETAIL_RECORD_TYPE_NAME);
         return BallerinaValues.createRecord(recordValue, e.getMessage(), e.getCause(), e.getDetail());
     }

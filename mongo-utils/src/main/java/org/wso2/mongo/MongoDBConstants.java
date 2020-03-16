@@ -20,12 +20,11 @@ package org.wso2.mongo;
  * Constants used in the module-mongodb.
  */
 public class MongoDBConstants {
-    public static final String ORGANIZATION_NAME = "wso2";
+    public static final String ORGANIZATION_NAME = "ballerina";
     public static final String MODULE_NAME = "mongodb";
-    public static final String MODULE_VERSION = "0.9.0";
     public static final String ERROR_DETAIL_RECORD_TYPE_NAME = "ErrorDetail";
 
     //Error reasons
-    public static final String DATABASE_ERROR_REASON = "{wso2/mongodb}DatabaseError";
-    public static final String APPLICATION_ERROR_REASON = "{wso2/mongodb}ApplicationError";
+    public static final String DATABASE_ERROR_REASON = "{ballerina/mongodb}DatabaseError";
+    public static final String APPLICATION_ERROR_REASON = "{ballerina/mongodb}ApplicationError";
 }
