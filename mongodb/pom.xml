@@ -22,13 +22,12 @@
     <parent>
         <artifactId>module-mongo</artifactId>
         <groupId>org.wso2.ei</groupId>
-        <version>0.9.0</version>
+        <version>0.10.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>mongodb</artifactId>
-    <version>0.9.0</version>
     <packaging>pom</packaging>
     <name>MongoDB Module - Ballerina Implementation</name>
     <url>https://ballerina.io/</url>
