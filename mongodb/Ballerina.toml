@@ -1,6 +1,10 @@
 [project]
 org-name= "ballerina"
 version= "0.10.0"
+license= ["Apache-2.0"]
+authors = ["Ballerina"]
+keywords = ["mongodb",]
+repository = "https://github.com/ballerina-platform/module-mongodb"
 
 [dependencies]
 
