@@ -16,6 +16,8 @@ jobs:
               with:
                 args:
                   build -a -c --skip-tests --sourceroot mongodb
+              env:
+                JAVA_OPTS: -DBALLERINA_DEV_COMPILE_BALLERINA_ORG=true
                   
             - name: Ballerina Push
               uses: ballerina-platform/ballerina-action/@master
