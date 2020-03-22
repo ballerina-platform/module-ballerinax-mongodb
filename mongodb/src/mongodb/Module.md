@@ -8,17 +8,17 @@ The Mongo DB connector allows you to connect to Mongo DB from Ballerina and perf
 
 |                             |       Version               |
 |:---------------------------:|:---------------------------:|
-| Ballerina Language          | 1.1.x                       |
+| Ballerina Language          | 1.2.0                       |
 | Mongo DB                    | V4.2.0                      |
 
 ## Sample
 
-First, import the `wso2/mongodb` module into the ballerina project.
+First, import the `ballerina/mongodb` module into the ballerina project.
 
 ```ballerina
 import ballerina/config;
 import ballerina/log;
-import wso2/mongodb;
+import ballerina/mongodb;
 
 public function main() returns error? {
     host: config:getAsString("MONGO_HOST"),

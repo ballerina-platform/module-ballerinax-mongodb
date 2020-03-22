@@ -18,7 +18,7 @@
 // MongoDB Client Endpoint
 ///////////////////////////////
 
-import ballerinax/java;
+import ballerina/java;
 
 ///////////////////////////////
 // MongoDB Client Endpoint

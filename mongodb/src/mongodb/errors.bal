@@ -26,8 +26,8 @@ public type ErrorDetail record {
 };
 
 // Error reasons
-public const DATABASE_ERROR_REASON = "{wso2/mongodb}DatabaseError";
-public const APPLICATION_ERROR_REASON = "{wso2/mongodb}ApplicationError";
+public const DATABASE_ERROR_REASON = "{ballerina/mongodb}DatabaseError";
+public const APPLICATION_ERROR_REASON = "{ballerina/mongodb}ApplicationError";
 
 public type DatabaseError error<DATABASE_ERROR_REASON, ErrorDetail>;
 public type ApplicationError error<APPLICATION_ERROR_REASON, ErrorDetail>;

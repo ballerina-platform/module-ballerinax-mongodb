@@ -13,10 +13,9 @@
 # limitations under the License.
 
 script:
-  - wget https://product-dist.ballerina.io/downloads/1.1.0/ballerina-linux-installer-x64-1.1.0.deb
-  - sudo dpkg -i ballerina-linux-installer-x64-1.1.0.deb
+  - wget https://product-dist.ballerina.io/downloads/1.2.0/ballerina-linux-installer-x64-1.2.0.deb
+  - sudo dpkg -i ballerina-linux-installer-x64-1.2.0.deb
   - sudo apt-get install -f
-  - cd mongo-utils
-  - mvn clean install
-  - cd ../mongodb
-  - ballerina build -a -c --skip-tests
+  - export JAVA_OPTS="-DBALLERINA_DEV_COMPILE_BALLERINA_ORG=true"
+  - mvn clean install -pl mongo-utils
+  - ballerina build -a -c --skip-tests --sourceroot mongodb

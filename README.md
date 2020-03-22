@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/wso2-ballerina/module-mongodb.svg?branch=master)](https://travis-ci.org/wso2-ballerina/module-mongodb)
+[![Build Status](https://travis-ci.org/ballerina-platform/module-mongodb.svg?branch=master)](https://travis-ci.org/ballerina-platform/module-mongodb)
 
 Ballerina MongoDB Client is used to connect Ballerina with MongoDB data source.<br/> <br/>
  With the Ballerina MongoDB client following operations are supported.
@@ -18,7 +18,7 @@ Following is a simple Ballerina program that can be used to perform CRUD operati
 
 ```ballerina
 import ballerina/io;
-import wso2/mongodb;
+import ballerina/mongodb;
 import ballerina/log;
 
 mongodb:ClientEndpointConfig mongoConfig = {
