@@ -161,7 +161,6 @@ public function testListIndices() {
     } else {
         test:assertFail("Indices List Failure");
     }
-
 }
 
 @test:Config {
@@ -270,7 +269,6 @@ function testUpdateDocumentUpsertTrue() {
 }
 
 @test:Config {
-    enable: false,
     dependsOn: ["testUpdateDocumentUpsertTrue"]
 }
 function testDelete() {
