@@ -1,14 +1,15 @@
 [![Build Status](https://travis-ci.org/ballerina-platform/module-mongodb.svg?branch=master)](https://travis-ci.org/ballerina-platform/module-mongodb)
 
-Ballerina MongoDB Client is used to connect Ballerina with MongoDB data source.<br/> <br/>
+Ballerina MongoDB Client is used to connect Ballerina with MongoDB data source.
  With the Ballerina MongoDB client following operations are supported.
 
-1. insert - To insert document to a given collection <br/>
-2. find - To select document from a given collection according to given query. <br/>
-3. findOne - To select the first document match with the query.<br/>
-4. update - To update documents that matches to the given filter. <br/>
-5. delete - To delete documents that matches to the given filter.
-Steps to Configure <br/>
+1. getDatabaseNames - Get the database names in a given MongoDB node
+2. getCollectionNames - Get the collection names in a given MongoDB collection.
+3. countDocuments - Count number of documents in a given collection
+4. insert - To insert document to a given collection.
+5. find - To select document from a given collection according to given query.
+6. update - To update documents that matches to the given filter.
+7. delete - To delete documents that matches to the given filter.
 
 ## Samples
 
@@ -17,86 +18,68 @@ Steps to Configure <br/>
 Following is a simple Ballerina program that can be used to perform CRUD operations.
 
 ```ballerina
-import ballerina/io;
-import ballerina/mongodb;
 import ballerina/log;
+import ballerina/mongodb;
 
-mongodb:ClientEndpointConfig mongoConfig = {
-    host: "localhost",
-    dbName: "projectsTest1",
-    username: "",
-    password: "",
-    options: {sslEnabled: false, serverSelectionTimeout: 500}
-};
+public function main() {
 
-public function main() returns error? {
-   
-mongodb:Client mongoClient =  check new (mongoConfig);
+    mongodb:ClientConfig mongoConfig = {
+        host: "localhost",
+        port: 27017,
+        username: "admin",
+        password: "admin",
+        options: {sslEnabled: false, serverSelectionTimeout: 5000}
+    };
 
-    json doc1 = { "name": "ballerina", "type": "src" };
-    json doc2 = { "name": "connectors", "type": "artifacts" };
-    json doc3 = { "name": "docerina", "type": "src" };
-    json doc4 = { "name": "test", "type": "artifacts" };
+    mongodb:Client mongoClient = checkpanic new (mongoConfig);
+    mongodb:Database mongoDatabase = checkpanic mongoClient->getDatabase("Ballerina");
+    mongodb:Collection mongoCollection = checkpanic mongoDatabase->getCollection("projects");
+
+    map<json> doc1 = { "name": "ballerina", "type": "src" };
+    map<json> doc2 = { "name": "connectors", "type": "artifacts" };
+    map<json> doc3 = { "name": "docerina", "type": "src" };
+    map<json> doc4 = { "name": "test", "type": "artifacts" };
 
     log:printInfo("------------------ Inserting Data -------------------");
-    var ret = mongoClient->insert("projects", doc1);
-    handleInsert(ret, "Insert to projects");
-    ret = mongoClient->insert("projects", doc2);
-    handleInsert(ret, "Insert to projects");
-    ret = mongoClient->insert("projects", doc3);
-    handleInsert(ret, "Insert to projects");
+    checkpanic mongoCollection->insert(doc1);
+    checkpanic mongoCollection->insert(doc2);
+    checkpanic mongoCollection->insert(doc3);
+    checkpanic mongoCollection->insert(doc4);
   
+    log:printInfo("------------------ Counting Data -------------------");
+    int count = checkpanic mongoCollection->countDocuments(());
+    log:printInfo("Count of the documents '" + count.toString() + "'.");
+
+
     log:printInfo("------------------ Querying Data -------------------");
-    var jsonRet = mongoClient->find("projects", ());
-    handleFind(jsonRet);
+    map<json>[] jsonRet = checkpanic mongoCollection->find(());
+    log:printInfo("Returned documents '" + jsonRet.toString() + "'.");
 
-    json queryString = {name: "connectors" };
-    jsonRet = mongoClient->find("projects", queryString);
-    handleFind(jsonRet);
+    map<json> queryString = {name: "connectors" };
+    jsonRet = checkpanic mongoCollection->find(queryString);
+    log:printInfo("Returned Filtered documents '" + jsonRet.toString() + "'.");
 
-    json jsonRetOne = mongoClient->findOne("projects", queryString);
-    handleFind(jsonRetOne);
 
     log:printInfo("------------------ Updating Data -------------------");
-    json replaceFilter = { "type": "artifacts" };
-    json doc5 = { "name": "main", "type": "artifacts" };
-    boolean upsert = true;
+    map<json> replaceFilter = { "type": "artifacts" };
+    map<json> replaceDoc = { "name": "main", "type": "artifacts" };
 
-    int response = mongoClient->replace("projects", replaceFilter, doc5,upsert);
+    int response = checkpanic mongoCollection->update(replaceDoc, replaceFilter, true);
     if (response > 0 ) {
-        log:printInfo("Modified count: ") ;
-        log:printInfo(response.toString());
+        log:printInfo("Modified count: '" + response.toString() + "'.") ;
     } else {
         log:printInfo("Error in replacing data");
     }
 
    log:printInfo("------------------ Deleting Data -------------------");
-   json deleteFilter = { "name": "ballerina" };
-   var deleteRet = mongoClient->delete("projects", deleteFilter, true);
+   map<json> deleteFilter = { "name": "ballerina" };
+   var deleteRet = checkpanic mongoCollection->delete(deleteFilter, true);
     if (response > 0 ) {
-        log:printInfo("Modified count: ") ;
-        log:printInfo(response.toString());
+        log:printInfo("Delete count: '" + response.toString() + "'.") ;
     } else {
-        log:printInfo("Error in replacing data");
+        log:printInfo("Error in deleting data");
     }
-    
-     mongoClient.stop();
+
+     mongoClient->close();
 }
-
-function handleInsert(json|error returned, string message) {
-    if (returned is error) {
-        log:printInfo(message + " failed: " , returned.reason());
-    } else {
-        log:printInfo(message + " success ");
-    }
-}
-
-function handleFind(json|error returned) {
-    if (returned is json) {
-        log:printInfo("initial data:");
-        log:printInfo(io:sprintf("%s", returned));
-    } else {
-        log:printInfo("find failed: " + returned.reason());
-    }
-}```
-
+```
