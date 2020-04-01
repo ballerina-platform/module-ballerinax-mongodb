@@ -292,4 +292,6 @@ function testDelete() {
         log:printInfo("Deleting data failed");
         test:assertFalse(true, msg = deleteRet.detail()?.message);
     }
+
+    mongoClient->close();
 }
