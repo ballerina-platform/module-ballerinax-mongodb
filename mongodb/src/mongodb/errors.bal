@@ -34,7 +34,7 @@ public type DatabaseErrorDetail record {
     error cause?;
 };
 
-// Error reasons
+// Error reasons.
 public const DATABASE_ERROR_REASON = "{ballerina/mongodb}DatabaseError";
 
 # Represents an error caused by an issue related to database accessibility, erroneous queries, constraint violations,

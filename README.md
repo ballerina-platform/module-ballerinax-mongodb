@@ -1,7 +1,7 @@
 [![Build Status](https://travis-ci.org/ballerina-platform/module-mongodb.svg?branch=master)](https://travis-ci.org/ballerina-platform/module-mongodb)
 
 Ballerina MongoDB Client is used to connect Ballerina with a MongoDB data source.
- With the Ballerina MongoDB client following operations are supported.
+ The following operations are supported with the Ballerina MongoDB client.
 
 1. getDatabaseNames - Get the database names in a given MongoDB node
 2. getCollectionNames - Get the collection names in a given MongoDB collection
