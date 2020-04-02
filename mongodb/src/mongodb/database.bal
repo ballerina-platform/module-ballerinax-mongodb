@@ -30,7 +30,8 @@ public type Database client object {
         return getCollectionNames(self.database);
     }
 
-    #
+    # Returns the collection object.
+    # 
     # + name - Name of the collection
     # + return - A collection object on success or else returns an error
     public remote function getCollection(string name) returns Collection|Error {

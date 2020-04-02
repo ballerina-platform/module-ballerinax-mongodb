@@ -32,7 +32,8 @@ public type Client client object {
         return getDatabasesNames(self.datasource);
     }
 
-    #
+    # Returns the `Database` client.
+    # 
     # + name - Name of the database
     # + return - A database client object on success or else returns an error
     public remote function getDatabase(string name) returns Database|Error {
