@@ -6,15 +6,15 @@
 
 ## Prerequisites
 
-1. MongoDB 4.2.0 running instance
+1. A MongoDB 4.2.0 running instance
 
-2. Create 'moviecollection' database in the MongoDB node.
+2. The 'moviecollection' database created in the MongoDB node.
 
 ## Running the tests
 
-1. Configure `mongoConfig` in main_test.bal to add credentials and server address of the running MongoDB node
+1. Configure the `mongoConfig` in the `main_test.bal` file to add the credentials and server address of the running MongoDB node.
 
-2. Run the following command
+2. Execute the following command.
 
     ```cmd
     mvn clean install  

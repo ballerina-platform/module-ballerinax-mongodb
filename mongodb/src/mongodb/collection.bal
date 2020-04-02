@@ -23,9 +23,9 @@ public type Collection client object {
         self.collection = collection;
     }
 
-    # Counts the documents based on the filter. When the filter is () it counts all documents in the collection.
+    # Counts the documents based on the filter. When the filter is (), it counts all the documents in the collection.
     #
-    # + filter - Filter for count ($where & $near can be used)
+    # + filter - Filter for the count ($where & $near can be used)
     # + return - Count of the documents in the collection
     public remote function countDocuments(map<json>? filter = ()) returns int|DatabaseError {
         if (filter is ()) {
@@ -35,29 +35,29 @@ public type Collection client object {
         return countDocuments(self.collection, java:fromString(filterString));
     }
 
-    # List indices associated with the collection
+    # Lists the indices associated with the collection.
     #
-    # + return - json object with indices on success, else returns an error
+    # + return - a JSON object with indices on success or else returns an error
     public remote function listIndices() returns map<json>[]|DatabaseError {
         return listIndices(self.collection);
     }
 
 
-    # Insert one document
+    # Inserts one document.
     #
     # + document - Document to be inserted
-    # + return - () on success, else panics
+    # + return - () on success or else panics
     public remote function insert(map<json> document) returns DatabaseError? {
         string documentStr = document.toJsonString();
         return insert(self.collection, java:fromString(documentStr));
     }
 
-    # queries collection for documents and sorts and limit returned results.
+    # The queries collection for documents, which sorts and limits the returned results.
     #
-    # + filter - Filter for query
-    # + sort - Sort options for query
+    # + filter - Filter for the query
+    # + sort - Sort options for the query
     # + limit - Limit options for the query results. No limit is applied for -1
-    # + return - json array of the documents in the collection, else an error
+    # + return - JSON array of the documents in the collection or else returns an error
     public remote function find(map<json>? filter = (), map<json>? sort = (), int limit = -1) returns map<json>[]|DatabaseError {
         if (filter is ()) {
             if (sort is ()) {
@@ -74,13 +74,13 @@ public type Collection client object {
         return find(self.collection, java:fromString(filterStr), java:fromString(sortString), limit);
     }
 
-    # Update document based on condition
+    # Updates a document based on a condition.
     #
-    # + set - Document for update condition
-    # + filter - Filter for query
+    # + set - Document for the update condition
+    # + filter - Filter for the query
     # + isMultiple - Whether to update multiple documents
     # + upsert - Whether to insert if update cannot be achieved
-    # + return - json array of the documents in the collection, else an error
+    # + return - JSON array of the documents in the collection or else returns an error
     public remote function update(map<json> set, map<json>? filter = (), boolean isMultiple = false, boolean upsert = false)
     returns int|DatabaseError {
         string updateDoc = set.toJsonString();
@@ -91,11 +91,11 @@ public type Collection client object {
         return update(self.collection, java:fromString(updateDoc), java:fromString(filterStr), isMultiple, upsert);
     }
 
-    # Delete document based on condition
+    # Deletes a document based on a condition.
     #
-    # + filter - Filter for query
-    # + isMultiple - Delete multiple documents if condition match
-    # + return - number of deleted documents, else an error
+    # + filter - Filter for the query
+    # + isMultiple - Delete multiple documents if the condition is matched
+    # + return - number of deleted documents or else returns an error
     public remote function delete(map<json>? filter = (), boolean isMultiple = false) returns int|DatabaseError {
         if (filter is ()) {
             return delete(self.collection, (), isMultiple);

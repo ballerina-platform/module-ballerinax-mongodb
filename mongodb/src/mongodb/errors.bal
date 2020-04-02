@@ -14,7 +14,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
-# Holds the properties of an Application error
+# Holds the properties of an application error.
 #
 # + message - Specific error message for the error
 # + cause - Cause of the error
@@ -23,10 +23,10 @@ public type ApplicationErrorDetail record {
     error cause?;
 };
 
-# Holds the properties of a Database error
+# Holds the properties of a database error.
 #
 # + message - Specific error message for the error
-# + mongoDBExceptionType - Type of the mongodb exception returned
+# + mongoDBExceptionType - Type of the returned MongoDB exception 
 # + cause - Cause of the error
 public type DatabaseErrorDetail record {
     string message;

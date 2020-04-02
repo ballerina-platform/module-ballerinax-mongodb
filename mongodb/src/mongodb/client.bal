@@ -16,7 +16,7 @@
 
 import ballerina/java;
 
-# Represents MongoDB client.
+# Represents the MongoDB client.
 public type Client client object {
 
     handle datasource;
@@ -25,16 +25,16 @@ public type Client client object {
         self.datasource = check initClient(config);
     }
 
-    # List database names in the MongoDB server.
+    # Lists the database names in the MongoDB server.
     #
-    # + return - A array of database names on success else returns an error
+    # + return - An array of database names on success or else returns an error
     public remote function getDatabasesNames() returns string[]|DatabaseError {
         return getDatabasesNames(self.datasource);
     }
 
     #
     # + name - Name of the database
-    # + return - A Database client object on success, else returns an error
+    # + return - A database client object on success or else returns an error
     public remote function getDatabase(string name) returns Database|Error {
         if (name.trim().length() == 0) {
             return ApplicationError(message = "Database Name cannot be empty.");

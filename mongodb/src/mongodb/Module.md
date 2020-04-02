@@ -2,7 +2,7 @@ Connects to Mongo DB from Ballerina.
 
 # Module Overview
 
-The Mongo DB connector allows you to connect to Mongo DB from Ballerina and perform various operations such as `getDatabaseNames`, `getCollectionNames`, `count`, `find`, `insert`, `update` and `delete`.
+The Mongo DB connector allows you to connect to a Mongo DB from Ballerina and perform various operations such as `getDatabaseNames`, `getCollectionNames`, `count`, `find`, `insert`, `update`, and `delete`.
 
 ## Compatibility
 
@@ -15,11 +15,11 @@ The Mongo DB connector allows you to connect to Mongo DB from Ballerina and perf
 
 There are 3 clients provided by Ballerina to interact with MongoDB.
 
-1. **mongodb:Client** - This connects to the running MongoDB node and can list databases names as well as get a client for a specific database.
+1. **mongodb:Client** - This connects to the running MongoDB node and lists the database names as well as gets a client for a specific database.
 
-2. **mongodb:Database** - This connects to a specific MongoDB database and can list collection names as well as get a client for a specific collection.
+2. **mongodb:Database** - This connects to a specific MongoDB database and lists the collection names as well as get a client for a specific collection.
 
-3. **mongodb:Collection** - This connects to a specific collection and can perform various operations such as `count`, `listIndexes`, `insert`, `find`, `update` and `delete`.
+3. **mongodb:Collection** - This connects to a specific collection and performs various operations such as `count`, `listIndexes`, `insert`, `find`, `update`, and `delete`.
 
 ## Sample
 

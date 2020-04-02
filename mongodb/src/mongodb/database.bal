@@ -23,16 +23,16 @@ public type Database client object {
         self.database = database;
     }
 
-    # List collection names in the MongoDB database.
+    # Lists the collection names in the MongoDB database.
     #
-    # + return - A array of collection names on success else returns an error
+    # + return - An array of collection names on success or else returns an error
     public remote function getCollectionNames() returns string[]|DatabaseError {
         return getCollectionNames(self.database);
     }
 
     #
     # + name - Name of the collection
-    # + return - A collection object on success, else returns an error
+    # + return - A collection object on success or else returns an error
     public remote function getCollection(string name) returns Collection|Error {
         if (name.trim().length() == 0) {
             return ApplicationError( message = "Collection Name cannot be empty.");
@@ -49,4 +49,3 @@ function getCollectionNames(handle database) returns string[]|DatabaseError = @j
 function getCollection(handle database, string collectionName) returns handle|DatabaseError = @java:Method {
     class: "org.wso2.mongo.MongoDBDatabaseUtil"
 } external;
-
