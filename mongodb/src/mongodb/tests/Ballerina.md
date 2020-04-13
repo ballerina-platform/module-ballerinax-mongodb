@@ -2,7 +2,7 @@
 
 | Ballerina Language Version  | MongoDB Version |
 | ----------------------------| -------------------------------|
-|  1.2.0                      |   4.2.0
+|  1.2.X                      |   4.2.0
 
 ## Prerequisites
 
@@ -14,8 +14,9 @@
 
 1. Configure the `mongoConfig` in the `main_test.bal` file to add the credentials and server address of the running MongoDB node.
 
-2. Execute the following command.
+2. Execute the following commands inside the repo root folder.
 
     ```cmd
-    mvn clean install  
+    $ export JAVA_OPTS="-DBALLERINA_DEV_COMPILE_BALLERINA_ORG=true"
+    $ mvn clean install  
     ```
