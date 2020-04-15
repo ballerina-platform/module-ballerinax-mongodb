@@ -26,7 +26,7 @@ public type Collection client object {
     # Counts the documents based on the filter. When the filter is (), it counts all the documents in the collection.
     #
     # + filter - Filter for the count ($where & $near can be used)
-    # + return - Count of the documents in the collection
+    # + return - Count of the documents in the collection or else `mongodb:DatabaseError` if unable to reach the DB
     public remote function countDocuments(map<json>? filter = ()) returns int|DatabaseError {
         if (filter is ()) {
             return countDocuments(self.collection, ());
@@ -37,7 +37,7 @@ public type Collection client object {
 
     # Lists the indices associated with the collection.
     #
-    # + return - a JSON object with indices on success or else returns an error
+    # + return - a JSON object with indices on success or else `mongodb:DatabaseError` if unable to reach the DB
     public remote function listIndices() returns map<json>[]|DatabaseError {
         return listIndices(self.collection);
     }
@@ -46,7 +46,7 @@ public type Collection client object {
     # Inserts one document.
     #
     # + document - Document to be inserted
-    # + return - () on success or else panics
+    # + return - () on success or else `mongodb:DatabaseError` if unable to reach the DB
     public remote function insert(map<json> document) returns DatabaseError? {
         string documentStr = document.toJsonString();
         return insert(self.collection, java:fromString(documentStr));
@@ -57,7 +57,7 @@ public type Collection client object {
     # + filter - Filter for the query
     # + sort - Sort options for the query
     # + limit - Limit options for the query results. No limit is applied for -1
-    # + return - JSON array of the documents in the collection or else returns an error
+    # + return - JSON array of the documents in the collection or else `mongodb:DatabaseError` if unable to reach the DB
     public remote function find(map<json>? filter = (), map<json>? sort = (), int limit = -1) returns map<json>[]|DatabaseError {
         if (filter is ()) {
             if (sort is ()) {
@@ -80,7 +80,7 @@ public type Collection client object {
     # + filter - Filter for the query
     # + isMultiple - Whether to update multiple documents
     # + upsert - Whether to insert if update cannot be achieved
-    # + return - JSON array of the documents in the collection or else returns an error
+    # + return - JSON array of the documents in the collection or else `mongodb:DatabaseError` if unable to reach the DB
     public remote function update(map<json> set, map<json>? filter = (), boolean isMultiple = false, boolean upsert = false)
     returns int|DatabaseError {
         string updateDoc = set.toJsonString();
@@ -95,7 +95,7 @@ public type Collection client object {
     #
     # + filter - Filter for the query
     # + isMultiple - Delete multiple documents if the condition is matched
-    # + return - The number of deleted documents or else returns an error
+    # + return - The number of deleted documents or else `mongodb:DatabaseError` if unable to reach the DB
     public remote function delete(map<json>? filter = (), boolean isMultiple = false) returns int|DatabaseError {
         if (filter is ()) {
             return delete(self.collection, (), isMultiple);

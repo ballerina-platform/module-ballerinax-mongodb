@@ -27,7 +27,7 @@ public type Client client object {
 
     # Lists the database names in the MongoDB server.
     #
-    # + return - An array of database names on success or else returns an error
+    # + return - An array of database names on success or else `mongodb:DatabaseError` if unable to reach the DB 
     public remote function getDatabasesNames() returns string[]|DatabaseError {
         return getDatabasesNames(self.datasource);
     }
@@ -35,7 +35,7 @@ public type Client client object {
     # Returns the `Database` client.
     # 
     # + name - Name of the database
-    # + return - A database client object on success or else returns an error
+    # + return - A database client object on success or else `mongodb:DatabaseError` if unable to reach the DB
     public remote function getDatabase(string name) returns Database|Error {
         if (name.trim().length() == 0) {
             return ApplicationError(message = "Database Name cannot be empty.");

@@ -25,7 +25,7 @@ public type Database client object {
 
     # Lists the collection names in the MongoDB database.
     #
-    # + return - An array of collection names on success or else returns an error
+    # + return - An array of collection names on success or else `mongodb:DatabaseError` if unable to reach the DB
     public remote function getCollectionNames() returns string[]|DatabaseError {
         return getCollectionNames(self.database);
     }
@@ -33,7 +33,7 @@ public type Database client object {
     # Returns the collection object.
     # 
     # + name - Name of the collection
-    # + return - A collection object on success or else returns an error
+    # + return - A collection object on success or else `mongodb:DatabaseError` if unable to reach the DB
     public remote function getCollection(string name) returns Collection|Error {
         if (name.trim().length() == 0) {
             return ApplicationError( message = "Collection Name cannot be empty.");
