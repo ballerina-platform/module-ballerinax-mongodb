@@ -95,7 +95,7 @@ public type Collection client object {
     #
     # + filter - Filter for the query
     # + isMultiple - Delete multiple documents if the condition is matched
-    # + return - number of deleted documents or else returns an error
+    # + return - The number of deleted documents or else returns an error
     public remote function delete(map<json>? filter = (), boolean isMultiple = false) returns int|DatabaseError {
         if (filter is ()) {
             return delete(self.collection, (), isMultiple);

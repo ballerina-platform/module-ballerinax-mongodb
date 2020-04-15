@@ -1,21 +1,21 @@
 [![Build Status](https://travis-ci.org/ballerina-platform/module-mongodb.svg?branch=master)](https://travis-ci.org/ballerina-platform/module-mongodb)
 
-Ballerina MongoDB Client is used to connect Ballerina with a MongoDB data source.
- The following operations are supported with the Ballerina MongoDB client.
+The Ballerina MongoDB Client is used to connect Ballerina with a MongoDB data source.
+ The following operations are supported by the Ballerina MongoDB client.
 
 1. getDatabaseNames - Get the database names in a given MongoDB node
 2. getCollectionNames - Get the collection names in a given MongoDB collection
 3. countDocuments - Count the documents in a given collection
 4. insert - To insert a document to a given collection
 5. find - To select a document from a given collection according to a given query
-6. update - To update documents, which matches the given filter
-7. delete - To delete documents, which matches the given filter
+6. update - To update the documents, which matche the given filter
+7. delete - To delete the documents, which match the given filter
 
 ## Samples
 
-### Performing CRUD operations with MongoDB client
+### Performing CRUD operations with a MongoDB client
 
-The following is a simple Ballerina program that can be used to perform CRUD operations.
+The following is a simple Ballerina program, which can be used to perform CRUD operations.
 
 ```ballerina
 import ballerina/log;

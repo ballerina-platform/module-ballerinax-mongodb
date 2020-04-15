@@ -68,7 +68,7 @@ function close(handle datasource) = @java:Method {
 } external;
 
 
-# The Client configuration for MongoDB.
+# The Client configurations for MongoDB.
 #
 # + host - The database's host address
 # + port - The port on which the database is running

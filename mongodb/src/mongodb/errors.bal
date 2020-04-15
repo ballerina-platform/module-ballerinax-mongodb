@@ -46,5 +46,5 @@ public const APPLICATION_ERROR_REASON = "{ballerina/mongodb}ApplicationError";
 # Represents an error originating from application-level causes.
 public type ApplicationError error<APPLICATION_ERROR_REASON, ApplicationErrorDetail>;
 
-# Represents a database or application level error returned from MongoDB client remote functions.
+# Represents a database or application level error returned from the MongoDB client remote functions.
 public type Error DatabaseError|ApplicationError;

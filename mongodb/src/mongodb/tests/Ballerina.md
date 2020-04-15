@@ -14,7 +14,7 @@
 
 1. Configure the `mongoConfig` in the `main_test.bal` file to add the credentials and server address of the running MongoDB node.
 
-2. Execute the following commands inside the repo root folder.
+2. Execute the following commands inside the root folder of the GitHub repo.
 
     ```cmd
     $ export JAVA_OPTS="-DBALLERINA_DEV_COMPILE_BALLERINA_ORG=true"
