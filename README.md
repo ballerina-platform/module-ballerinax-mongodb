@@ -1,21 +1,43 @@
-[![Build Status](https://travis-ci.org/ballerina-platform/module-mongodb.svg?branch=master)](https://travis-ci.org/ballerina-platform/module-mongodb)
+# Module Overview
 
-The Ballerina MongoDB Client is used to connect Ballerina with a MongoDB data source.
- The following operations are supported by the Ballerina MongoDB client.
+The Mongo DB connector allows you to connect to a Mongo DB from Ballerina and perform various operations such as `getDatabaseNames`, `getCollectionNames`, `count`, `find`, `insert`, `update`, and `delete`.
 
-1. getDatabaseNames - Get the database names in a given MongoDB node
-2. getCollectionNames - Get the collection names in a given MongoDB collection
-3. countDocuments - Count the documents in a given collection
-4. insert - To insert a document to a given collection
-5. find - To select a document from a given collection according to a given query
-6. update - To update the documents, which matche the given filter
-7. delete - To delete the documents, which match the given filter
+## Compatibility
 
-## Samples
+|                             |       Version               |
+|:---------------------------:|:---------------------------:|
+| Ballerina Language          | 1.2.X                       |
+| Mongo DB                    | V4.2.0                      |
 
-### Performing CRUD operations with a MongoDB client
+## MongoDB Clients
 
-The following is a simple Ballerina program, which can be used to perform CRUD operations.
+There are 3 clients provided by Ballerina to interact with MongoDB.
+
+1. **mongodb:Client** - This connects to the running MongoDB node and lists the database names as well as gets a client for a specific database.
+
+    ```ballerina
+    ClientConfig mongoConfig = {
+            host: "localhost",
+            options: {sslEnabled: false, serverSelectionTimeout: 5000}
+        };
+    Client mongoClient = check new (mongoConfig);
+    ```
+
+2. **mongodb:Database** - This connects to a specific MongoDB database and lists the collection names as well as gets a client for a specific collection.
+
+    ```ballerina
+    Database mongoDatabase = check mongoClient->getDatabase("moviecollection");
+    ```
+
+3. **mongodb:Collection** - This connects to a specific collection and performs various operations such as `count`, `listIndexes`, `insert`, `find`, `update`, and `delete`.
+
+    ```ballerina
+    Collection mongoCollection = check mongoDatabase->getCollection("moviedetails");
+    ```
+
+## Sample
+
+First, import the `ballerina/mongodb` module into the Ballerina project.
 
 ```ballerina
 import ballerina/log;
