@@ -1,7 +1,3 @@
-Connects to Mongo DB from Ballerina.
-
-# Module Overview
-
 The Mongo DB connector allows you to connect to a Mongo DB from Ballerina and perform various operations such as `getDatabaseNames`, `getCollectionNames`, `count`, `find`, `insert`, `update`, and `delete`.
 
 ## Compatibility
