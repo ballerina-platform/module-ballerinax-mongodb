@@ -13,9 +13,25 @@ There are 3 clients provided by Ballerina to interact with MongoDB.
 
 1. **mongodb:Client** - This connects to the running MongoDB node and lists the database names as well as gets a client for a specific database.
 
+    ```ballerina
+    ClientConfig mongoConfig = {
+            host: "localhost",
+            options: {sslEnabled: false, serverSelectionTimeout: 5000}
+        };
+    Client mongoClient = check new (mongoConfig);
+    ```
+
 2. **mongodb:Database** - This connects to a specific MongoDB database and lists the collection names as well as gets a client for a specific collection.
 
+    ```ballerina
+    Database mongoDatabase = check mongoClient->getDatabase("moviecollection");
+    ```
+
 3. **mongodb:Collection** - This connects to a specific collection and performs various operations such as `count`, `listIndexes`, `insert`, `find`, `update`, and `delete`.
+
+    ```ballerina
+    Collection mongoCollection = check mongoDatabase->getCollection("moviedetails");
+    ```
 
 ## Sample
 
