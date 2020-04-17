@@ -102,7 +102,8 @@ public type ClientConfig record {|
 # + writeConcern - The write concern to use. The default value is `WriteConcern.ACKNOWLEDGED`
 # + readPreference - The read preference for the replica set
 # + authSource - The source in which the user is defined
-# + authMechanism - Authentication mechanism to use. Possible values are PLAIN, SCRAM_SHA_1, SCRAM_SHA_256, MONGODB_X509, or GSSAPI
+# + authMechanism - Authentication mechanism to use. 
+#                   Possible values are PLAIN, SCRAM_SHA_1, SCRAM_SHA_256, MONGODB_X509, or GSSAPI
 # + gssapiServiceName - Authentications GSSAPI Service name
 # + replicaSet - The replica set name if it is to connect to replicas
 # + sslEnabled - Whether SSL connection is enabled
@@ -118,7 +119,8 @@ public type ClientConfig record {|
 # + waitQueueMultiple - The multiplier for the number of threads allowed to block waiting for a connection
 # + waitQueueTimeout - The maximum time that a thread will block waiting for a connection in milliseconds
 # + localThreshold - The local threshold latency in milliseconds
-# + heartbeatFrequency - The heartbeat frequency (ms). This is the frequency that the driver will attempt to determine the current state of each server in the cluster.
+# + heartbeatFrequency - The heartbeat frequency (ms). This is the frequency that the driver will attempt to 
+#                        determine the current state of each server in the cluster.
 public type ConnectionProperties record {|
     string url = "";
     string readConcern = "";

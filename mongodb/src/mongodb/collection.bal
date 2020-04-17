@@ -71,7 +71,8 @@ public type Collection client object {
 # + sort - Sort options for the query
 # + limit - Limit options for the query results. No limit is applied for -1
 # + return - JSON array of the documents in the collection or else a `mongodb:DatabaseError` if unable to reach the DB
-    public remote function find(map<json>? filter = (), map<json>? sort = (), int limit = -1) returns map<json>[]|DatabaseError {
+    public remote function find(map<json>? filter = (), map<json>? sort = (), int limit = -1) 
+                                                                                    returns map<json>[]|DatabaseError {
         if (filter is ()) {
             if (sort is ()) {
                 return find(self.collection, (), (), limit);
@@ -97,7 +98,8 @@ public type Collection client object {
 # + isMultiple - Whether to update multiple documents
 # + upsert - Whether to insert if update cannot be achieved
 # + return - JSON array of the documents in the collection or else a `mongodb:DatabaseError` if unable to reach the DB
-    public remote function update(map<json> set, map<json>? filter = (), boolean isMultiple = false, boolean upsert = false)
+    public remote function update(map<json> set, map<json>? filter = (), boolean isMultiple = false, 
+                                                                                                boolean upsert = false)
     returns int|DatabaseError {
         string updateDoc = set.toJsonString();
         if (filter is ()) {
