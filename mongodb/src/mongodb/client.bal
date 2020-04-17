@@ -21,9 +21,9 @@ public type Client client object {
 
     handle datasource;
 
-    # Initailises the `Client` object with `ClientConfig` properties provided.
+    # Initialises the `Client` object with the provided `ClientConfig` properties.
     # 
-    # + return - `ApplicationError` if there is any error in configurations provided
+    # + return - An `ApplicationError` if there is any error in the provided configurations 
     public function __init(ClientConfig config) returns ApplicationError? {
         self.datasource = check initClient(config);
     }
@@ -33,7 +33,7 @@ public type Client client object {
 # string[]|mongodb:DatabaseError result = mongoClient->getDatabasesNames();
 # ```
 #
-# + return - An array of database names on success or else `mongodb:DatabaseError` if unable to reach the DB 
+# + return - An array of database names on success or else a`mongodb:DatabaseError` if unable to reach the DB 
     public remote function getDatabasesNames() returns string[]|DatabaseError {
         return getDatabasesNames(self.datasource);
     }
@@ -44,7 +44,7 @@ public type Client client object {
 # ```
 # 
 # + name - Name of the database
-# + return - A database client object on success or else `mongodb:Error` if unable to reach the DB
+# + return - A database client object on success or else a `mongodb:Error` if unable to reach the DB
     public remote function getDatabase(string name) returns Database|Error {
         if (name.trim().length() == 0) {
             return ApplicationError(message = "Database Name cannot be empty.");
@@ -97,17 +97,17 @@ public type ClientConfig record {|
 
 # MongoDB connection pool properties
 # 
-# + url - MongoDB url for connecting to replicas
+# + url - MongoDB URL for connecting to replicas
 # + readConcern - The read concern to use
-# + writeConcern - The write concern to use. Default is WriteConcern.ACKNOWLEDGED
+# + writeConcern - The write concern to use. The default value is `WriteConcern.ACKNOWLEDGED`
 # + readPreference - The read preference for the replica set
-# + authSource - The source where the user is defined
-# + authMechanism - Authentication mechanism to use. Possible values PLAIN, SCRAM_SHA_1, SCRAM_SHA_256, MONGODB_X509 or GSSAPI
+# + authSource - The source in which the user is defined
+# + authMechanism - Authentication mechanism to use. Possible values are PLAIN, SCRAM_SHA_1, SCRAM_SHA_256, MONGODB_X509, or GSSAPI
 # + gssapiServiceName - Authentications GSSAPI Service name
-# + replicaSet - The replica set name if to connect to replicas
+# + replicaSet - The replica set name if it is to connect to replicas
 # + sslEnabled - Whether SSL connection is enabled
 # + sslInvalidHostNameAllowed - Whether invalid host names should be allowed
-# + retryWrites - Whether to retry write failures
+# + retryWrites - Whether to retry writing failures
 # + maxPoolSize - Maximum connection pool size
 # + minPoolSize - Minimum connection pool size
 # + socketTimeout - The socket timeout in milliseconds
@@ -115,7 +115,7 @@ public type ClientConfig record {|
 # + serverSelectionTimeout - The server selection timeout in milliseconds
 # + maxIdleTime - The maximum idle time for a pooled connection in milliseconds
 # + maxLifeTime - The maximum life time for a pooled connection in milliseconds
-# + waitQueueMultiple - The multiplier for number of threads allowed to block waiting for a connection
+# + waitQueueMultiple - The multiplier for the number of threads allowed to block waiting for a connection
 # + waitQueueTimeout - The maximum time that a thread will block waiting for a connection in milliseconds
 # + localThreshold - The local threshold latency in milliseconds
 # + heartbeatFrequency - The heartbeat frequency (ms). This is the frequency that the driver will attempt to determine the current state of each server in the cluster.
