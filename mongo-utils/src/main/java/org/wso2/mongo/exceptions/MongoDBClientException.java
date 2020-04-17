@@ -14,19 +14,19 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package org.wso2.mongo;
+package org.wso2.mongo.exceptions;
 
 import org.ballerinalang.jvm.util.exceptions.BallerinaException;
 
 /**
- * Exception class for mongo
+ * Exception class for MongoDBClient validations
  */
-public class BallerinaMongoDbException extends BallerinaException {
-    public BallerinaMongoDbException(String message) {
+public class MongoDBClientException extends BallerinaException {
+    public MongoDBClientException(String message) {
         super(message);
     }
 
-    public BallerinaMongoDbException(String message, Throwable cause) {
+    public MongoDBClientException(String message, Throwable cause) {
         super(message, cause);
     }
 }

@@ -34,3 +34,6 @@ target
 *.iml
 *.ipr
 *.iws
+
+
+mongo-utils/dependency-reduced-pom.xml

@@ -22,9 +22,13 @@ package org.wso2.mongo;
 public class MongoDBConstants {
     public static final String ORGANIZATION_NAME = "ballerina";
     public static final String MODULE_NAME = "mongodb";
-    public static final String ERROR_DETAIL_RECORD_TYPE_NAME = "ErrorDetail";
+
+    public static final String APPLICATION_ERROR_DETAIL_RECORD_NAME = "ApplicationErrorDetail";
+    public static final String DATABASE_ERROR_DETAIL_RECORD_NAME = "DatabaseErrorDetail";
 
     //Error reasons
     public static final String DATABASE_ERROR_REASON = "{ballerina/mongodb}DatabaseError";
     public static final String APPLICATION_ERROR_REASON = "{ballerina/mongodb}ApplicationError";
+
+    public static final String EMPTY_JSON = "{}";
 }
