@@ -95,12 +95,12 @@ public function main() {
 
    log:printInfo("------------------ Deleting Data -------------------");
    map<json> deleteFilter = { "name": "ballerina" };
-   var deleteRet = checkpanic mongoCollection->delete(deleteFilter, true);
-    if (response > 0 ) {
-        log:printInfo("Delete count: '" + response.toString() + "'.") ;
-    } else {
-        log:printInfo("Error in deleting data");
-    }
+   int deleteRet = checkpanic mongoCollection->delete(deleteFilter, true);
+   if (deleteRet > 0 ) {
+       log:printInfo("Delete count: '" + deleteRet.toString() + "'.") ;
+   } else {
+       log:printInfo("Error in deleting data");
+   }
 
      mongoClient->close();
 }
