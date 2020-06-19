@@ -19,7 +19,7 @@ import ballerina/java;
 public type Collection client object {
     handle collection;
 
-    # Initailizes the `Collection` object.
+    # Initializes the `Collection` object.
     public function init(handle collection) {
         self.collection = collection;
     }

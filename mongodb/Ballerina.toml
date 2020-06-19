@@ -4,7 +4,7 @@ version= "1.0.0"
 license= ["Apache-2.0"]
 authors = ["Ballerina"]
 keywords = ["MongoDB", "NoSQL"]
-repository = "https://github.com/ballerina-platform/module-mongodb"
+repository = "https://github.com/ballerina-platform/module-ballerinax-mongodb"
 
 [dependencies]
 

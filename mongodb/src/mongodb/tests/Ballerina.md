@@ -2,7 +2,7 @@
 
 | Ballerina Language Version  | MongoDB Version |
 | ----------------------------| -------------------------------|
-|  1.2.X                      |   4.2.0
+|  Swan Lake Preview1         |   4.2.0
 
 ## Prerequisites
 
@@ -17,6 +17,6 @@
 2. Execute the following commands inside the root folder of the GitHub repo.
 
     ```cmd
-    $ export JAVA_OPTS="-DBALLERINA_DEV_COMPILE_BALLERINA_ORG=true"
-    $ mvn clean install  
+    export JAVA_OPTS="-DBALLERINA_DEV_COMPILE_BALLERINA_ORG=true"
+    mvn clean install  
     ```

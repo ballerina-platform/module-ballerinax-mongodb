@@ -13,8 +13,8 @@
 # limitations under the License.
 
 script:
-  - wget https://product-dist.ballerina.io/downloads/1.2.0/ballerina-linux-installer-x64-1.2.0.deb
-  - sudo dpkg -i ballerina-linux-installer-x64-1.2.0.deb
+  - wget http://dist-dev.ballerina.io/downloads/swan-lake-preview1/ballerina-linux-installer-x64-swan-lake-preview1.deb
+  - sudo dpkg -i ballerina-linux-installer-x64-swan-lake-preview1.deb
   - sudo apt-get install -f
   - export JAVA_OPTS="-DBALLERINA_DEV_COMPILE_BALLERINA_ORG=true"
   - mvn clean install -pl mongo-utils
