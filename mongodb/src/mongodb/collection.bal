@@ -19,8 +19,8 @@ import ballerina/java;
 public type Collection client object {
     handle collection;
 
-    # Initailises the `Collection` object.
-    public function __init(handle collection) {
+    # Initailizes the `Collection` object.
+    public function init(handle collection) {
         self.collection = collection;
     }
 
@@ -71,21 +71,21 @@ public type Collection client object {
 # + sort - Sort options for the query
 # + limit - Limit options for the query results. No limit is applied for -1
 # + return - JSON array of the documents in the collection or else a `mongodb:DatabaseError` if unable to reach the DB
-    public remote function find(map<json>? filter = (), map<json>? sort = (), int limit = -1) 
+    public remote function find(map<json>? filter = (), map<json>? sort = (), int 'limit = -1) 
                                                                                     returns map<json>[]|DatabaseError {
         if (filter is ()) {
             if (sort is ()) {
-                return find(self.collection, (), (), limit);
+                return find(self.collection, (), (), 'limit);
             }
             string sortString = sort.toJsonString();
-            return find(self.collection, (), java:fromString(sortString), limit);
+            return find(self.collection, (), java:fromString(sortString), 'limit);
         }
         string filterStr = filter.toJsonString();
         if (sort is ()) {
-            return find(self.collection, java:fromString(filterStr), (), limit);
+            return find(self.collection, java:fromString(filterStr), (), 'limit);
         }
         string sortString = sort.toJsonString();
-        return find(self.collection, java:fromString(filterStr), java:fromString(sortString), limit);
+        return find(self.collection, java:fromString(filterStr), java:fromString(sortString), 'limit);
     }
 
 # Updates a document based on a condition.

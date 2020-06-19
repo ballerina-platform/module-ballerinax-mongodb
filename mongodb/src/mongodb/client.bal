@@ -24,7 +24,7 @@ public type Client client object {
     # Initialises the `Client` object with the provided `ClientConfig` properties.
     # 
     # + return - An `ApplicationError` if there is any error in the provided configurations 
-    public function __init(ClientConfig config) returns ApplicationError? {
+    public function init(ClientConfig config) returns ApplicationError? {
         self.datasource = check initClient(config);
     }
 
@@ -47,7 +47,7 @@ public type Client client object {
 # + return - A database client object on success or else a `mongodb:Error` if unable to reach the DB
     public remote function getDatabase(string name) returns Database|Error {
         if (name.trim().length() == 0) {
-            return ApplicationError(message = "Database Name cannot be empty.");
+            return ApplicationError("Database Name cannot be empty.");
         }
 
         handle database = check getDatabase(self.datasource, name);

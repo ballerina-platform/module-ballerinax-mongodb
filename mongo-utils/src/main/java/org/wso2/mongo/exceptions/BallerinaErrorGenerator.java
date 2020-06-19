@@ -18,48 +18,35 @@ package org.wso2.mongo.exceptions;
 
 import org.ballerinalang.jvm.BallerinaErrors;
 import org.ballerinalang.jvm.BallerinaValues;
-import org.ballerinalang.jvm.types.BPackage;
-import org.ballerinalang.jvm.values.BmpStringValue;
 import org.ballerinalang.jvm.values.ErrorValue;
 import org.ballerinalang.jvm.values.MapValue;
+import org.ballerinalang.jvm.values.api.BString;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.wso2.mongo.MongoDBConstants.APPLICATION_ERROR_DETAIL_RECORD_NAME;
-import static org.wso2.mongo.MongoDBConstants.APPLICATION_ERROR_REASON;
-import static org.wso2.mongo.MongoDBConstants.DATABASE_ERROR_DETAIL_RECORD_NAME;
-import static org.wso2.mongo.MongoDBConstants.DATABASE_ERROR_REASON;
-import static org.wso2.mongo.MongoDBConstants.MODULE_NAME;
-import static org.wso2.mongo.MongoDBConstants.ORGANIZATION_NAME;
+import static org.wso2.mongo.MongoDBConstants.APPLICATION_ERROR;
+import static org.wso2.mongo.MongoDBConstants.BAL_PACKAGE;
+import static org.wso2.mongo.MongoDBConstants.DatabaseError.DETAIL_FIELD_MONGODB_EXCEPTION;
+import static org.wso2.mongo.MongoDBConstants.DatabaseError.DETAIL_RECORD_NAME;
+import static org.wso2.mongo.MongoDBConstants.DatabaseError.NAME;
 
 /**
  * Map Java Exception to Ballerina MongoDB Error.
  */
 public class BallerinaErrorGenerator {
-    private static BPackage bpackage = new BPackage(ORGANIZATION_NAME, MODULE_NAME);
 
     public static ErrorValue createBallerinaDatabaseError(Exception e) {
-
         Map<String, Object> valueMap = new HashMap<>();
-        valueMap.put("message", e.getMessage());
-        valueMap.put("mongoDBExceptionType", e.getClass().getSimpleName());
-        valueMap.put("cause", e.getCause());
+        valueMap.put(DETAIL_FIELD_MONGODB_EXCEPTION, e.getClass().getSimpleName());
+        MapValue<BString, Object> recordValue = BallerinaValues
+                .createRecordValue(BAL_PACKAGE, DETAIL_RECORD_NAME, valueMap);
 
-        MapValue<String, Object> recordValue = BallerinaValues
-                .createRecordValue(bpackage, DATABASE_ERROR_DETAIL_RECORD_NAME, valueMap);
-
-        return BallerinaErrors.createError(new BmpStringValue(DATABASE_ERROR_REASON), recordValue);
+        return BallerinaErrors.createDistinctError(NAME, BAL_PACKAGE,  e.getMessage(), recordValue);
     }
 
     public static ErrorValue createBallerinaApplicationError(Exception e) {
-        Map<String, Object> valueMap = new HashMap<>();
-        valueMap.put("message", e.getMessage());
-        valueMap.put("cause", e.getCause());
-
-        MapValue<String, Object> recordValue = BallerinaValues
-                .createRecordValue(bpackage, APPLICATION_ERROR_DETAIL_RECORD_NAME, valueMap);
-        return BallerinaErrors.createError(new BmpStringValue(APPLICATION_ERROR_REASON), recordValue);
+        return BallerinaErrors.createDistinctError(APPLICATION_ERROR, BAL_PACKAGE, e.getMessage());
     }
 
 }

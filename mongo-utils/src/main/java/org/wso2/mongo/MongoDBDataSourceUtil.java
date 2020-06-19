@@ -31,6 +31,7 @@ import com.mongodb.client.MongoCursor;
 import org.ballerinalang.jvm.values.HandleValue;
 import org.ballerinalang.jvm.values.MapValue;
 import org.ballerinalang.jvm.values.api.BString;
+import org.ballerinalang.jvm.values.api.BValue;
 import org.ballerinalang.jvm.values.api.BValueCreator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,21 +41,30 @@ import org.wso2.mongo.exceptions.MongoDBClientException;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import static org.ballerinalang.jvm.StringUtils.fromString;
+
 /**
  * Java implementation of MongoDB datasource.
  */
 public class MongoDBDataSourceUtil {
-    private static Logger log = LoggerFactory.getLogger(MongoDBDataSourceUtil.class);
+    private static final Logger log = LoggerFactory.getLogger(MongoDBDataSourceUtil.class);
 
     private MongoDBDataSourceUtil() {
     }
 
-    public static Object initClient(MapValue config) {
-        String host = config.getStringValue("host");
-        long port = config.getIntValue("port");
-        String username = config.getStringValue("userName");
-        String password = config.getStringValue("password");
-        MapValue options = config.getMapValue("options");
+    public static Object initClient(MapValue<BString, BValue> config) {
+        String host = config.getStringValue(fromString("host")).getValue();
+        long port = config.getIntValue(fromString("port"));
+        String username = "";
+        // Optional Fields
+        if (config.getStringValue(fromString("userName")) != null) {
+            username = config.getStringValue(fromString("userName")).getValue();
+        }
+        String password = "";
+        if (config.getStringValue(fromString("password")) != null) {
+            password = config.getStringValue(fromString("password")).getValue();
+        }
+        MapValue options = config.getMapValue(fromString("options"));
 
         try {
             return init(host, port, username, password, options);
@@ -67,11 +77,11 @@ public class MongoDBDataSourceUtil {
         MongoClient mongoClient = (MongoClient) datasource.getValue();
         try {
             MongoCursor<String> databaseItr = mongoClient.listDatabaseNames().iterator();
-            ArrayList<String> databaseNames = new ArrayList<>();
+            ArrayList<BString> databaseNames = new ArrayList<>();
             while (databaseItr.hasNext()) {
-                databaseNames.add(databaseItr.next());
+                databaseNames.add(fromString(databaseItr.next()));
             }
-            return BValueCreator.createArrayValue(databaseNames.toArray(new String[0]));
+            return BValueCreator.createArrayValue(databaseNames.toArray(new BString[0]));
         } catch (MongoException e) {
             return BallerinaErrorGenerator.createBallerinaDatabaseError(e);
         }
@@ -96,7 +106,7 @@ public class MongoDBDataSourceUtil {
 
     public static MongoClient init(String host, long port, String username, String password, MapValue options) {
         MongoCredential mongoCredential = createCredentials(username, password, options);
-        String directURL = options.getStringValue(ConnectionParam.URL.getKey());
+        String directURL = options.getStringValue(ConnectionParam.URL.getKey()).getValue();
 
         //URL in options overrides host and port config
         if (!directURL.isEmpty()) {
@@ -121,9 +131,9 @@ public class MongoDBDataSourceUtil {
      * @return MongoCredential
      */
     private static MongoCredential createCredentials(String username, String password, MapValue options) {
-        String authSource = options.getStringValue(ConnectionParam.AUTHSOURCE.getKey());
+        String authSource = options.getStringValue(ConnectionParam.AUTHSOURCE.getKey()).getValue();
 
-        String authMechanismString = options.getStringValue(ConnectionParam.AUTHMECHANISM.getKey());
+        String authMechanismString = options.getStringValue(ConnectionParam.AUTHMECHANISM.getKey()).getValue();
         MongoCredential mongoCredential = null;
         if (!authMechanismString.isEmpty()) {
             AuthenticationMechanism authMechanism = retrieveAuthMechanism(authMechanismString);
@@ -148,7 +158,8 @@ public class MongoDBDataSourceUtil {
                     }
                     break;
                 case GSSAPI:
-                    String gssApiServiceName = options.getStringValue(ConnectionParam.GSSAPI_SERVICE_NAME.getKey());
+                    String gssApiServiceName = options.getStringValue(
+                                                    ConnectionParam.GSSAPI_SERVICE_NAME.getKey()).getValue();
                     mongoCredential = MongoCredential.createGSSAPICredential(username);
                     if (!gssApiServiceName.isEmpty()) {
                         mongoCredential = mongoCredential.withMechanismProperty("SERVICE_NAME", gssApiServiceName);
@@ -190,19 +201,19 @@ public class MongoDBDataSourceUtil {
             builder.sslInvalidHostNameAllowed(true);
         }
         builder.retryWrites(options.getBooleanValue(ConnectionParam.RETRY_WRITES.getKey()));
-        String readConcern = options.getStringValue(ConnectionParam.READ_CONCERN.getKey());
+        String readConcern = options.getStringValue(ConnectionParam.READ_CONCERN.getKey()).getValue();
         if (!readConcern.isEmpty()) {
             builder = builder.readConcern(new ReadConcern(ReadConcernLevel.valueOf(readConcern)));
         }
-        String writeConsern = options.getStringValue(ConnectionParam.WRITE_CONCERN.getKey());
+        String writeConsern = options.getStringValue(ConnectionParam.WRITE_CONCERN.getKey()).getValue();
         if (!writeConsern.isEmpty()) {
             builder = builder.writeConcern(WriteConcern.valueOf(writeConsern));
         }
-        String readPreference = options.getStringValue(ConnectionParam.READ_PREFERENCE.getKey());
+        String readPreference = options.getStringValue(ConnectionParam.READ_PREFERENCE.getKey()).getValue();
         if (!readPreference.isEmpty()) {
             builder = builder.readPreference((ReadPreference.valueOf(readPreference)));
         }
-        String replicaSet = options.getStringValue(ConnectionParam.REPLICA_SET.getKey());
+        String replicaSet = options.getStringValue(ConnectionParam.REPLICA_SET.getKey()).getValue();
         if (!replicaSet.isEmpty()) {
             builder = builder.requiredReplicaSetName(replicaSet);
         }
@@ -259,27 +270,30 @@ public class MongoDBDataSourceUtil {
      */
     private enum ConnectionParam {
         // String Params
-        URL("url"), READ_CONCERN("readConcern"), WRITE_CONCERN("writeConcern"), READ_PREFERENCE("readPreference"),
-        AUTHSOURCE("authSource"), AUTHMECHANISM("authMechanism"), GSSAPI_SERVICE_NAME("gssapiServiceName"),
-        REPLICA_SET("replicaSet"),
+        URL(fromString("url")), READ_CONCERN(fromString("readConcern")),
+        WRITE_CONCERN(fromString("writeConcern")), READ_PREFERENCE(fromString("readPreference")),
+        AUTHSOURCE(fromString("authSource")), AUTHMECHANISM(fromString("authMechanism")),
+        GSSAPI_SERVICE_NAME(fromString("gssapiServiceName")), REPLICA_SET(fromString("replicaSet")),
 
         // boolean params
-        SSL_ENABLED("sslEnabled"), SSL_INVALID_HOSTNAME_ALLOWED("sslInvalidHostNameAllowed"),
-        RETRY_WRITES("retryWrites"),
+        SSL_ENABLED(fromString("sslEnabled")), SSL_INVALID_HOSTNAME_ALLOWED(fromString("sslInvalidHostNameAllowed")),
+        RETRY_WRITES(fromString("retryWrites")),
 
         // int params
-        SOCKET_TIMEOUT("socketTimeout"), CONNECTION_TIMEOUT("connectionTimeout"), MAX_POOL_SIZE("maxPoolSize"),
-        SERVER_SELECTION_TIMEOUT("serverSelectionTimeout"), MAX_IDLE_TIME("maxIdleTime"), MAX_LIFE_TIME("maxLifeTime"),
-        MIN_POOL_SIZE("minPoolSize"), WAIT_QUEUE_MULTIPLE("waitQueueMultiple"), WAIT_QUEUE_TIMEOUT("waitQueueTimeout"),
-        LOCAL_THRESHOLD("localThreshold"), HEART_BEAT_FREQUENCY("heartbeatFrequency");
+        SOCKET_TIMEOUT(fromString("socketTimeout")), CONNECTION_TIMEOUT(fromString("connectionTimeout")),
+        MAX_POOL_SIZE(fromString("maxPoolSize")), SERVER_SELECTION_TIMEOUT(fromString("serverSelectionTimeout")),
+        MAX_IDLE_TIME(fromString("maxIdleTime")), MAX_LIFE_TIME(fromString("maxLifeTime")),
+        MIN_POOL_SIZE(fromString("minPoolSize")), WAIT_QUEUE_MULTIPLE(fromString("waitQueueMultiple")),
+        WAIT_QUEUE_TIMEOUT(fromString("waitQueueTimeout")),
+        LOCAL_THRESHOLD(fromString("localThreshold")), HEART_BEAT_FREQUENCY(fromString("heartbeatFrequency"));
 
-        private String key;
+        private final BString key;
 
-        ConnectionParam(String key) {
+        ConnectionParam(BString key) {
             this.key = key;
         }
 
-        private String getKey() {
+        private BString getKey() {
             return key;
         }
     }

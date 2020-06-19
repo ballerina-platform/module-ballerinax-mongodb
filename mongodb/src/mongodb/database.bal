@@ -20,7 +20,7 @@ public type Database client object {
     handle database;
 
     #Initialises the `Database` object.
-    public function __init(handle database) {
+    public function init(handle database) {
         self.database = database;
     }
 
@@ -43,7 +43,7 @@ public type Database client object {
 # + return - A collection object on success or else a `mongodb:Error` if unable to reach the DB
     public remote function getCollection(string name) returns Collection|Error {
         if (name.trim().length() == 0) {
-            return ApplicationError( message = "Collection Name cannot be empty.");
+            return ApplicationError("Collection Name cannot be empty.");
         }
         handle collection = check getCollection(self.database, name);
         return new Collection(collection);
