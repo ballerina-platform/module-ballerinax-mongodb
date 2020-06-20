@@ -52,7 +52,7 @@ public class MongoDBDataSourceUtil {
     public static Object initClient(MapValue config) {
         String host = config.getStringValue("host");
         long port = config.getIntValue("port");
-        String username = config.getStringValue("userName");
+        String username = config.getStringValue("username");
         String password = config.getStringValue("password");
         MapValue options = config.getMapValue("options");
 
