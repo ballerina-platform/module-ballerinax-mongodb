@@ -57,8 +57,8 @@ public class MongoDBDataSourceUtil {
         long port = config.getIntValue(fromString("port"));
         String username = "";
         // Optional Fields
-        if (config.getStringValue(fromString("userName")) != null) {
-            username = config.getStringValue(fromString("userName")).getValue();
+        if (config.getStringValue(fromString("username")) != null) {
+            username = config.getStringValue(fromString("username")).getValue();
         }
         String password = "";
         if (config.getStringValue(fromString("password")) != null) {
