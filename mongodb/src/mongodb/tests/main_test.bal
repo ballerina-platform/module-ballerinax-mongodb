@@ -16,9 +16,12 @@
 
 import ballerina/log;
 import ballerina/test;
+import ballerina/system;
+
+string testHostName = system:getEnv("MONGODB_HOST") != "" ? system:getEnv("MONGODB_HOST") : "localhost";
 
 ClientConfig mongoConfig = {
-    host: "localhost",
+    host: testHostName,
     options: {sslEnabled: false, serverSelectionTimeout: 5000}
 };
 
