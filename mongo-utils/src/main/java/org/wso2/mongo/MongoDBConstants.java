@@ -22,7 +22,7 @@ import org.ballerinalang.jvm.types.BPackage;
  * Constants used in the module-mongodb.
  */
 public class MongoDBConstants {
-    public static final BPackage BAL_PACKAGE = new BPackage("ballerina", "mongodb", "1.0.0");
+    public static final BPackage BAL_PACKAGE = new BPackage("ballerinax", "mongodb", "2.0.0");
 
     /**
      * Constants related to `mongodb:DatabaseError`.

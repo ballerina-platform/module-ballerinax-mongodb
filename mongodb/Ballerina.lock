@@ -1,9 +1,9 @@
-org_name = "ballerina"
-version = "1.0.0"
+org_name = "ballerinax"
+version = "2.0.0"
 lockfile_version = "1.0.0"
 ballerina_version = "slp1"
 
-[[imports."ballerina/mongodb:1.0.0"]]
+[[imports."ballerinax/mongodb:2.0.0"]]
 org_name = "ballerina"
 name = "java"
 version = "0.9.0"

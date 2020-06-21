@@ -37,11 +37,11 @@ There are 3 clients provided by Ballerina to interact with MongoDB.
 
 ## Sample
 
-First, import the `ballerina/mongodb` module into the Ballerina project.
+First, import the `ballerinax/mongodb` module into the Ballerina project.
 
 ```ballerina
 import ballerina/log;
-import ballerina/mongodb;
+import ballerinax/mongodb;
 
 public function main() {
 
