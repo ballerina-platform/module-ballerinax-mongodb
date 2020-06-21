@@ -13,10 +13,7 @@
 # limitations under the License.
 
 services:
-  - docker
-
-before_install:
-  - docker run --name mongodb -d -p 127.0.0.1:27018:27017 mongo:4.2.0
+  - mongodb
 
 script:
   - wget http://dist-dev.ballerina.io/downloads/swan-lake-preview1/ballerina-linux-installer-x64-swan-lake-preview1.deb
