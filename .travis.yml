@@ -16,7 +16,7 @@ services:
   - mongodb
 
 script:
-  - wget http://dist-dev.ballerina.io/downloads/swan-lake-preview1/ballerina-linux-installer-x64-swan-lake-preview1.deb
+  - wget http://dist.ballerina.io/downloads/swan-lake-preview1/ballerina-linux-installer-x64-swan-lake-preview1.deb
   - sudo dpkg -i ballerina-linux-installer-x64-swan-lake-preview1.deb
   - sudo apt-get install -f
   - export JAVA_OPTS="-DBALLERINA_DEV_COMPILE_BALLERINA_ORG=true"
