@@ -37,8 +37,8 @@ Collection mongoCollection = check mongoDatabase->getCollection("moviedetails");
 
 @test:Config {
 }
-public function initaliseInValidClient() {
-    log:printInfo("Start initalisation test failure");
+public function initializeInValidClient() {
+    log:printInfo("Start initialization test failure");
     Client|ApplicationError mongoClient = new (mongoConfigError);
     if (mongoClient is ApplicationError) {
         log:printInfo("Creating client failed '" + mongoClient.detail().message + "'.");
@@ -48,7 +48,7 @@ public function initaliseInValidClient() {
 }
 
 @test:Config {
-    dependsOn: ["initaliseInValidClient"]
+    dependsOn: ["initializeInValidClient"]
 }
 public function testListDatabaseNames() {
     log:printInfo("----------------- List Databases------------------");

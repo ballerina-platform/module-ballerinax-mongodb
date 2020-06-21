@@ -194,9 +194,9 @@ public class MongoDBDataSourceUtil {
         if (!readConcern.isEmpty()) {
             builder = builder.readConcern(new ReadConcern(ReadConcernLevel.valueOf(readConcern)));
         }
-        String writeConsern = options.getStringValue(ConnectionParam.WRITE_CONCERN.getKey());
-        if (!writeConsern.isEmpty()) {
-            builder = builder.writeConcern(WriteConcern.valueOf(writeConsern));
+        String writeConcern = options.getStringValue(ConnectionParam.WRITE_CONCERN.getKey());
+        if (!writeConcern.isEmpty()) {
+            builder = builder.writeConcern(WriteConcern.valueOf(writeConcern));
         }
         String readPreference = options.getStringValue(ConnectionParam.READ_PREFERENCE.getKey());
         if (!readPreference.isEmpty()) {
