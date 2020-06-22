@@ -28,23 +28,23 @@ public type Client client object {
         self.datasource = check initClient(config);
     }
 
-# Lists the database names in the MongoDB server.
-# ```ballerina
-# string[]|mongodb:DatabaseError result = mongoClient->getDatabasesNames();
-# ```
-#
-# + return - An array of database names on success or else a`mongodb:DatabaseError` if unable to reach the DB 
+    # Lists the database names in the MongoDB server.
+    # ```ballerina
+    # string[]|mongodb:DatabaseError result = mongoClient->getDatabasesNames();
+    # ```
+    #
+    # + return - An array of database names on success or else a`mongodb:DatabaseError` if unable to reach the DB 
     public remote function getDatabasesNames() returns string[]|DatabaseError {
         return getDatabasesNames(self.datasource);
     }
 
-# Returns the `Database` client.
-# ```ballerina
-# mongodb:Database|mongodb:Error result = mongoClient->getDatabase("Ballerina");
-# ```
-# 
-# + name - Name of the database
-# + return - A database client object on success or else a `mongodb:Error` if unable to reach the DB
+    # Returns the `Database` client.
+    # ```ballerina
+    # mongodb:Database|mongodb:Error result = mongoClient->getDatabase("Ballerina");
+    # ```
+    # 
+    # + name - Name of the database
+    # + return - A database client object on success or else a `mongodb:Error` if unable to reach the DB
     public remote function getDatabase(string name) returns Database|Error {
         if (name.trim().length() == 0) {
             return ApplicationError("Database Name cannot be empty.");
@@ -54,10 +54,10 @@ public type Client client object {
         return new Database(database);
     }
 
-# Closes the client.
-# ```ballerina
-# mongoClient->close();
-# ```
+    # Closes the client.
+    # ```ballerina
+    # mongoClient->close();
+    # ```
     public remote function close() {
         close(self.datasource);
     }

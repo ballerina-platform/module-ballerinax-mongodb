@@ -15,8 +15,8 @@
 // under the License.
 
 import ballerina/log;
-import ballerina/test;
 import ballerina/system;
+import ballerina/test;
 
 string testHostName = system:getEnv("MONGODB_HOST") != "" ? system:getEnv("MONGODB_HOST") : "localhost";
 
@@ -119,7 +119,7 @@ public function testInsertData() returns Error? {
     Collection mongoCollection = check mongoDatabase->getCollection(COLLECTION_NAME);
     var returned = mongoCollection->insert(insertDocument);
     if (returned is DatabaseError) {
-         log:printInfo(returned.toString());
+        log:printInfo(returned.toString());
         test:assertFail("Inserting data failed!");
     } else {
         log:printInfo("Successfully inserted document into collection");
@@ -284,12 +284,12 @@ function testUpdateDocumentUpsertTrue() returns Error? {
             test:assertNotEquals(returned.toString(), "null", "Querying one data failed");
         } else {
             log:printInfo(returned.toString());
-            test:assertFail("Finding data failed");   
+            test:assertFail("Finding data failed");
         }
 
     } else {
         log:printInfo(modifiedCount.toString());
-        test:assertFail("Replacing data failed");   
+        test:assertFail("Replacing data failed");
     }
 }
 

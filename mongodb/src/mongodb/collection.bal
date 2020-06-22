@@ -24,13 +24,13 @@ public type Collection client object {
         self.collection = collection;
     }
 
-# Counts the documents based on the filter. When the filter is (), it counts all the documents in the collection.
-# ```ballerina
-# int|mongodb:DatabaseError returned = mongoCollection->countDocuments(());
-# ```
-#
-# + filter - Filter for the count ($where & $near can be used)
-# + return - Count of the documents in the collection or else `mongodb:DatabaseError` if unable to reach the DB
+    # Counts the documents based on the filter. When the filter is (), it counts all the documents in the collection.
+    # ```ballerina
+    # int|mongodb:DatabaseError returned = mongoCollection->countDocuments(());
+    # ```
+    #
+    # + filter - Filter for the count ($where & $near can be used)
+    # + return - Count of the documents in the collection or else `mongodb:DatabaseError` if unable to reach the DB
     public remote function countDocuments(map<json>? filter = ()) returns int|DatabaseError {
         if (filter is ()) {
             return countDocuments(self.collection, ());
@@ -39,40 +39,40 @@ public type Collection client object {
         return countDocuments(self.collection, java:fromString(filterString));
     }
 
-# Lists the indices associated with the collection.
-# ```ballerina
-# map<json>[]|mongodb:DatabaseError returned = mongoCollection->listIndices();
-# ```
-#
-# + return - a JSON object with indices on success or else a `mongodb:DatabaseError` if unable to reach the DB
+    # Lists the indices associated with the collection.
+    # ```ballerina
+    # map<json>[]|mongodb:DatabaseError returned = mongoCollection->listIndices();
+    # ```
+    #
+    # + return - a JSON object with indices on success or else a `mongodb:DatabaseError` if unable to reach the DB
     public remote function listIndices() returns map<json>[]|DatabaseError {
         return listIndices(self.collection);
     }
 
 
-# Inserts one document.
-# ```ballerina
-# mongodb:DatabaseError? error = mongoCollection->insert(insertDocument);
-# ```
-#
-# + document - Document to be inserted
-# + return - `()` on success or else a `mongodb:DatabaseError` if unable to reach the DB
+    # Inserts one document.
+    # ```ballerina
+    # mongodb:DatabaseError? error = mongoCollection->insert(insertDocument);
+    # ```
+    #
+    # + document - Document to be inserted
+    # + return - `()` on success or else a `mongodb:DatabaseError` if unable to reach the DB
     public remote function insert(map<json> document) returns DatabaseError? {
         string documentStr = document.toJsonString();
         return insert(self.collection, java:fromString(documentStr));
     }
 
-# The queries collection for documents, which sorts and limits the returned results.
-# ```ballerina
-# map<json>[]|mongodb:DatabaseError returned = mongoCollection->find(filter = findDoc);
-# ```
-#
-# + filter - Filter for the query
-# + sort - Sort options for the query
-# + limit - Limit options for the query results. No limit is applied for -1
-# + return - JSON array of the documents in the collection or else a `mongodb:DatabaseError` if unable to reach the DB
-    public remote function find(map<json>? filter = (), map<json>? sort = (), int 'limit = -1) 
-                                                                                    returns map<json>[]|DatabaseError {
+    # The queries collection for documents, which sorts and limits the returned results.
+    # ```ballerina
+    # map<json>[]|mongodb:DatabaseError returned = mongoCollection->find(filter = findDoc);
+    # ```
+    #
+    # + filter - Filter for the query
+    # + sort - Sort options for the query
+    # + limit - Limit options for the query results. No limit is applied for -1
+    # + return - JSON array of the documents in the collection or else a `mongodb:DatabaseError` if unable to reach the DB
+    public remote function find(map<json>? filter = (), map<json>? sort = (), int 'limit = -1)
+    returns map<json>[]|DatabaseError {
         if (filter is ()) {
             if (sort is ()) {
                 return find(self.collection, (), (), 'limit);
@@ -88,18 +88,18 @@ public type Collection client object {
         return find(self.collection, java:fromString(filterStr), java:fromString(sortString), 'limit);
     }
 
-# Updates a document based on a condition.
-# ```ballerina
-# int|mongodb:DatabaseError modifiedCount = mongoCollection->update(replaceDoc, replaceFilter, false);
-# ```
-#
-# + set - Document for the update condition
-# + filter - Filter for the query
-# + isMultiple - Whether to update multiple documents
-# + upsert - Whether to insert if update cannot be achieved
-# + return - JSON array of the documents in the collection or else a `mongodb:DatabaseError` if unable to reach the DB
-    public remote function update(map<json> set, map<json>? filter = (), boolean isMultiple = false, 
-                                                                                                boolean upsert = false)
+    # Updates a document based on a condition.
+    # ```ballerina
+    # int|mongodb:DatabaseError modifiedCount = mongoCollection->update(replaceDoc, replaceFilter, false);
+    # ```
+    #
+    # + set - Document for the update condition
+    # + filter - Filter for the query
+    # + isMultiple - Whether to update multiple documents
+    # + upsert - Whether to insert if update cannot be achieved
+    # + return - JSON array of the documents in the collection or else a `mongodb:DatabaseError` if unable to reach the DB
+    public remote function update(map<json> set, map<json>? filter = (), boolean isMultiple = false,
+        boolean upsert = false)
     returns int|DatabaseError {
         string updateDoc = set.toJsonString();
         if (filter is ()) {
@@ -109,14 +109,14 @@ public type Collection client object {
         return update(self.collection, java:fromString(updateDoc), java:fromString(filterStr), isMultiple, upsert);
     }
 
-# Deletes a document based on a condition.
-# ```ballerina
-# int:mongodb:DatabaseError deleteRet = mongoCollection->delete(deleteFilter, true);
-# ```
-#
-# + filter - Filter for the query
-# + isMultiple - Delete multiple documents if the condition is matched
-# + return - The number of deleted documents or else a `mongodb:DatabaseError` if unable to reach the DB
+    # Deletes a document based on a condition.
+    # ```ballerina
+    # int:mongodb:DatabaseError deleteRet = mongoCollection->delete(deleteFilter, true);
+    # ```
+    #
+    # + filter - Filter for the query
+    # + isMultiple - Delete multiple documents if the condition is matched
+    # + return - The number of deleted documents or else a `mongodb:DatabaseError` if unable to reach the DB
     public remote function delete(map<json>? filter = (), boolean isMultiple = false) returns int|DatabaseError {
         if (filter is ()) {
             return delete(self.collection, (), isMultiple);
