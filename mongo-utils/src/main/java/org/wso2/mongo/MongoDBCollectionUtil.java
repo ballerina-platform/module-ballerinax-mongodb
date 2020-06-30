@@ -30,7 +30,7 @@ import org.wso2.mongo.exceptions.BallerinaErrorGenerator;
 import static org.wso2.mongo.MongoDBConstants.EMPTY_JSON;
 
 /**
- * Java imlementaton for Ballerina MongoDB Collection.
+ * Java implementation for Ballerina MongoDB Collection.
  */
 public class MongoDBCollectionUtil {
 

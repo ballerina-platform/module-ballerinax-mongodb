@@ -28,6 +28,8 @@ import org.wso2.mongo.exceptions.BallerinaErrorGenerator;
 
 import java.util.ArrayList;
 
+import static org.ballerinalang.jvm.StringUtils.fromString;
+
 /**
  * Java implementation of MongoDB Database.
  */
@@ -37,11 +39,11 @@ public class MongoDBDatabaseUtil {
         MongoDatabase mongoDatabase = (MongoDatabase) database.getValue();
         try {
             MongoCursor<String> iterator = mongoDatabase.listCollectionNames().iterator();
-            ArrayList<String> collectionNames = new ArrayList<>();
+            ArrayList<BString> collectionNames = new ArrayList<>();
             while (iterator.hasNext()) {
-                collectionNames.add(iterator.next());
+                collectionNames.add(fromString(iterator.next()));
             }
-            return BValueCreator.createArrayValue(collectionNames.toArray(new String[0]));
+            return BValueCreator.createArrayValue(collectionNames.toArray(new BString[0]));
         } catch (MongoException e) {
             return BallerinaErrorGenerator.createBallerinaDatabaseError(e);
         }

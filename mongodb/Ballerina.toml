@@ -1,10 +1,10 @@
 [project]
-org-name= "ballerina"
-version= "1.0.0"
+org-name= "ballerinax"
+version= "2.0.0"
 license= ["Apache-2.0"]
 authors = ["Ballerina"]
 keywords = ["MongoDB", "NoSQL"]
-repository = "https://github.com/ballerina-platform/module-mongodb"
+repository = "https://github.com/ballerina-platform/module-ballerinax-mongodb"
 
 [dependencies]
 
@@ -13,7 +13,7 @@ target = "java8"
 
     [[platform.libraries]]
     module = "mongodb"
-    path = "../mongo-utils/target/mongo-utils-1.0.0.jar"
+    path = "../mongo-utils/target/mongo-utils-2.0.0.jar"
     artafactId = "mongo-utils"
-    version = "1.0.0"
+    version = "2.0.0"
     groupId = "org.wso2.ei"

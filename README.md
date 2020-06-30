@@ -6,7 +6,7 @@ The Mongo DB connector allows you to connect to a Mongo DB from Ballerina and pe
 
 |                             |       Version               |
 |:---------------------------:|:---------------------------:|
-| Ballerina Language          | 1.2.X                       |
+| Ballerina Language          | Swan Lake Preview1          |
 | Mongo DB                    | V4.2.0                      |
 
 ## MongoDB Clients
@@ -37,11 +37,11 @@ There are 3 clients provided by Ballerina to interact with MongoDB.
 
 ## Sample
 
-First, import the `ballerina/mongodb` module into the Ballerina project.
+First, import the `ballerinax/mongodb` module into the Ballerina project.
 
 ```ballerina
 import ballerina/log;
-import ballerina/mongodb;
+import ballerinax/mongodb;
 
 public function main() {
 

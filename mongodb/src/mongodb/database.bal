@@ -20,30 +20,30 @@ public type Database client object {
     handle database;
 
     #Initialises the `Database` object.
-    public function __init(handle database) {
+    public function init(handle database) {
         self.database = database;
     }
 
-# Lists the collection names in the MongoDB database.
-# ```ballerina
-# string[]:mongodb:DatabaseError returned = mongoDatabase->getCollectionNames();
-# ```
-#
-# + return - An array of collection names on success or else a `mongodb:DatabaseError` if unable to reach the DB
+    # Lists the collection names in the MongoDB database.
+    # ```ballerina
+    # string[]:mongodb:DatabaseError returned = mongoDatabase->getCollectionNames();
+    # ```
+    #
+    # + return - An array of collection names on success or else a `mongodb:DatabaseError` if unable to reach the DB
     public remote function getCollectionNames() returns string[]|DatabaseError {
         return getCollectionNames(self.database);
     }
 
-# Returns the collection object.
-# ```ballerina
-# mongodb:collection|mongodb:Error returned = mongoDatabase->getCollection("Programmes");
-# ```
-# 
-# + name - Name of the collection
-# + return - A collection object on success or else a `mongodb:Error` if unable to reach the DB
+    # Returns the collection object.
+    # ```ballerina
+    # mongodb:collection|mongodb:Error returned = mongoDatabase->getCollection("Programmes");
+    # ```
+    # 
+    # + name - Name of the collection
+    # + return - A collection object on success or else a `mongodb:Error` if unable to reach the DB
     public remote function getCollection(string name) returns Collection|Error {
         if (name.trim().length() == 0) {
-            return ApplicationError( message = "Collection Name cannot be empty.");
+            return ApplicationError("Collection Name cannot be empty.");
         }
         handle collection = check getCollection(self.database, name);
         return new Collection(collection);

@@ -14,37 +14,19 @@
 // specific language governing permissions and limitations
 // under the License.
 
-# Holds the properties of an application error.
-#
-# + message - Specific error message for the error
-# + cause - Cause of the error
-public type ApplicationErrorDetail record {
-    string message;
-    error cause?;
-};
-
 # Holds the properties of a database error.
 #
-# + message - Specific error message for the error
-# + mongoDBExceptionType - Type of the returned MongoDB exception 
-# + cause - Cause of the error
-public type DatabaseErrorDetail record {
-    string message;
+# + mongoDBExceptionType - Type of the returned MongoDB exception
+public type DatabaseErrorDetail record {|
     string mongoDBExceptionType;
-    error cause?;
-};
-
-// Error reasons.
-public const DATABASE_ERROR_REASON = "{ballerina/mongodb}DatabaseError";
+|};
 
 # Represents an error caused by an issue related to database accessibility, erroneous queries, constraint violations,
 # database resource clean-up, and other similar scenarios.
-public type DatabaseError error<DATABASE_ERROR_REASON, DatabaseErrorDetail>;
-
-public const APPLICATION_ERROR_REASON = "{ballerina/mongodb}ApplicationError";
+public type DatabaseError distinct error<DatabaseErrorDetail>;
 
 # Represents an error originating from application-level causes.
-public type ApplicationError error<APPLICATION_ERROR_REASON, ApplicationErrorDetail>;
+public type ApplicationError distinct error;
 
 # Represents a database or application level error returned from the MongoDB client remote functions.
 public type Error DatabaseError|ApplicationError;

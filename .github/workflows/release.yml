@@ -9,20 +9,25 @@ jobs:
     build:
 
         runs-on: ubuntu-latest
-
+        services:
+          mongodb:
+            image: mongo:4.2.0
+            ports:
+              - 27017:27017
         steps:
             - uses: actions/checkout@v2
             - run: mvn clean install -pl mongo-utils
             - name: Ballerina Build
-              uses: ballerina-platform/ballerina-action/@master
+              uses: ballerina-platform/ballerina-action/@swan-lake-release
               with:
                 args:
-                  build -a -c --skip-tests --sourceroot mongodb
+                  build -a -c --sourceroot mongodb
               env:
                 JAVA_OPTS: -DBALLERINA_DEV_COMPILE_BALLERINA_ORG=true
+                MONGODB_HOST: mongodb
                   
             - name: Ballerina Push
-              uses: ballerina-platform/ballerina-action/@master
+              uses: ballerina-platform/ballerina-action/@swan-lake-release
               with:
                   args:
                       push -a
