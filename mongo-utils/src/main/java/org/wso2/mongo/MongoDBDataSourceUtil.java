@@ -38,8 +38,19 @@ import org.slf4j.LoggerFactory;
 import org.wso2.mongo.exceptions.BallerinaErrorGenerator;
 import org.wso2.mongo.exceptions.MongoDBClientException;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.security.GeneralSecurityException;
+import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.Locale;
+import javax.net.ssl.KeyManager;
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
 
 import static org.ballerinalang.jvm.StringUtils.fromString;
 
@@ -99,7 +110,7 @@ public class MongoDBDataSourceUtil {
     }
 
     public static void close(HandleValue datasource) {
-        log.debug("Closing mongodb connection");
+        log.debug("Closing MongoDB connection");
         MongoClient mongoClient = (MongoClient) datasource.getValue();
         mongoClient.close();
     }
@@ -194,11 +205,12 @@ public class MongoDBDataSourceUtil {
         boolean sslEnabled = options.getBooleanValue(ConnectionParam.SSL_ENABLED.getKey());
         if (sslEnabled) {
             builder = builder.sslEnabled(true);
-        }
-        boolean sslInvalidHostNameAllowed = options.getBooleanValue(ConnectionParam.SSL_INVALID_HOSTNAME_ALLOWED
-                .getKey());
-        if (sslInvalidHostNameAllowed) {
-            builder.sslInvalidHostNameAllowed(true);
+            boolean sslInvalidHostNameAllowed = options.getBooleanValue(ConnectionParam.SSL_INVALID_HOSTNAME_ALLOWED
+                    .getKey());
+            if (sslInvalidHostNameAllowed) {
+                builder.sslInvalidHostNameAllowed(true);
+            }
+            builder.sslContext(initializeSSLContext(options));
         }
         builder.retryWrites(options.getBooleanValue(ConnectionParam.RETRY_WRITES.getKey()));
         String readConcern = options.getStringValue(ConnectionParam.READ_CONCERN.getKey()).getValue();
@@ -265,6 +277,69 @@ public class MongoDBDataSourceUtil {
         return builder.build();
     }
 
+    private static SSLContext initializeSSLContext(MapValue options) {
+        TrustManager[] trustManagers;
+        KeyManager[] keyManagers;
+
+        MapValue secureSocket = options.getMapValue(ConnectionParam.SECURE_SOCKET.getKey());
+
+        MapValue trustStore = secureSocket.getMapValue(ConnectionParam.TRUST_STORE.getKey());
+        String trustStoreFilePath = trustStore.getStringValue(ConnectionParam.CERTIFICATE_PATH.getKey()).getValue();
+        try (InputStream trustStream = new FileInputStream(trustStoreFilePath)) {
+            char[] trustStorePass = trustStore.getStringValue(ConnectionParam.CERTIFICATE_PASSWORD.getKey()).getValue()
+                                        .toCharArray();
+            KeyStore trustStoreJKS = KeyStore.getInstance(KeyStore.getDefaultType());
+            trustStoreJKS.load(trustStream, trustStorePass);
+
+            TrustManagerFactory trustFactory =
+                    TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+            trustFactory.init(trustStoreJKS);
+            trustManagers = trustFactory.getTrustManagers();
+        } catch (FileNotFoundException e) {
+            throw new MongoDBClientException("Trust store file not found for secure connections to MongoDB. " +
+                    "Trust Store file path : '" + trustStoreFilePath + "'.", e);
+        } catch (IOException e) {
+            throw new MongoDBClientException("I/O Exception in creating trust store for secure connections to " +
+                    "MongoDB. Trust Store file path : '" + trustStoreFilePath + "'.", e);
+        } catch (GeneralSecurityException e) {
+            throw new MongoDBClientException("Error in initializing certs for Trust Store : " +
+                                                                                      e.getMessage(), e.getCause());
+        }
+
+        MapValue keyStore = secureSocket.getMapValue(ConnectionParam.KEY_STORE.getKey());
+        String keyStoreFilePath = keyStore.getStringValue(ConnectionParam.CERTIFICATE_PATH.getKey()).getValue();
+        try (InputStream keyStream = new FileInputStream(keyStoreFilePath)) {
+            char[] keyStorePass = keyStore.getStringValue(ConnectionParam.CERTIFICATE_PASSWORD.getKey()).getValue()
+                                                                                        .toCharArray();
+            KeyStore keyStoreJKS = KeyStore.getInstance(KeyStore.getDefaultType());
+            keyStoreJKS.load(keyStream, keyStorePass);
+            KeyManagerFactory keyManagerFactory =
+                    KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+            keyManagerFactory.init(keyStoreJKS, keyStorePass);
+            keyManagers = keyManagerFactory.getKeyManagers();
+        } catch (FileNotFoundException e) {
+            throw new MongoDBClientException("Key store file not found for secure connections to MongoDB. " +
+                    "Key Store file path : '" + keyStoreFilePath + "'.", e);
+        } catch (IOException e) {
+            throw new MongoDBClientException("I/O Exception in creating trust store for secure connections to " +
+                    "MongoDB. Key Store file path : '" + keyStoreFilePath + "'.", e);
+        } catch (GeneralSecurityException e) {
+            throw new MongoDBClientException("Error in initializing certs for Key Store : " +
+                                                                                         e.getMessage(), e.getCause());
+        }
+
+        try {
+            String protocol = secureSocket.getStringValue(ConnectionParam.SSL_PROTOCOL.getKey()).getValue();
+            SSLContext sslContext = SSLContext.getInstance(protocol);
+            sslContext.init(keyManagers, trustManagers, null);
+            return sslContext;
+        } catch (GeneralSecurityException e) {
+            throw new MongoDBClientException("Error in initializing SSL context with the key store/ trust store. " +
+                    "Trust Store file path : '" + trustStoreFilePath + "'. " +
+                    "Key Store file path : '" + keyStoreFilePath + "'.", e);
+        }
+    }
+
     /**
      * Enum for connection parameter indices.
      */
@@ -274,6 +349,8 @@ public class MongoDBDataSourceUtil {
         WRITE_CONCERN(fromString("writeConcern")), READ_PREFERENCE(fromString("readPreference")),
         AUTHSOURCE(fromString("authSource")), AUTHMECHANISM(fromString("authMechanism")),
         GSSAPI_SERVICE_NAME(fromString("gssapiServiceName")), REPLICA_SET(fromString("replicaSet")),
+        CERTIFICATE_PATH(fromString("path")), CERTIFICATE_PASSWORD(fromString("password")),
+        SSL_PROTOCOL(fromString("protocol")),
 
         // boolean params
         SSL_ENABLED(fromString("sslEnabled")), SSL_INVALID_HOSTNAME_ALLOWED(fromString("sslInvalidHostNameAllowed")),
@@ -285,7 +362,11 @@ public class MongoDBDataSourceUtil {
         MAX_IDLE_TIME(fromString("maxIdleTime")), MAX_LIFE_TIME(fromString("maxLifeTime")),
         MIN_POOL_SIZE(fromString("minPoolSize")), WAIT_QUEUE_MULTIPLE(fromString("waitQueueMultiple")),
         WAIT_QUEUE_TIMEOUT(fromString("waitQueueTimeout")),
-        LOCAL_THRESHOLD(fromString("localThreshold")), HEART_BEAT_FREQUENCY(fromString("heartbeatFrequency"));
+        LOCAL_THRESHOLD(fromString("localThreshold")), HEART_BEAT_FREQUENCY(fromString("heartbeatFrequency")),
+
+        // Map Params
+        SECURE_SOCKET(fromString("secureSocket")),
+        TRUST_STORE(fromString("trustStore")), KEY_STORE(fromString("keyStore"));
 
         private final BString key;
 
