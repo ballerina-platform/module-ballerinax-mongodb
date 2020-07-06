@@ -32,3 +32,7 @@ The MongoDB functionality are tested with the docker base test framework. The te
     * MongoDB 4.2 with basic authentication
 
             mvn verify -P mongodb -Ddocker.removeVolumes=true
+
+    * MongoDB 3.2 with SSL Enabled
+    
+                mvn verify -P mongodb-ssl -Ddocker.removeVolumes=true

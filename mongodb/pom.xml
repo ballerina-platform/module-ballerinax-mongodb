@@ -93,8 +93,72 @@
                             </environmentVariables>
                             <executable>ballerina</executable>
                             <arguments>
-                                <argument>build</argument>
-                                <argument>-c</argument>
+                                <argument>test</argument>
+                                <argument>--groups</argument>
+                                <argument>mongodb</argument>
+                                <argument>-a</argument>
+                            </arguments>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>mongodb-ssl</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>io.fabric8</groupId>
+                        <artifactId>docker-maven-plugin</artifactId>
+                        <version>0.31.0</version>
+                        <executions>
+                            <execution>
+                                <id>start-docker-for-mongo</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>start</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>stop-docker-for-mongo</id>
+                                <phase>post-integration-test</phase>
+                                <goals>
+                                    <goal>stop</goal>
+                                    <goal>remove</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <images>
+                                <image>
+                                    <alias>mongodb-ssl</alias>
+                                    <name>rzhilkibaev/mongo-x509-auth-ssl</name>
+                                </image>
+                            </images>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>ballerina-build</id>
+                                <phase>integration-test</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <environmentVariables>
+                                <MONGODB_HOST>${docker.container.mongodb-ssl.ip}</MONGODB_HOST>
+                                <MONGODB_USER>C=US,ST=CA,L=San Francisco,O=Jaspersoft,OU=JSDev,CN=admin</MONGODB_USER>
+                            </environmentVariables>
+                            <executable>ballerina</executable>
+                            <arguments>
+                                <argument>test</argument>
+                                <argument>--groups</argument>
+                                <argument>mongodb-ssl</argument>
                                 <argument>-a</argument>
                             </arguments>
                         </configuration>
