@@ -8,15 +8,11 @@ jobs:
         services:
           mongodb:
             image: mongo:4.2.0
-            ports:
-              - 27017:27017
             env:
               MONGO_INITDB_ROOT_USERNAME: admin
               MONGO_INITDB_ROOT_PASSWORD: admin
           mongodb-ssl:
             image: rzhilkibaev/mongo-x509-auth-ssl:latest
-            ports:
-              - 27018:27017
         steps:
             - uses: actions/checkout@v2
             - run: mvn clean install -pl mongo-utils
@@ -45,4 +41,3 @@ jobs:
                 WORKING_DIR: ./mongodb
                 MONGODB_HOST: mongodb-ssl
                 MONGODB_USER: C=US,ST=CA,L=San Francisco,O=Jaspersoft,OU=JSDev,CN=admin
-                MONGODB_PORT: 27018

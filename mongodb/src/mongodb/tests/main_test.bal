@@ -17,10 +17,8 @@
 import ballerina/log;
 import ballerina/system;
 import ballerina/test;
-import ballerina/lang.'int;
 
 string testHostName = system:getEnv("MONGODB_HOST") != "" ? system:getEnv("MONGODB_HOST") : "localhost";
-int testPort = system:getEnv("MONGODB_PORT") != "" ? check 'int:fromString(system:getEnv("MONGODB_PORT")) : 27017;
 string testUser = system:getEnv("MONGODB_USER") != "" ? system:getEnv("MONGODB_USER") : "";
 string testPass = system:getEnv("MONGODB_PASSWORD") != "" ? system:getEnv("MONGODB_PASSWORD") : "";
 
