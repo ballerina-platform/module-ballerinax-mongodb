@@ -15,6 +15,7 @@
 // under the License.
 
 import ballerina/java;
+import ballerina/crypto;
 
 # Represents the MongoDB client.
 public type Client client object {
@@ -25,26 +26,30 @@ public type Client client object {
     # 
     # + return - An `ApplicationError` if there is any error in the provided configurations 
     public function __init(ClientConfig config) returns ApplicationError? {
+        if (config.options.sslEnabled && config.options.secureSocket is ()) {
+            return ApplicationError(message = "`secureSocket` ConnectionProperty config is mandatory " +
+            "when ssl is enabled for connection.");
+        }
         self.datasource = check initClient(config);
     }
 
-# Lists the database names in the MongoDB server.
-# ```ballerina
-# string[]|mongodb:DatabaseError result = mongoClient->getDatabasesNames();
-# ```
-#
-# + return - An array of database names on success or else a`mongodb:DatabaseError` if unable to reach the DB 
+    # Lists the database names in the MongoDB server.
+    # ```ballerina
+    # string[]|mongodb:DatabaseError result = mongoClient->getDatabasesNames();
+    # ```
+    #
+    # + return - An array of database names on success or else a`mongodb:DatabaseError` if unable to reach the DB 
     public remote function getDatabasesNames() returns string[]|DatabaseError {
         return getDatabasesNames(self.datasource);
     }
 
-# Returns the `Database` client.
-# ```ballerina
-# mongodb:Database|mongodb:Error result = mongoClient->getDatabase("Ballerina");
-# ```
-# 
-# + name - Name of the database
-# + return - A database client object on success or else a `mongodb:Error` if unable to reach the DB
+    # Returns the `Database` client.
+    # ```ballerina
+    # mongodb:Database|mongodb:Error result = mongoClient->getDatabase("Ballerina");
+    # ```
+    # 
+    # + name - Name of the database
+    # + return - A database client object on success or else a `mongodb:Error` if unable to reach the DB
     public remote function getDatabase(string name) returns Database|Error {
         if (name.trim().length() == 0) {
             return ApplicationError(message = "Database Name cannot be empty.");
@@ -54,10 +59,10 @@ public type Client client object {
         return new Database(database);
     }
 
-# Closes the client.
-# ```ballerina
-# mongoClient->close();
-# ```
+    # Closes the client.
+    # ```ballerina
+    # mongoClient->close();
+    # ```
     public remote function close() {
         close(self.datasource);
     }
@@ -103,11 +108,12 @@ public type ClientConfig record {|
 # + readPreference - The read preference for the replica set
 # + authSource - The source in which the user is defined
 # + authMechanism - Authentication mechanism to use. 
-#                   Possible values are PLAIN, SCRAM_SHA_1, SCRAM_SHA_256, MONGODB_X509, or GSSAPI
+#                   Possible values are PLAIN, SCRAM_SHA_1, SCRAM_SHA_256, MONGODB-X509, or GSSAPI
 # + gssapiServiceName - Authentications GSSAPI Service name
 # + replicaSet - The replica set name if it is to connect to replicas
 # + sslEnabled - Whether SSL connection is enabled
 # + sslInvalidHostNameAllowed - Whether invalid host names should be allowed
+# + secureSocket - Configurations related to facilitating secure connection
 # + retryWrites - Whether to retry writing failures
 # + maxPoolSize - Maximum connection pool size
 # + minPoolSize - Minimum connection pool size
@@ -132,6 +138,7 @@ public type ConnectionProperties record {|
     string replicaSet = "";
     boolean sslEnabled = false;
     boolean sslInvalidHostNameAllowed = false;
+    SecureSocket? secureSocket = ();
     boolean retryWrites = false;
     int socketTimeout = -1;
     int connectionTimeout = -1;
@@ -144,4 +151,15 @@ public type ConnectionProperties record {|
     int waitQueueTimeout = -1;
     int localThreshold = -1;
     int heartbeatFrequency = -1;
+|};
+
+# Configurations related to facilitating secure connection.
+#
+# + trustStore - Configurations associated with the TrustStore
+# + keyStore - Configurations associated with the KeyStore
+# + protocol - The standard name of the requested protocol
+public type SecureSocket record {|
+    crypto:TrustStore trustStore;
+    crypto:KeyStore keyStore;
+    string protocol = "TLS";
 |};
