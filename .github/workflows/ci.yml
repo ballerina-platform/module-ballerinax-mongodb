@@ -4,7 +4,6 @@ on: [push]
 
 jobs:
     build:
-
         runs-on: ubuntu-latest
         services:
           mongodb:
@@ -14,16 +13,35 @@ jobs:
             env:
               MONGO_INITDB_ROOT_USERNAME: admin
               MONGO_INITDB_ROOT_PASSWORD: admin
+          mongodb-ssl:
+            image: rzhilkibaev/mongo-x509-auth-ssl:latest
+            ports:
+              - 27018:27017
         steps:
             - uses: actions/checkout@v2
             - run: mvn clean install -pl mongo-utils
-            - name: Ballerina Build
+            - name: Ballerina Build W/O tests
               uses: ballerina-platform/ballerina-action/@swan-lake-release
               with:
                 args:
-                  build -a -c --sourceroot mongodb
+                  build -a -c --sourceroot mongodb --skip-tests
               env:
                 JAVA_OPTS: -DBALLERINA_DEV_COMPILE_BALLERINA_ORG=true
+            - name: Ballerina Build W/ tests
+              uses: ballerina-platform/ballerina-action/@swan-lake-release
+              with:
+                args:
+                  test -a --sourceroot mongodb --groups mongodb
+              env:
                 MONGODB_HOST: mongodb
                 MONGODB_USER: admin
                 MONGODB_PASSWORD: admin
+            - name: Ballerina Build W/ tests (SSL)
+              uses: ballerina-platform/ballerina-action/@swan-lake-release
+              with:
+                args:
+                  test -a --sourceroot mongodb --groups mongodb-ssl
+              env:
+                MONGODB_HOST: mongodb-ssl
+                MONGODB_USER: C=US,ST=CA,L=San Francisco,O=Jaspersoft,OU=JSDev,CN=admin
+                MONGODB_PORT: 27018

@@ -20,5 +20,7 @@ script:
   - sudo dpkg -i ballerina-linux-installer-x64-swan-lake-preview1.deb
   - sudo apt-get install -f
   - export JAVA_OPTS="-DBALLERINA_DEV_COMPILE_BALLERINA_ORG=true"
-  - mvn clean install -pl mongo-utils
-  - ballerina build -a -c --sourceroot mongodb
+  - mvn clean install
+  - cd mongodb
+  - mvn verify -P mongodb
+  - mvn verify -P mongodb-ssl
