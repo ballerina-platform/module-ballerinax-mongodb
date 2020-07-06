@@ -1,6 +1,6 @@
 [project]
 org-name= "ballerina"
-version= "1.0.0"
+version= "1.0.1"
 license= ["Apache-2.0"]
 authors = ["Ballerina"]
 keywords = ["MongoDB", "NoSQL"]
@@ -13,7 +13,7 @@ target = "java8"
 
     [[platform.libraries]]
     module = "mongodb"
-    path = "../mongo-utils/target/mongo-utils-1.0.0.jar"
+    path = "../mongo-utils/target/mongo-utils-1.0.1.jar"
     artafactId = "mongo-utils"
-    version = "1.0.0"
+    version = "1.0.1"
     groupId = "org.wso2.ei"
