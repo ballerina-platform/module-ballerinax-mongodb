@@ -13,7 +13,7 @@
 # limitations under the License.
 
 services:
-  - mongodb
+  - docker
 
 script:
   - wget https://product-dist.ballerina.io/downloads/1.2.0/ballerina-linux-installer-x64-1.2.0.deb
