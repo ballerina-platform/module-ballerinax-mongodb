@@ -2,19 +2,33 @@
 
 | Ballerina Language Version  | MongoDB Version |
 | ----------------------------| -------------------------------|
-|  1.2.X                      |   4.2.0
+|  1.2.x                      |   4.2.0
 
-## Prerequisites
+## Running Tests in Docker Containers
 
-1. A MongoDB 4.2.0 running instance
+The MongoDB functionality are tested with the docker base test framework. The test framework initializes the docker container according to the given profile before executing the test suite.
 
-## Running the tests
+1. Install and run docker in daemon mode.
 
-1. Configure the `mongoConfig` in the `main_test.bal` file to add the credentials and server address of the running MongoDB node. By default, tests are configured for an instance running in localhost:27017 without enabling authentication. If only hostname is changed, hostname can be exposed through `MONGODB_HOST` environment variable.
+    * Installing docker on Linux,
+      Note:
+      These commands retrieve content from get.docker.com web in a quiet output-document mode and install.Then we need to stop docker service as it needs to restart docker in daemon mode. After that, we need to export docker daemon host.
 
-2. Execute the following commands inside the root folder of the GitHub repo.
+            wget -qO- https://get.docker.com/ | sh
+            sudo service dockerd stop
+            export DOCKER_HOST=tcp://172.17.0.1:4326
+            docker daemon -H tcp://172.17.0.1:4326
 
-    ```cmd
-    $ export JAVA_OPTS="-DBALLERINA_DEV_COMPILE_BALLERINA_ORG=true"
-    $ mvn clean install  
-    ```
+    * On installing docker on Mac, see [Get started with Docker for Mac](https://docs.docker.com/docker-for-mac/)
+
+    * On installing docker on Windows, see [Get started with Docker for Windows](https://docs.docker.com/docker-for-windows/)
+
+2. Export following options to build module under `ballerinax` organisation.
+
+        export JAVA_OPTS="-DBALLERINA_DEV_COMPILE_BALLERINA_ORG=true"
+
+3. To run the integration tests, issue the following commands.
+
+    * MongoDB 4.2 with basic authentication
+
+            mvn verify -P mongodb -Ddocker.removeVolumes=true
