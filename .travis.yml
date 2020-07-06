@@ -13,7 +13,7 @@
 # limitations under the License.
 
 services:
-  - mongodb
+  - docker
 
 script:
   - wget http://dist.ballerina.io/downloads/swan-lake-preview1/ballerina-linux-installer-x64-swan-lake-preview1.deb
