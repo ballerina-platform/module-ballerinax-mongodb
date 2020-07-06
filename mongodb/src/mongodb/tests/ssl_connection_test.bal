@@ -30,7 +30,6 @@ ClientConfig mongoConfigInvalid = {
 
 ClientConfig sslMongoConfig = {
     host: testHostName,
-    port: testPort,
     username: testUser,
     options: {
         socketTimeout: 10000,
