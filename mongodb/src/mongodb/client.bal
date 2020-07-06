@@ -14,8 +14,8 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import ballerina/java;
 import ballerina/crypto;
+import ballerina/java;
 
 # Represents the MongoDB client.
 public type Client client object {
@@ -27,8 +27,8 @@ public type Client client object {
     # + return - An `ApplicationError` if there is any error in the provided configurations 
     public function init(ClientConfig config) returns ApplicationError? {
         if (config.options.sslEnabled && config.options.secureSocket is ()) {
-            return ApplicationError("`secureSocket` ConnectionProperty config is mandatory " + 
-            "when ssl is enabled for connection.");
+            return ApplicationError("`secureSocket` ConnectionProperty config is mandatory " +
+                "when ssl is enabled for connection.");
         }
         self.datasource = check initClient(config);
     }
