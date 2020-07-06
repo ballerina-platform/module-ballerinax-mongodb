@@ -43,8 +43,9 @@ jobs:
               uses: ballerina-platform/ballerina-action/@swan-lake-release
               with:
                 args:
-                  test -a --sourceroot mongodb --groups mongodb-ssl
+                  test -a --groups mongodb-ssl
               env:
+                WORKING_DIR: ./mongodb
                 MONGODB_HOST: mongodb-ssl
                 MONGODB_USER: C=US,ST=CA,L=San Francisco,O=Jaspersoft,OU=JSDev,CN=admin
                 MONGODB_PORT: 27018
