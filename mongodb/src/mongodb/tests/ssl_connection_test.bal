@@ -56,7 +56,7 @@ public function initializeInValidConfig() {
     log:printInfo("Start initialization test failure");
     Client|ApplicationError mongoClient = new (mongoConfigInvalid);
     if (mongoClient is ApplicationError) {
-        log:printInfo("Creating client failed '" + mongoClient.message() + "'.");
+        log:printInfo("Creating client failed '" + mongoClient.detail().message + "'.");
     } else {
         test:assertFail("Error expected when url is invalid.");
     }
