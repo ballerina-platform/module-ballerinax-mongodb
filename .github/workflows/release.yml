@@ -14,6 +14,9 @@ jobs:
             image: mongo:4.2.0
             ports:
               - 27017:27017
+            env:
+              MONGO_INITDB_ROOT_USERNAME: admin
+              MONGO_INITDB_ROOT_PASSWORD: admin
         steps:
             - uses: actions/checkout@v2
             - run: mvn clean install -pl mongo-utils
@@ -25,7 +28,9 @@ jobs:
               env:
                 JAVA_OPTS: -DBALLERINA_DEV_COMPILE_BALLERINA_ORG=true
                 MONGODB_HOST: mongodb
-                  
+                MONGODB_USER: admin
+                MONGODB_PASSWORD: admin
+
             - name: Ballerina Push
               uses: ballerina-platform/ballerina-action/@swan-lake-release
               with:

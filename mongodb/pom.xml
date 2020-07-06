@@ -32,6 +32,78 @@
     <name>MongoDB Module - Ballerina Implementation</name>
     <url>https://ballerina.io/</url>
 
+    <profiles>
+        <profile>
+            <id>mongodb</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>io.fabric8</groupId>
+                        <artifactId>docker-maven-plugin</artifactId>
+                        <version>0.31.0</version>
+                        <executions>
+                            <execution>
+                                <id>start-docker-for-mongo</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>start</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>stop-docker-for-mongo</id>
+                                <phase>post-integration-test</phase>
+                                <goals>
+                                    <goal>stop</goal>
+                                    <goal>remove</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <images>
+                                <image>
+                                    <alias>mongodb</alias>
+                                    <name>mongo:4.2</name>
+                                    <run>
+                                        <env>
+                                            <MONGO_INITDB_ROOT_USERNAME>admin</MONGO_INITDB_ROOT_USERNAME>
+                                            <MONGO_INITDB_ROOT_PASSWORD>admin</MONGO_INITDB_ROOT_PASSWORD>
+                                        </env>
+                                    </run>
+                                </image>
+                            </images>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>ballerina-build</id>
+                                <phase>integration-test</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <environmentVariables>
+                                <MONGODB_HOST>${docker.container.mongodb.ip}</MONGODB_HOST>
+                                <MONGODB_USER>admin</MONGODB_USER>
+                                <MONGODB_PASSWORD>admin</MONGODB_PASSWORD>
+                            </environmentVariables>
+                            <executable>ballerina</executable>
+                            <arguments>
+                                <argument>build</argument>
+                                <argument>-c</argument>
+                                <argument>-a</argument>
+                            </arguments>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
     <build>
         <sourceDirectory>src</sourceDirectory>
         <plugins>
@@ -51,6 +123,7 @@
                     <executable>ballerina</executable>
                     <arguments>
                         <argument>build</argument>
+                        <argument>--skip-tests</argument>
                         <argument>-c</argument>
                         <argument>-a</argument>
                     </arguments>
