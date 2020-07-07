@@ -1,9 +1,29 @@
 org_name = "ballerinax"
-version = "2.0.0"
+version = "2.0.1"
 lockfile_version = "1.0.0"
 ballerina_version = "slp1"
 
-[[imports."ballerinax/mongodb:2.0.0"]]
+[[imports."ballerinax/mongodb:2.0.1"]]
+org_name = "ballerina"
+name = "crypto"
+version = "1.0.0"
+
+[[imports."ballerinax/mongodb:2.0.1"]]
+org_name = "ballerina"
+name = "java"
+version = "0.9.0"
+
+[[imports."ballerina/crypto:1.0.0"]]
+org_name = "ballerina"
+name = "time"
+version = "1.0.0"
+
+[[imports."ballerina/crypto:1.0.0"]]
+org_name = "ballerina"
+name = "java"
+version = "0.9.0"
+
+[[imports."ballerina/time:1.0.0"]]
 org_name = "ballerina"
 name = "java"
 version = "0.9.0"

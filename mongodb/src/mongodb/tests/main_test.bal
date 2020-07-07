@@ -19,9 +19,13 @@ import ballerina/system;
 import ballerina/test;
 
 string testHostName = system:getEnv("MONGODB_HOST") != "" ? system:getEnv("MONGODB_HOST") : "localhost";
+string testUser = system:getEnv("MONGODB_USER") != "" ? system:getEnv("MONGODB_USER") : "";
+string testPass = system:getEnv("MONGODB_PASSWORD") != "" ? system:getEnv("MONGODB_PASSWORD") : "";
 
 ClientConfig mongoConfig = {
     host: testHostName,
+    username: testUser,
+    password: testPass,
     options: {sslEnabled: false, serverSelectionTimeout: 5000}
 };
 
@@ -36,6 +40,7 @@ const DATABASE_NAME = "moviecollection";
 const COLLECTION_NAME = "moviedetails";
 
 @test:Config {
+        groups: ["mongodb"]
 }
 public function initializeInValidClient() {
     log:printInfo("Start initialization test failure");
@@ -48,7 +53,8 @@ public function initializeInValidClient() {
 }
 
 @test:Config {
-    dependsOn: ["initializeInValidClient"]
+    dependsOn: ["initializeInValidClient"],
+    groups: ["mongodb"]
 }
 public function testListDatabaseNames() {
     log:printInfo("----------------- List Databases------------------");
@@ -63,7 +69,8 @@ public function testListDatabaseNames() {
 }
 
 @test:Config {
-    dependsOn: ["testListDatabaseNames"]
+    dependsOn: ["testListDatabaseNames"],
+    groups: ["mongodb"]
 }
 public function testGetDatabase() {
     log:printInfo("----------------- Get Database------------------");
@@ -77,7 +84,8 @@ public function testGetDatabase() {
 }
 
 @test:Config {
-    dependsOn: ["testGetDatabase"]
+    dependsOn: ["testGetDatabase"],
+    groups: ["mongodb"]
 }
 public function testListCollections() returns Error? {
     log:printInfo("----------------- List Collections------------------");
@@ -93,7 +101,8 @@ public function testListCollections() returns Error? {
 }
 
 @test:Config {
-    dependsOn: ["testListCollections"]
+    dependsOn: ["testListCollections"],
+    groups: ["mongodb"]
 }
 public function testGetCollection() returns Error? {
     log:printInfo("----------------- Get Collection------------------");
@@ -108,7 +117,8 @@ public function testGetCollection() returns Error? {
 }
 
 @test:Config {
-    dependsOn: ["testGetCollection"]
+    dependsOn: ["testGetCollection"],
+    groups: ["mongodb"]
 }
 public function testInsertData() returns Error? {
     log:printInfo("------------------ Inserting Data ------------------");
@@ -135,7 +145,8 @@ public function testInsertData() returns Error? {
 }
 
 @test:Config {
-    dependsOn: ["testInsertData"]
+    dependsOn: ["testInsertData"],
+    groups: ["mongodb"]
 }
 public function testCountDocuments() returns Error? {
     log:printInfo("----------------- Count Documents------------------");
@@ -164,7 +175,8 @@ public function testCountDocuments() returns Error? {
 }
 
 @test:Config {
-    dependsOn: ["testCountDocuments"]
+    dependsOn: ["testCountDocuments"],
+    groups: ["mongodb"]
 }
 public function testListIndices() returns Error? {
     log:printInfo("----------------- Count Documents------------------");
@@ -181,7 +193,8 @@ public function testListIndices() returns Error? {
 }
 
 @test:Config {
-    dependsOn: ["testListIndices"]
+    dependsOn: ["testListIndices"],
+    groups: ["mongodb"]
 }
 public function testFindData() returns Error? {
     log:printInfo("----------------- Querying Data ----------------");
@@ -229,7 +242,8 @@ public function testFindData() returns Error? {
 }
 
 @test:Config {
-    dependsOn: ["testFindData"]
+    dependsOn: ["testFindData"],
+    groups: ["mongodb"]
 }
 function testUpdateDocument() returns Error? {
     log:printInfo("------------------ Updating Data -------------------");
@@ -262,7 +276,8 @@ function testUpdateDocument() returns Error? {
 }
 
 @test:Config {
-    dependsOn: ["testUpdateDocument"]
+    dependsOn: ["testUpdateDocument"],
+    groups: ["mongodb"]
 }
 function testUpdateDocumentUpsertTrue() returns Error? {
     log:printInfo("------------------ Updating Data (Upsert) -------------------");
@@ -294,7 +309,8 @@ function testUpdateDocumentUpsertTrue() returns Error? {
 }
 
 @test:Config {
-    dependsOn: ["testUpdateDocumentUpsertTrue"]
+    dependsOn: ["testUpdateDocumentUpsertTrue"],
+    groups: ["mongodb"]
 }
 function testDelete() returns Error? {
     log:printInfo("------------------ Deleting Data -------------------");
