@@ -276,7 +276,7 @@ public class MongoDBDataSourceUtil {
         String trustStoreFilePath = trustStore.getStringValue(ConnectionParam.CERTIFICATE_PATH.getKey());
         try (InputStream trustStream = new FileInputStream(trustStoreFilePath)) {
             char[] trustStorePass = trustStore.getStringValue(ConnectionParam.CERTIFICATE_PASSWORD.getKey())
-                                        .toCharArray();
+                    .toCharArray();
             KeyStore trustStoreJKS = KeyStore.getInstance(KeyStore.getDefaultType());
             trustStoreJKS.load(trustStream, trustStorePass);
 
@@ -292,14 +292,14 @@ public class MongoDBDataSourceUtil {
                     "MongoDB. Trust Store file path : '" + trustStoreFilePath + "'.", e);
         } catch (GeneralSecurityException e) {
             throw new MongoDBClientException("Error in initializing certs for Trust Store : " +
-                                                                                      e.getMessage(), e.getCause());
+                    e.getMessage(), e.getCause());
         }
 
         MapValue keyStore = secureSocket.getMapValue(ConnectionParam.KEY_STORE.getKey());
         String keyStoreFilePath = keyStore.getStringValue(ConnectionParam.CERTIFICATE_PATH.getKey());
         try (InputStream keyStream = new FileInputStream(keyStoreFilePath)) {
             char[] keyStorePass = keyStore.getStringValue(ConnectionParam.CERTIFICATE_PASSWORD.getKey())
-                                                                                        .toCharArray();
+                    .toCharArray();
             KeyStore keyStoreJKS = KeyStore.getInstance(KeyStore.getDefaultType());
             keyStoreJKS.load(keyStream, keyStorePass);
             KeyManagerFactory keyManagerFactory =
@@ -314,7 +314,7 @@ public class MongoDBDataSourceUtil {
                     "MongoDB. Key Store file path : '" + keyStoreFilePath + "'.", e);
         } catch (GeneralSecurityException e) {
             throw new MongoDBClientException("Error in initializing certs for Key Store : " +
-                                                                                         e.getMessage(), e.getCause());
+                    e.getMessage(), e.getCause());
         }
 
         try {
