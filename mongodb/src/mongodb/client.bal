@@ -27,7 +27,7 @@ public type Client client object {
     # + return - An `ApplicationError` if there is any error in the provided configurations 
     public function init(ClientConfig config) returns ApplicationError? {
         if (config.options.sslEnabled && config.options.secureSocket is ()) {
-            return ApplicationError("`secureSocket` ConnectionProperty config is mandatory " +
+            return ApplicationError("The connection property `secureSocket` is mandatory " +
                 "when ssl is enabled for connection.");
         }
         self.datasource = check initClient(config);
