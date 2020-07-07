@@ -34,6 +34,7 @@ jobs:
                   test -a --sourceroot mongodb --groups mongodb
               env:
                 # Following credentials are only used during testing in docker container
+                JAVA_OPTS: -DBALLERINA_DEV_COMPILE_BALLERINA_ORG=true
                 MONGODB_HOST: mongodb
                 MONGODB_USER: admin
                 MONGODB_PASSWORD: admin
@@ -44,6 +45,7 @@ jobs:
                   test -a --groups mongodb-ssl
               env:
                 # Following credentials are only used during testing in docker container
+                JAVA_OPTS: -DBALLERINA_DEV_COMPILE_BALLERINA_ORG=true
                 WORKING_DIR: ./mongodb
                 MONGODB_HOST: mongodb-ssl
                 MONGODB_USER: C=US,ST=CA,L=San Francisco,O=Jaspersoft,OU=JSDev,CN=admin

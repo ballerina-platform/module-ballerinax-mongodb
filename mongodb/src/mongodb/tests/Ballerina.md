@@ -23,7 +23,7 @@ The MongoDB functionality are tested with the docker base test framework. The te
 
     * On installing docker on Windows, see [Get started with Docker for Windows](https://docs.docker.com/docker-for-windows/)
 
-2. Export following options to build module under `ballerinax` organisation.
+2. Export following options to build module under `ballerina` organisation.
 
         export JAVA_OPTS="-DBALLERINA_DEV_COMPILE_BALLERINA_ORG=true"
 
