@@ -9,6 +9,7 @@ jobs:
           mongodb:
             image: mongo:4.2.0
             env:
+              # Following credentials are only used during testing in docker container
               MONGO_INITDB_ROOT_USERNAME: admin
               MONGO_INITDB_ROOT_PASSWORD: admin
           mongodb-ssl:
@@ -29,6 +30,7 @@ jobs:
                 args:
                   test -a --sourceroot mongodb --groups mongodb
               env:
+                # Following credentials are only used during testing in docker container
                 MONGODB_HOST: mongodb
                 MONGODB_USER: admin
                 MONGODB_PASSWORD: admin
@@ -38,6 +40,7 @@ jobs:
                 args:
                   test -a --groups mongodb-ssl
               env:
+                # Following credentials are only used during testing in docker container
                 WORKING_DIR: ./mongodb
                 MONGODB_HOST: mongodb-ssl
                 MONGODB_USER: C=US,ST=CA,L=San Francisco,O=Jaspersoft,OU=JSDev,CN=admin
