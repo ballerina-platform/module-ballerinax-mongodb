@@ -12,10 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+services:
+  - docker
+
 script:
-  - wget https://product-dist.ballerina.io/downloads/1.2.0/ballerina-linux-installer-x64-1.2.0.deb
-  - sudo dpkg -i ballerina-linux-installer-x64-1.2.0.deb
+  - wget https://dist.ballerina.io/downloads/1.2.4/ballerina-linux-installer-x64-1.2.4.deb
+  - sudo dpkg -i ballerina-linux-installer-x64-1.2.4.deb
   - sudo apt-get install -f
   - export JAVA_OPTS="-DBALLERINA_DEV_COMPILE_BALLERINA_ORG=true"
-  - mvn clean install -pl mongo-utils
-  - ballerina build -a -c --skip-tests --sourceroot mongodb
+  - mvn clean install
+  - cd mongodb
+  - mvn verify -P mongodb
+  - mvn verify -P mongodb-ssl

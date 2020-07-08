@@ -22,7 +22,7 @@
     <parent>
         <artifactId>module-mongo</artifactId>
         <groupId>org.wso2.ei</groupId>
-        <version>1.0.0</version>
+        <version>1.0.1</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -31,6 +31,145 @@
     <packaging>pom</packaging>
     <name>MongoDB Module - Ballerina Implementation</name>
     <url>https://ballerina.io/</url>
+
+    <profiles>
+        <profile>
+            <id>mongodb</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>io.fabric8</groupId>
+                        <artifactId>docker-maven-plugin</artifactId>
+                        <version>0.31.0</version>
+                        <executions>
+                            <execution>
+                                <id>start-docker-for-mongo</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>start</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>stop-docker-for-mongo</id>
+                                <phase>post-integration-test</phase>
+                                <goals>
+                                    <goal>stop</goal>
+                                    <goal>remove</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <images>
+                                <image>
+                                    <alias>mongodb</alias>
+                                    <name>mongo:4.2</name>
+                                    <run>
+                                        <!--Following credentials are only used during testing in docker container-->
+                                        <env>
+                                            <MONGO_INITDB_ROOT_USERNAME>admin</MONGO_INITDB_ROOT_USERNAME>
+                                            <MONGO_INITDB_ROOT_PASSWORD>admin</MONGO_INITDB_ROOT_PASSWORD>
+                                        </env>
+                                    </run>
+                                </image>
+                            </images>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>ballerina-build</id>
+                                <phase>integration-test</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <!--Following credentials are only used during testing in docker container-->
+                            <environmentVariables>
+                                <MONGODB_HOST>${docker.container.mongodb.ip}</MONGODB_HOST>
+                                <MONGODB_USER>admin</MONGODB_USER>
+                                <MONGODB_PASSWORD>admin</MONGODB_PASSWORD>
+                            </environmentVariables>
+                            <executable>ballerina</executable>
+                            <arguments>
+                                <argument>test</argument>
+                                <argument>--groups</argument>
+                                <argument>mongodb</argument>
+                                <argument>-a</argument>
+                            </arguments>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>mongodb-ssl</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>io.fabric8</groupId>
+                        <artifactId>docker-maven-plugin</artifactId>
+                        <version>0.31.0</version>
+                        <executions>
+                            <execution>
+                                <id>start-docker-for-mongo</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>start</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>stop-docker-for-mongo</id>
+                                <phase>post-integration-test</phase>
+                                <goals>
+                                    <goal>stop</goal>
+                                    <goal>remove</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <images>
+                                <image>
+                                    <alias>mongodb-ssl</alias>
+                                    <name>rzhilkibaev/mongo-x509-auth-ssl</name>
+                                </image>
+                            </images>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>ballerina-build</id>
+                                <phase>integration-test</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <!--Following credentials are only used during testing in docker container-->
+                            <environmentVariables>
+                                <MONGODB_HOST>${docker.container.mongodb-ssl.ip}</MONGODB_HOST>
+                                <MONGODB_USER>C=US,ST=CA,L=San Francisco,O=Jaspersoft,OU=JSDev,CN=admin</MONGODB_USER>
+                            </environmentVariables>
+                            <executable>ballerina</executable>
+                            <arguments>
+                                <argument>test</argument>
+                                <argument>--groups</argument>
+                                <argument>mongodb-ssl</argument>
+                                <argument>-a</argument>
+                            </arguments>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
     <build>
         <sourceDirectory>src</sourceDirectory>
@@ -51,6 +190,7 @@
                     <executable>ballerina</executable>
                     <arguments>
                         <argument>build</argument>
+                        <argument>--skip-tests</argument>
                         <argument>-c</argument>
                         <argument>-a</argument>
                     </arguments>

@@ -15,10 +15,17 @@
 // under the License.
 
 import ballerina/log;
+import ballerina/system;
 import ballerina/test;
 
+string testHostName = system:getEnv("MONGODB_HOST") != "" ? system:getEnv("MONGODB_HOST") : "localhost";
+string testUser = system:getEnv("MONGODB_USER") != "" ? system:getEnv("MONGODB_USER") : "";
+string testPass = system:getEnv("MONGODB_PASSWORD") != "" ? system:getEnv("MONGODB_PASSWORD") : "";
+
 ClientConfig mongoConfig = {
-    host: "localhost",
+    host: testHostName,
+    username: testUser,
+    password: testPass,
     options: {sslEnabled: false, serverSelectionTimeout: 5000}
 };
 
@@ -33,9 +40,10 @@ Database mongoDatabase = check mongoClient->getDatabase("moviecollection");
 Collection mongoCollection = check mongoDatabase->getCollection("moviedetails");
 
 @test:Config {
+        groups: ["mongodb"]
 }
-public function initaliseInValidClient() {
-    log:printInfo("Start initalisation test failure");
+public function initializeInValidClient() {
+    log:printInfo("Start initialization test failure");
     Client|ApplicationError mongoClient = new (mongoConfigError);
     if (mongoClient is ApplicationError) {
         log:printInfo("Creating client failed '" + mongoClient.detail().message + "'.");
@@ -45,7 +53,8 @@ public function initaliseInValidClient() {
 }
 
 @test:Config {
-    dependsOn: ["initaliseInValidClient"]
+    dependsOn: ["initializeInValidClient"],
+    groups: ["mongodb"]
 }
 public function testListDatabaseNames() {
     log:printInfo("----------------- List Databases------------------");
@@ -59,7 +68,8 @@ public function testListDatabaseNames() {
 }
 
 @test:Config {
-    dependsOn: ["testListDatabaseNames"]
+    dependsOn: ["testListDatabaseNames"],
+    groups: ["mongodb"]
 }
 public function testGetDatabase() {
     log:printInfo("----------------- Get Database------------------");
@@ -72,7 +82,8 @@ public function testGetDatabase() {
 }
 
 @test:Config {
-    dependsOn: ["testGetDatabase"]
+    dependsOn: ["testGetDatabase"],
+    groups: ["mongodb"]
 }
 public function testListCollections() {
     log:printInfo("----------------- List Collections------------------");
@@ -86,7 +97,8 @@ public function testListCollections() {
 }
 
 @test:Config {
-    dependsOn: ["testListCollections"]
+    dependsOn: ["testListCollections"],
+    groups: ["mongodb"]
 }
 public function testGetCollection() {
     log:printInfo("----------------- Get Collection------------------");
@@ -99,7 +111,8 @@ public function testGetCollection() {
 }
 
 @test:Config {
-    dependsOn: ["testGetCollection"]
+    dependsOn: ["testGetCollection"],
+    groups: ["mongodb"]
 }
 public function testInsertData() {
     log:printInfo("------------------ Inserting Data ------------------");
@@ -126,7 +139,8 @@ public function testInsertData() {
 }
 
 @test:Config {
-    dependsOn: ["testInsertData"]
+    dependsOn: ["testInsertData"],
+    groups: ["mongodb"]
 }
 public function testCountDocuments() {
     log:printInfo("----------------- Count Documents------------------");
@@ -150,7 +164,8 @@ public function testCountDocuments() {
 }
 
 @test:Config {
-    dependsOn: ["testCountDocuments"]
+    dependsOn: ["testCountDocuments"],
+    groups: ["mongodb"]
 }
 public function testListIndices() {
     log:printInfo("----------------- Count Documents------------------");
@@ -164,7 +179,8 @@ public function testListIndices() {
 }
 
 @test:Config {
-    dependsOn: ["testListIndices"]
+    dependsOn: ["testListIndices"],
+    groups: ["mongodb"]
 }
 public function testFindData() {
     log:printInfo("----------------- Querying Data ----------------");
@@ -210,7 +226,8 @@ public function testFindData() {
 
 
 @test:Config {
-    dependsOn: ["testFindData"]
+    dependsOn: ["testFindData"],
+    groups: ["mongodb"]
 }
 function testUpdateDocument() {
     log:printInfo("------------------ Updating Data -------------------");
@@ -240,7 +257,8 @@ function testUpdateDocument() {
 }
 
 @test:Config {
-    dependsOn: ["testUpdateDocument"]
+    dependsOn: ["testUpdateDocument"],
+    groups: ["mongodb"]
 }
 function testUpdateDocumentUpsertTrue() {
     log:printInfo("------------------ Updating Data (Upsert) -------------------");
@@ -269,7 +287,8 @@ function testUpdateDocumentUpsertTrue() {
 }
 
 @test:Config {
-    dependsOn: ["testUpdateDocumentUpsertTrue"]
+    dependsOn: ["testUpdateDocumentUpsertTrue"],
+    groups: ["mongodb"]
 }
 function testDelete() {
     log:printInfo("------------------ Deleting Data -------------------");
