@@ -16,11 +16,11 @@
 
 import ballerina/java;
 
-public type Collection client object {
+public client class Collection {
     handle collection;
 
     # Initializes the `Collection` object.
-    public function init(handle collection) {
+    public isolated function init(handle collection) {
         self.collection = collection;
     }
 
@@ -125,31 +125,31 @@ public type Collection client object {
         return delete(self.collection, java:fromString(filterStr), isMultiple);
     }
 
-};
+}
 
 function countDocuments(handle collection, handle? filter) returns int|DatabaseError = @java:Method {
-    class: "org.wso2.mongo.MongoDBCollectionUtil"
+    'class: "org.wso2.mongo.MongoDBCollectionUtil"
 } external;
 
 function listIndices(handle collection) returns map<json>[]|DatabaseError = @java:Method {
-    class: "org.wso2.mongo.MongoDBCollectionUtil"
+    'class: "org.wso2.mongo.MongoDBCollectionUtil"
 } external;
 
 function insert(handle collection, handle document) returns DatabaseError? = @java:Method {
-    class: "org.wso2.mongo.MongoDBCollectionUtil"
+    'class: "org.wso2.mongo.MongoDBCollectionUtil"
 } external;
 
 function find(handle collection, handle? filter, handle? sort, int 'limit)
 returns map<json>[]|DatabaseError = @java:Method {
-    class: "org.wso2.mongo.MongoDBCollectionUtil"
+    'class: "org.wso2.mongo.MongoDBCollectionUtil"
 } external;
 
 function update(handle collection, handle update, handle? filter, boolean isMultiple, boolean upsert)
 returns int|DatabaseError = @java:Method {
-    class: "org.wso2.mongo.MongoDBCollectionUtil"
+    'class: "org.wso2.mongo.MongoDBCollectionUtil"
 } external;
 
 
 function delete(handle collection, handle? filter, boolean isMultiple) returns int|DatabaseError = @java:Method {
-    class: "org.wso2.mongo.MongoDBCollectionUtil"
+    'class: "org.wso2.mongo.MongoDBCollectionUtil"
 } external;

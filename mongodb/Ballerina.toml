@@ -9,7 +9,7 @@ repository = "https://github.com/ballerina-platform/module-ballerinax-mongodb"
 [dependencies]
 
 [platform]
-target = "java8"
+target = "java11"
 
     [[platform.libraries]]
     module = "mongodb"

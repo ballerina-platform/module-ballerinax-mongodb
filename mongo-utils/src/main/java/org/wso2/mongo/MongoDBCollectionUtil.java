@@ -22,8 +22,8 @@ import com.mongodb.MongoException;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.model.UpdateOptions;
-import org.ballerinalang.jvm.values.HandleValue;
-import org.ballerinalang.jvm.values.api.BValueCreator;
+import io.ballerina.runtime.api.ValueCreator;
+import io.ballerina.runtime.values.HandleValue;
 import org.bson.Document;
 import org.wso2.mongo.exceptions.BallerinaErrorGenerator;
 
@@ -55,7 +55,7 @@ public class MongoDBCollectionUtil {
         MongoCollection<Document> mongoCollection = (MongoCollection<Document>) collection.getValue();
         try {
             MongoCursor<Document> iterator = mongoCollection.listIndexes().iterator();
-            return BValueCreator.createStreamingJsonValue(new MongoDBIterator(iterator));
+            return ValueCreator.createStreamingJsonValue(new MongoDBIterator(iterator));
         } catch (MongoException e) {
             return BallerinaErrorGenerator.createBallerinaDatabaseError(e);
         }
@@ -95,7 +95,7 @@ public class MongoDBCollectionUtil {
             } else {
                 results = mongoCollection.find(filterDoc).sort(sortDoc).iterator();
             }
-            return BValueCreator.createStreamingJsonValue(new MongoDBIterator(results));
+            return ValueCreator.createStreamingJsonValue(new MongoDBIterator(results));
         } catch (MongoException e) {
             return BallerinaErrorGenerator.createBallerinaDatabaseError(e);
         } catch (Exception e) {

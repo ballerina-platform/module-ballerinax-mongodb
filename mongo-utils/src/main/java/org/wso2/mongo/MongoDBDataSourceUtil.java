@@ -28,11 +28,11 @@ import com.mongodb.ReadPreference;
 import com.mongodb.ServerAddress;
 import com.mongodb.WriteConcern;
 import com.mongodb.client.MongoCursor;
-import org.ballerinalang.jvm.values.HandleValue;
-import org.ballerinalang.jvm.values.MapValue;
-import org.ballerinalang.jvm.values.api.BString;
-import org.ballerinalang.jvm.values.api.BValue;
-import org.ballerinalang.jvm.values.api.BValueCreator;
+import io.ballerina.runtime.api.ValueCreator;
+import io.ballerina.runtime.api.values.BMap;
+import io.ballerina.runtime.api.values.BString;
+import io.ballerina.runtime.api.values.BValue;
+import io.ballerina.runtime.values.HandleValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.mongo.exceptions.BallerinaErrorGenerator;
@@ -52,7 +52,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 
-import static org.ballerinalang.jvm.StringUtils.fromString;
+import static io.ballerina.runtime.api.StringUtils.fromString;
 
 /**
  * Java implementation of MongoDB datasource.
@@ -63,7 +63,7 @@ public class MongoDBDataSourceUtil {
     private MongoDBDataSourceUtil() {
     }
 
-    public static Object initClient(MapValue<BString, BValue> config) {
+    public static Object initClient(BMap<BString, BValue> config) {
         String host = config.getStringValue(fromString("host")).getValue();
         long port = config.getIntValue(fromString("port"));
         String username = "";
@@ -75,7 +75,7 @@ public class MongoDBDataSourceUtil {
         if (config.getStringValue(fromString("password")) != null) {
             password = config.getStringValue(fromString("password")).getValue();
         }
-        MapValue options = config.getMapValue(fromString("options"));
+        BMap options = config.getMapValue(fromString("options"));
 
         try {
             return init(host, port, username, password, options);
@@ -92,7 +92,7 @@ public class MongoDBDataSourceUtil {
             while (databaseItr.hasNext()) {
                 databaseNames.add(fromString(databaseItr.next()));
             }
-            return BValueCreator.createArrayValue(databaseNames.toArray(new BString[0]));
+            return ValueCreator.createArrayValue(databaseNames.toArray(new BString[0]));
         } catch (MongoException e) {
             return BallerinaErrorGenerator.createBallerinaDatabaseError(e);
         }
@@ -115,7 +115,7 @@ public class MongoDBDataSourceUtil {
         mongoClient.close();
     }
 
-    public static MongoClient init(String host, long port, String username, String password, MapValue options) {
+    public static MongoClient init(String host, long port, String username, String password, BMap options) {
         MongoCredential mongoCredential = createCredentials(username, password, options);
         String directURL = options.getStringValue(ConnectionParam.URL.getKey()).getValue();
 
@@ -141,7 +141,7 @@ public class MongoDBDataSourceUtil {
      * @param options BStruct containing options for MongoCredential creation
      * @return MongoCredential
      */
-    private static MongoCredential createCredentials(String username, String password, MapValue options) {
+    private static MongoCredential createCredentials(String username, String password, BMap options) {
         String authSource = options.getStringValue(ConnectionParam.AUTHSOURCE.getKey()).getValue();
 
         String authMechanismString = options.getStringValue(ConnectionParam.AUTHMECHANISM.getKey()).getValue();
@@ -200,7 +200,7 @@ public class MongoDBDataSourceUtil {
         }
     }
 
-    private static MongoClientOptions createOptions(MapValue options) {
+    private static MongoClientOptions createOptions(BMap options) {
         MongoClientOptions.Builder builder = MongoClientOptions.builder();
         boolean sslEnabled = options.getBooleanValue(ConnectionParam.SSL_ENABLED.getKey());
         if (sslEnabled) {
@@ -277,13 +277,13 @@ public class MongoDBDataSourceUtil {
         return builder.build();
     }
 
-    private static SSLContext initializeSSLContext(MapValue options) {
+    private static SSLContext initializeSSLContext(BMap options) {
         TrustManager[] trustManagers;
         KeyManager[] keyManagers;
 
-        MapValue secureSocket = options.getMapValue(ConnectionParam.SECURE_SOCKET.getKey());
+        BMap secureSocket = options.getMapValue(ConnectionParam.SECURE_SOCKET.getKey());
 
-        MapValue trustStore = secureSocket.getMapValue(ConnectionParam.TRUST_STORE.getKey());
+        BMap trustStore = secureSocket.getMapValue(ConnectionParam.TRUST_STORE.getKey());
         String trustStoreFilePath = trustStore.getStringValue(ConnectionParam.CERTIFICATE_PATH.getKey()).getValue();
         try (InputStream trustStream = new FileInputStream(trustStoreFilePath)) {
             char[] trustStorePass = trustStore.getStringValue(ConnectionParam.CERTIFICATE_PASSWORD.getKey()).getValue()
@@ -306,7 +306,7 @@ public class MongoDBDataSourceUtil {
                     e.getMessage(), e.getCause());
         }
 
-        MapValue keyStore = secureSocket.getMapValue(ConnectionParam.KEY_STORE.getKey());
+        BMap keyStore = secureSocket.getMapValue(ConnectionParam.KEY_STORE.getKey());
         String keyStoreFilePath = keyStore.getStringValue(ConnectionParam.CERTIFICATE_PATH.getKey()).getValue();
         try (InputStream keyStream = new FileInputStream(keyStoreFilePath)) {
             char[] keyStorePass = keyStore.getStringValue(ConnectionParam.CERTIFICATE_PASSWORD.getKey()).getValue()

@@ -21,14 +21,14 @@ package org.wso2.mongo;
 import com.mongodb.MongoException;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
-import org.ballerinalang.jvm.values.HandleValue;
-import org.ballerinalang.jvm.values.api.BString;
-import org.ballerinalang.jvm.values.api.BValueCreator;
+import io.ballerina.runtime.api.ValueCreator;
+import io.ballerina.runtime.api.values.BString;
+import io.ballerina.runtime.values.HandleValue;
 import org.wso2.mongo.exceptions.BallerinaErrorGenerator;
 
 import java.util.ArrayList;
 
-import static org.ballerinalang.jvm.StringUtils.fromString;
+import static io.ballerina.runtime.api.StringUtils.fromString;
 
 /**
  * Java implementation of MongoDB Database.
@@ -43,7 +43,7 @@ public class MongoDBDatabaseUtil {
             while (iterator.hasNext()) {
                 collectionNames.add(fromString(iterator.next()));
             }
-            return BValueCreator.createArrayValue(collectionNames.toArray(new BString[0]));
+            return ValueCreator.createArrayValue(collectionNames.toArray(new BString[0]));
         } catch (MongoException e) {
             return BallerinaErrorGenerator.createBallerinaDatabaseError(e);
         }

@@ -16,10 +16,10 @@
 
 package org.wso2.mongo.exceptions;
 
-import org.ballerinalang.jvm.util.exceptions.BallerinaException;
+import io.ballerina.runtime.util.exceptions.BallerinaException;
 
 /**
- * Exception class for MongoDBClient validations
+ * Exception class for MongoDBClient validations.
  */
 public class MongoDBClientException extends BallerinaException {
     public MongoDBClientException(String message) {
