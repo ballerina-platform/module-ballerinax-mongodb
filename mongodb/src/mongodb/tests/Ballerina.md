@@ -2,7 +2,7 @@
 
 | Ballerina Language Version  | MongoDB Version |
 | ----------------------------| -------------------------------|
-|  Swan Lake Preview1         |   4.2.0
+|  Swan Lake Preview5         |   4.2.0
 
 ## Running Tests in Docker Containers
 
@@ -17,7 +17,7 @@ The MongoDB functionality are tested with the docker base test framework. The te
             wget -qO- https://get.docker.com/ | sh
             sudo service dockerd stop
             export DOCKER_HOST=tcp://172.17.0.1:4326
-            docker daemon -H tcp://172.17.0.1:4326
+            sudo dockerd -H tcp://172.17.0.1:4326
 
     * On installing docker on Mac, see [Get started with Docker for Mac](https://docs.docker.com/docker-for-mac/)
 
