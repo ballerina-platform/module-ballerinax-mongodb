@@ -21,14 +21,14 @@ jobs:
             - uses: actions/checkout@v2
             - run: mvn clean install -pl mongo-utils
             - name: Ballerina Build W/O tests
-              uses: ballerina-platform/ballerina-action/@swan-lake-release
+              uses: ballerina-platform/ballerina-action/@swan-lake-connector-release
               with:
                 args:
                   build -a -c --sourceroot mongodb --skip-tests
               env:
                 JAVA_OPTS: -DBALLERINA_DEV_COMPILE_BALLERINA_ORG=true
             - name: Ballerina Build W/ tests
-              uses: ballerina-platform/ballerina-action/@swan-lake-release
+              uses: ballerina-platform/ballerina-action/@swan-lake-connector-release
               with:
                 args:
                   test -a --sourceroot mongodb --groups mongodb
@@ -38,7 +38,7 @@ jobs:
                 MONGODB_USER: admin
                 MONGODB_PASSWORD: admin
             - name: Ballerina Build W/ tests (SSL)
-              uses: ballerina-platform/ballerina-action/@swan-lake-release
+              uses: ballerina-platform/ballerina-action/@swan-lake-connector-release
               with:
                 args:
                   test -a --groups mongodb-ssl
@@ -48,7 +48,7 @@ jobs:
                 MONGODB_HOST: mongodb-ssl
                 MONGODB_USER: C=US,ST=CA,L=San Francisco,O=Jaspersoft,OU=JSDev,CN=admin
             - name: Ballerina Push
-              uses: ballerina-platform/ballerina-action/@swan-lake-release
+              uses: ballerina-platform/ballerina-action/@swan-lake-connector-release
               with:
                   args:
                       push -a
