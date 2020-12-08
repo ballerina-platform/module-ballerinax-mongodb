@@ -28,11 +28,11 @@ import com.mongodb.ReadPreference;
 import com.mongodb.ServerAddress;
 import com.mongodb.WriteConcern;
 import com.mongodb.client.MongoCursor;
-import io.ballerina.runtime.api.ValueCreator;
+import io.ballerina.runtime.api.creators.ValueCreator;
 import io.ballerina.runtime.api.values.BMap;
 import io.ballerina.runtime.api.values.BString;
 import io.ballerina.runtime.api.values.BValue;
-import io.ballerina.runtime.values.HandleValue;
+import io.ballerina.runtime.internal.values.HandleValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.mongo.exceptions.BallerinaErrorGenerator;
@@ -52,7 +52,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 
-import static io.ballerina.runtime.api.StringUtils.fromString;
+import static io.ballerina.runtime.api.utils.StringUtils.fromString;
 
 /**
  * Java implementation of MongoDB datasource.

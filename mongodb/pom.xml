@@ -98,7 +98,6 @@
                                 <argument>test</argument>
                                 <argument>--groups</argument>
                                 <argument>mongodb</argument>
-                                <argument>-a</argument>
                             </arguments>
                         </configuration>
                     </plugin>
@@ -162,7 +161,6 @@
                                 <argument>test</argument>
                                 <argument>--groups</argument>
                                 <argument>mongodb-ssl</argument>
-                                <argument>-a</argument>
                             </arguments>
                         </configuration>
                     </plugin>
@@ -172,7 +170,6 @@
     </profiles>
 
     <build>
-        <sourceDirectory>src</sourceDirectory>
         <plugins>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -192,7 +189,6 @@
                         <argument>build</argument>
                         <argument>--skip-tests</argument>
                         <argument>-c</argument>
-                        <argument>-a</argument>
                     </arguments>
                 </configuration>
             </plugin>

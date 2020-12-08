@@ -19,14 +19,14 @@
 package org.wso2.mongo;
 
 import com.mongodb.client.MongoCursor;
-import io.ballerina.runtime.JSONDataSource;
-import io.ballerina.runtime.JSONGenerator;
-import io.ballerina.runtime.JSONParser;
 import io.ballerina.runtime.api.PredefinedTypes;
-import io.ballerina.runtime.api.ValueCreator;
+import io.ballerina.runtime.api.creators.ValueCreator;
 import io.ballerina.runtime.api.values.BArray;
-import io.ballerina.runtime.types.BArrayType;
-import io.ballerina.runtime.types.BMapType;
+import io.ballerina.runtime.internal.JsonDataSource;
+import io.ballerina.runtime.internal.JsonGenerator;
+import io.ballerina.runtime.internal.JsonParser;
+import io.ballerina.runtime.internal.types.BArrayType;
+import io.ballerina.runtime.internal.types.BMapType;
 import org.bson.Document;
 
 import java.io.IOException;
@@ -34,7 +34,7 @@ import java.io.IOException;
 /**
  * MongoDB result cursor implementation.
  */
-public class MongoDBIterator implements JSONDataSource {
+public class MongoDBIterator implements JsonDataSource {
 
     private MongoCursor<Document> mc;
 
@@ -43,7 +43,7 @@ public class MongoDBIterator implements JSONDataSource {
     }
 
     @Override
-    public void serialize(JSONGenerator jsonGenerator) throws IOException {
+    public void serialize(JsonGenerator jsonGenerator) throws IOException {
         jsonGenerator.writeStartArray();
         while (this.hasNext()) {
             jsonGenerator.serialize(this.next());
@@ -58,7 +58,7 @@ public class MongoDBIterator implements JSONDataSource {
 
     @Override
     public Object next() {
-        return JSONParser.parse(this.mc.next().toJson());
+        return JsonParser.parse(this.mc.next().toJson());
     }
 
     @Override

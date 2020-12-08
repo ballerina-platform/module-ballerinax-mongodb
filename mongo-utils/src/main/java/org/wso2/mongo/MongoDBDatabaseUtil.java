@@ -21,14 +21,14 @@ package org.wso2.mongo;
 import com.mongodb.MongoException;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
-import io.ballerina.runtime.api.ValueCreator;
+import io.ballerina.runtime.api.creators.ValueCreator;
 import io.ballerina.runtime.api.values.BString;
-import io.ballerina.runtime.values.HandleValue;
+import io.ballerina.runtime.internal.values.HandleValue;
 import org.wso2.mongo.exceptions.BallerinaErrorGenerator;
 
 import java.util.ArrayList;
 
-import static io.ballerina.runtime.api.StringUtils.fromString;
+import static io.ballerina.runtime.api.utils.StringUtils.fromString;
 
 /**
  * Java implementation of MongoDB Database.

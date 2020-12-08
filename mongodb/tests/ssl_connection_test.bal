@@ -14,11 +14,11 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import ballerina/filepath;
+import ballerina/file;
 import ballerina/log;
 import ballerina/test;
 
-string jksFilePath = check filepath:absolute("src/mongodb/tests/resources/mongodb-client.jks");
+string jksFilePath = check file:getAbsolutePath("tests/resources/mongodb-client.jks");
 
 ClientConfig mongoConfigInvalid = {
     host: testHostName,

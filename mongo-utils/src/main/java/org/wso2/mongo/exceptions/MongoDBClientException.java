@@ -16,7 +16,7 @@
 
 package org.wso2.mongo.exceptions;
 
-import io.ballerina.runtime.util.exceptions.BallerinaException;
+import io.ballerina.runtime.internal.util.exceptions.BallerinaException;
 
 /**
  * Exception class for MongoDBClient validations.

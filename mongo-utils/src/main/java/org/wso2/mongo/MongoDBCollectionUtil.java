@@ -22,8 +22,8 @@ import com.mongodb.MongoException;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.model.UpdateOptions;
-import io.ballerina.runtime.api.ValueCreator;
-import io.ballerina.runtime.values.HandleValue;
+import io.ballerina.runtime.api.creators.ValueCreator;
+import io.ballerina.runtime.internal.values.HandleValue;
 import org.bson.Document;
 import org.wso2.mongo.exceptions.BallerinaErrorGenerator;
 
