@@ -44,7 +44,7 @@ jobs:
               uses: ballerina-platform/ballerina-action/@swan-lake-connector-release
               with:
                 args:
-                  test --groups mongodb-ssl mongodb
+                  test --groups mongodb-ssl
               env:
                 JAVA_HOME: /usr/lib/jvm/default-jvm
                 # Following credentials are only used during testing in docker container
