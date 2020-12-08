@@ -25,7 +25,7 @@ jobs:
               uses: ballerina-platform/ballerina-action/@swan-lake-connector-release
               with:
                 args:
-                  build -a -c --sourceroot mongodb --skip-tests
+                  build --skip-tests -c mongodb
               env:
                 JAVA_HOME: /usr/lib/jvm/default-jvm
                 JAVA_OPTS: -DBALLERINA_DEV_COMPILE_BALLERINA_ORG=true
@@ -33,7 +33,7 @@ jobs:
               uses: ballerina-platform/ballerina-action/@swan-lake-connector-release
               with:
                 args:
-                  test -a --sourceroot mongodb --groups mongodb
+                  test --groups mongodb mongodb
               env:
                 JAVA_HOME: /usr/lib/jvm/default-jvm
                 # Following credentials are only used during testing in docker container
@@ -44,7 +44,7 @@ jobs:
               uses: ballerina-platform/ballerina-action/@swan-lake-connector-release
               with:
                 args:
-                  test -a --groups mongodb-ssl
+                  test --groups mongodb-ssl mongodb
               env:
                 JAVA_HOME: /usr/lib/jvm/default-jvm
                 # Following credentials are only used during testing in docker container
