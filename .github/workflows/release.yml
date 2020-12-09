@@ -54,7 +54,7 @@ jobs:
               uses: ballerina-platform/ballerina-action/@swan-lake-connector-release
               with:
                   args:
-                      push -a
+                      push
               env:
                   JAVA_HOME: /usr/lib/jvm/default-jvm
                   WORKING_DIR: ./mongodb
