@@ -16,11 +16,12 @@
 
 package org.wso2.mongo.exceptions;
 
-import org.ballerinalang.jvm.BallerinaErrors;
-import org.ballerinalang.jvm.BallerinaValues;
-import org.ballerinalang.jvm.values.ErrorValue;
-import org.ballerinalang.jvm.values.MapValue;
-import org.ballerinalang.jvm.values.api.BString;
+import io.ballerina.runtime.api.creators.ErrorCreator;
+import io.ballerina.runtime.api.creators.ValueCreator;
+import io.ballerina.runtime.api.utils.StringUtils;
+import io.ballerina.runtime.api.values.BError;
+import io.ballerina.runtime.api.values.BMap;
+import io.ballerina.runtime.api.values.BString;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -36,17 +37,17 @@ import static org.wso2.mongo.MongoDBConstants.DatabaseError.NAME;
  */
 public class BallerinaErrorGenerator {
 
-    public static ErrorValue createBallerinaDatabaseError(Exception e) {
+    public static BError createBallerinaDatabaseError(Exception e) {
         Map<String, Object> valueMap = new HashMap<>();
         valueMap.put(DETAIL_FIELD_MONGODB_EXCEPTION, e.getClass().getSimpleName());
-        MapValue<BString, Object> recordValue = BallerinaValues
+        BMap<BString, Object> recordValue = ValueCreator
                 .createRecordValue(BAL_PACKAGE, DETAIL_RECORD_NAME, valueMap);
 
-        return BallerinaErrors.createDistinctError(NAME, BAL_PACKAGE,  e.getMessage(), recordValue);
+        return ErrorCreator.createDistinctError(NAME, BAL_PACKAGE, StringUtils.fromString(e.getMessage()), recordValue);
     }
 
-    public static ErrorValue createBallerinaApplicationError(Exception e) {
-        return BallerinaErrors.createDistinctError(APPLICATION_ERROR, BAL_PACKAGE, e.getMessage());
+    public static BError createBallerinaApplicationError(Exception e) {
+        return ErrorCreator.createDistinctError(APPLICATION_ERROR, BAL_PACKAGE, StringUtils.fromString(e.getMessage()));
     }
 
 }

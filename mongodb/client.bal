@@ -18,7 +18,7 @@ import ballerina/crypto;
 import ballerina/java;
 
 # Represents the MongoDB client.
-public type Client client object {
+public client class Client {
 
     handle datasource;
 
@@ -66,22 +66,22 @@ public type Client client object {
     public remote function close() {
         close(self.datasource);
     }
-};
+}
 
 function initClient(ClientConfig config) returns handle|ApplicationError = @java:Method {
-    class: "org.wso2.mongo.MongoDBDataSourceUtil"
+    'class: "org.wso2.mongo.MongoDBDataSourceUtil"
 } external;
 
 function getDatabasesNames(handle datasource) returns string[]|DatabaseError = @java:Method {
-    class: "org.wso2.mongo.MongoDBDataSourceUtil"
+    'class: "org.wso2.mongo.MongoDBDataSourceUtil"
 } external;
 
 function getDatabase(handle datasource, string databaseName) returns handle|Error = @java:Method {
-    class: "org.wso2.mongo.MongoDBDataSourceUtil"
+    'class: "org.wso2.mongo.MongoDBDataSourceUtil"
 } external;
 
 function close(handle datasource) = @java:Method {
-    class: "org.wso2.mongo.MongoDBDataSourceUtil"
+    'class: "org.wso2.mongo.MongoDBDataSourceUtil"
 } external;
 
 

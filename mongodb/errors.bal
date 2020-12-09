@@ -17,9 +17,9 @@
 # Holds the properties of a database error.
 #
 # + mongoDBExceptionType - Type of the returned MongoDB exception
-public type DatabaseErrorDetail record {|
+public type DatabaseErrorDetail record {
     string mongoDBExceptionType;
-|};
+};
 
 # Represents an error caused by an issue related to database accessibility, erroneous queries, constraint violations,
 # database resource clean-up, and other similar scenarios.

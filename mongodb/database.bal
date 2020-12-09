@@ -16,11 +16,11 @@
 
 import ballerina/java;
 
-public type Database client object {
+public client class Database {
     handle database;
 
     #Initialises the `Database` object.
-    public function init(handle database) {
+    public isolated function init(handle database) {
         self.database = database;
     }
 
@@ -48,12 +48,12 @@ public type Database client object {
         handle collection = check getCollection(self.database, name);
         return new Collection(collection);
     }
-};
+}
 
 function getCollectionNames(handle database) returns string[]|DatabaseError = @java:Method {
-    class: "org.wso2.mongo.MongoDBDatabaseUtil"
+    'class: "org.wso2.mongo.MongoDBDatabaseUtil"
 } external;
 
 function getCollection(handle database, string collectionName) returns handle|DatabaseError = @java:Method {
-    class: "org.wso2.mongo.MongoDBDatabaseUtil"
+    'class: "org.wso2.mongo.MongoDBDatabaseUtil"
 } external;

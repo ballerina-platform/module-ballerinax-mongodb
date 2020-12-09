@@ -16,13 +16,13 @@
 
 package org.wso2.mongo;
 
-import org.ballerinalang.jvm.types.BPackage;
+import io.ballerina.runtime.api.Module;
 
 /**
  * Constants used in the module-mongodb.
  */
 public class MongoDBConstants {
-    public static final BPackage BAL_PACKAGE = new BPackage("ballerinax", "mongodb", "2.0.1");
+    public static final Module BAL_PACKAGE = new Module("ballerinax", "mongodb", "2.0.2");
 
     /**
      * Constants related to `mongodb:DatabaseError`.
@@ -32,6 +32,7 @@ public class MongoDBConstants {
         public static final String DETAIL_RECORD_NAME = "DatabaseErrorDetail";
         public static final String DETAIL_FIELD_MONGODB_EXCEPTION = "mongoDBExceptionType";
     }
+
     //Error reasons
     public static final String APPLICATION_ERROR = "ApplicationError";
 
