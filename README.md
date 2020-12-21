@@ -6,7 +6,7 @@ The Mongo DB connector allows you to connect to a Mongo DB from Ballerina and pe
 
 |                             |       Version               |
 |:---------------------------:|:---------------------------:|
-| Ballerina Language          | Swan Lake Preview7          |
+| Ballerina Language          | Swan Lake Preview8          |
 | Mongo DB                    | V4.2.0                      |
 
 ## MongoDB Clients
@@ -62,44 +62,44 @@ public function main() {
     map<json> doc3 = { "name": "docerina", "type": "src" };
     map<json> doc4 = { "name": "test", "type": "artifacts" };
 
-    log:printInfo("------------------ Inserting Data -------------------");
+    log:print("------------------ Inserting Data -------------------");
     checkpanic mongoCollection->insert(doc1);
     checkpanic mongoCollection->insert(doc2);
     checkpanic mongoCollection->insert(doc3);
     checkpanic mongoCollection->insert(doc4);
   
-    log:printInfo("------------------ Counting Data -------------------");
+    log:print("------------------ Counting Data -------------------");
     int count = checkpanic mongoCollection->countDocuments(());
-    log:printInfo("Count of the documents '" + count.toString() + "'.");
+    log:print("Count of the documents '" + count.toString() + "'.");
 
 
-    log:printInfo("------------------ Querying Data -------------------");
+    log:print("------------------ Querying Data -------------------");
     map<json>[] jsonRet = checkpanic mongoCollection->find(());
-    log:printInfo("Returned documents '" + jsonRet.toString() + "'.");
+    log:print("Returned documents '" + jsonRet.toString() + "'.");
 
     map<json> queryString = {name: "connectors" };
     jsonRet = checkpanic mongoCollection->find(queryString);
-    log:printInfo("Returned Filtered documents '" + jsonRet.toString() + "'.");
+    log:print("Returned Filtered documents '" + jsonRet.toString() + "'.");
 
 
-    log:printInfo("------------------ Updating Data -------------------");
+    log:print("------------------ Updating Data -------------------");
     map<json> replaceFilter = { "type": "artifacts" };
     map<json> replaceDoc = { "name": "main", "type": "artifacts" };
 
     int response = checkpanic mongoCollection->update(replaceDoc, replaceFilter, true);
     if (response > 0 ) {
-        log:printInfo("Modified count: '" + response.toString() + "'.") ;
+        log:print("Modified count: '" + response.toString() + "'.") ;
     } else {
-        log:printInfo("Error in replacing data");
+        log:print("Error in replacing data");
     }
 
-   log:printInfo("------------------ Deleting Data -------------------");
+   log:print("------------------ Deleting Data -------------------");
    map<json> deleteFilter = { "name": "ballerina" };
    int deleteRet = checkpanic mongoCollection->delete(deleteFilter, true);
    if (deleteRet > 0 ) {
-       log:printInfo("Delete count: '" + deleteRet.toString() + "'.") ;
+       log:print("Delete count: '" + deleteRet.toString() + "'.") ;
    } else {
-       log:printInfo("Error in deleting data");
+       log:print("Error in deleting data");
    }
 
      mongoClient->close();
