@@ -39,7 +39,7 @@ public client class Client {
     # ```
     #
     # + return - An array of database names on success or else a`mongodb:DatabaseError` if unable to reach the DB 
-    public remote function getDatabasesNames() returns string[]|DatabaseError {
+    remote function getDatabasesNames() returns string[]|DatabaseError {
         return getDatabasesNames(self.datasource);
     }
 
@@ -50,7 +50,7 @@ public client class Client {
     # 
     # + name - Name of the database
     # + return - A database client object on success or else a `mongodb:Error` if unable to reach the DB
-    public remote function getDatabase(string name) returns Database|Error {
+    remote function getDatabase(string name) returns Database|Error {
         if (name.trim().length() == 0) {
             return ApplicationError("Database Name cannot be empty.");
         }
@@ -63,7 +63,7 @@ public client class Client {
     # ```ballerina
     # mongoClient->close();
     # ```
-    public remote function close() {
+    remote function close() {
         close(self.datasource);
     }
 }
