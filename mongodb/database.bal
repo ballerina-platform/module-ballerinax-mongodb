@@ -30,7 +30,7 @@ public client class Database {
     # ```
     #
     # + return - An array of collection names on success or else a `mongodb:DatabaseError` if unable to reach the DB
-    public remote function getCollectionNames() returns string[]|DatabaseError {
+    remote function getCollectionNames() returns string[]|DatabaseError {
         return getCollectionNames(self.database);
     }
 
@@ -41,7 +41,7 @@ public client class Database {
     # 
     # + name - Name of the collection
     # + return - A collection object on success or else a `mongodb:Error` if unable to reach the DB
-    public remote function getCollection(string name) returns Collection|Error {
+    remote function getCollection(string name) returns Collection|Error {
         if (name.trim().length() == 0) {
             return ApplicationError("Collection Name cannot be empty.");
         }
