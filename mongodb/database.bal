@@ -14,7 +14,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import ballerina/java;
+import ballerina/jballerina.java;
 
 public client class Database {
     handle database;
@@ -43,7 +43,7 @@ public client class Database {
     # + return - A collection object on success or else a `mongodb:Error` if unable to reach the DB
     remote function getCollection(string name) returns Collection|Error {
         if (name.trim().length() == 0) {
-            return ApplicationError("Collection Name cannot be empty.");
+            return error ApplicationError("Collection Name cannot be empty.");
         }
         handle collection = check getCollection(self.database, name);
         return new Collection(collection);

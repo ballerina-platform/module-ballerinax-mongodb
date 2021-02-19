@@ -63,7 +63,7 @@ public function initializeInValidConfig() {
 }
 
 @test:Config {
-    dependsOn: ["initializeInValidConfig"],
+    dependsOn: [ initializeInValidConfig ],
     groups: ["mongodb-ssl"]
 }
 public function testSSLConnection() returns Error? {
