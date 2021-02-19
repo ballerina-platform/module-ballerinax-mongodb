@@ -7,9 +7,14 @@ authors = ["Ballerina"]
 keywords = ["MongoDB", "NoSQL"]
 repository = "https://github.com/ballerina-platform/module-ballerinax-mongodb"
 
-
 [[platform.java11.dependency]]
 path = "../mongo-utils/target/mongo-utils-2.0.3.jar"
 groupId = "org.wso2.ei"
 artifactId = "mongo-utils"
 version = "2.0.3"
+
+[[platform.java11.repository]]
+id = "github.releases"
+url = "https://maven.pkg.github.com/ballerina-platform/ballerina-lang"
+username = "${{ secrets.USERNAME }}"
+password = "${{ secrets.PERSONAL_TOKEN }}"
