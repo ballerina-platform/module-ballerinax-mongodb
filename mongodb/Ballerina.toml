@@ -16,5 +16,5 @@ version = "2.0.3"
 [[platform.java11.repository]]
 id = "github.releases"
 url = "https://maven.pkg.github.com/ballerina-platform/ballerina-lang"
-username = @encrypted:{k9qx7LwfIyse3ZUn2NeHSIKORnHenSbyDbey82Jp3oU/8iDiY+ALCJVUwWKiAKhU}
-password = @encrypted:{/6nOc0PDC9jwvSwTDsF1Ha1/+bmkRgK2ius9K4qgZMf7spZe9PvxBF/6bXO900j3KUmYxtuiiTlwNs16lv5W7A==}
+username = "@encrypted:{k9qx7LwfIyse3ZUn2NeHSIKORnHenSbyDbey82Jp3oU/8iDiY+ALCJVUwWKiAKhU}"
+password = "@encrypted:{/6nOc0PDC9jwvSwTDsF1Ha1/+bmkRgK2ius9K4qgZMf7spZe9PvxBF/6bXO900j3KUmYxtuiiTlwNs16lv5W7A==}"
