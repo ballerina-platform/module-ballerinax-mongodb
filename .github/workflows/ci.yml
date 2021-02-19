@@ -19,7 +19,42 @@ jobs:
             - name: Set up JDK 11
               uses: actions/setup-java@v1
               with:
-                java-version: 11      
+                java-version: 11 
+            - name: 'Create settings.xml'
+              run: |
+                  echo '<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+                          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
+                                              http://maven.apache.org/xsd/settings-1.0.0.xsd">
+                          <activeProfiles>
+                            <activeProfile>github</activeProfile>
+                          </activeProfiles>
+                          <profiles>
+                            <profile>
+                              <id>github</id>
+                              <repositories>
+                                <repository>
+                                  <id>central</id>
+                                  <url>https://repo1.maven.org/maven2</url>
+                                  <releases><enabled>true</enabled></releases>
+                                  <snapshots><enabled>true</enabled></snapshots>
+                                </repository>
+                                <repository>
+                                  <id>github</id>
+                                  <name>GitHub ballerina-platform Apache Maven Packages</name>
+                                  <url>https://maven.pkg.github.com/ballerina-platform/ballerina-lang</url>
+                                </repository>
+                              </repositories>
+                            </profile>
+                          </profiles>
+                          <servers>
+                            <server>
+                              <id>github</id>
+                              <username>${{ secrets.USERNAME }}</username>
+                              <password>${{ secrets.PERSONAL_TOKEN }}</password>
+                            </server>
+                          </servers>
+                        </settings>' > ~/.m2/settings.xml         
             - run: mvn clean install -pl mongo-utils
             - name: Ballerina Build W/O tests
               uses: ballerina-platform/ballerina-action/@swan-lake-connector-release
