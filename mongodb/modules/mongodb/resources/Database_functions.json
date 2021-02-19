@@ -1,1 +1,0 @@
-{"ballerinax/mongodb:2.0.3" : [{"function":{"name":"getCollectionNames","requiredParams":[],"returnType":"string[]"}},{"function":{"name":"getCollection","requiredParams":[{"name":"string"}],"returnType":"ballerinax/mongodb:2.0.3:Collection"}}]}

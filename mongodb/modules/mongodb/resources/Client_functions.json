@@ -1,1 +1,0 @@
-{"ballerinax/mongodb:2.0.3" : [{"function":{"name":"getDatabasesNames","requiredParams":[],"returnType":"string[]"}},{"function":{"name":"getDatabase","requiredParams":[{"name":"string"}],"returnType":"ballerinax/mongodb:2.0.3:Database"}},{"function":{"name":"close","requiredParams":[],"returnType":"null"}}]}
