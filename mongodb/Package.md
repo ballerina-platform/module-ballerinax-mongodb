@@ -4,7 +4,7 @@ The Mongo DB connector allows you to connect to a Mongo DB from Ballerina and pe
 
 |                             |       Version               |
 |:---------------------------:|:---------------------------:|
-| Ballerina Language          | Swan Lake Alpha 1           |
+| Ballerina Language          | Swan Lake Alpha 2           |
 | Mongo DB                    | V4.2.0                      |
 
 ## MongoDB Clients
