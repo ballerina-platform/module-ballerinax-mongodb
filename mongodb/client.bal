@@ -15,7 +15,7 @@
 // under the License.
 
 import ballerina/crypto;
-import ballerina/java;
+import ballerina/jballerina.java;
 
 # Represents the MongoDB client.
 public client class Client {
@@ -27,7 +27,7 @@ public client class Client {
     # + return - An `ApplicationError` if there is any error in the provided configurations 
     public function init(ClientConfig config) returns ApplicationError? {
         if (config.options.sslEnabled && config.options.secureSocket is ()) {
-            return ApplicationError("The connection property `secureSocket` is mandatory " +
+            return error ApplicationError("The connection property `secureSocket` is mandatory " +
                 "when ssl is enabled for connection.");
         }
         self.datasource = check initClient(config);
@@ -52,7 +52,7 @@ public client class Client {
     # + return - A database client object on success or else a `mongodb:Error` if unable to reach the DB
     remote function getDatabase(string name) returns Database|Error {
         if (name.trim().length() == 0) {
-            return ApplicationError("Database Name cannot be empty.");
+            return error ApplicationError("Database Name cannot be empty.");
         }
 
         handle database = check getDatabase(self.datasource, name);

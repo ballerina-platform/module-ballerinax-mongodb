@@ -1,12 +1,5 @@
 The Mongo DB connector allows you to connect to a Mongo DB from Ballerina and perform various operations such as `getDatabaseNames`, `getCollectionNames`, `count`, `find`, `insert`, `update`, and `delete`.
 
-## Compatibility
-
-|                             |       Version               |
-|:---------------------------:|:---------------------------:|
-| Ballerina Language          | Swan Lake Preview8          |
-| Mongo DB                    | V4.2.0                      |
-
 ## MongoDB Clients
 
 There are 3 clients provided by Ballerina to interact with MongoDB.

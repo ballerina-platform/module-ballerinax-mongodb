@@ -15,12 +15,12 @@
 // under the License.
 
 import ballerina/log;
-import ballerina/system;
+import ballerina/os;
 import ballerina/test;
 
-string testHostName = system:getEnv("MONGODB_HOST") != "" ? system:getEnv("MONGODB_HOST") : "localhost";
-string testUser = system:getEnv("MONGODB_USER") != "" ? system:getEnv("MONGODB_USER") : "";
-string testPass = system:getEnv("MONGODB_PASSWORD") != "" ? system:getEnv("MONGODB_PASSWORD") : "";
+string testHostName = os:getEnv("MONGODB_HOST") != "" ? os:getEnv("MONGODB_HOST") : "localhost";
+string testUser = os:getEnv("MONGODB_USER") != "" ? os:getEnv("MONGODB_USER") : "";
+string testPass = os:getEnv("MONGODB_PASSWORD") != "" ? os:getEnv("MONGODB_PASSWORD") : "";
 
 ClientConfig mongoConfig = {
     host: testHostName,
@@ -53,7 +53,7 @@ public function initializeInValidClient() {
 }
 
 @test:Config {
-    dependsOn: ["initializeInValidClient"],
+    dependsOn: [ initializeInValidClient ],
     groups: ["mongodb"]
 }
 public function testListDatabaseNames() {
@@ -69,7 +69,7 @@ public function testListDatabaseNames() {
 }
 
 @test:Config {
-    dependsOn: ["testListDatabaseNames"],
+    dependsOn: [ testListDatabaseNames ],
     groups: ["mongodb"]
 }
 public function testGetDatabase() {
@@ -78,13 +78,14 @@ public function testGetDatabase() {
     if (returned is ApplicationError) {
         log:print("Empty dbName validated successfully");
     } else {
-        log:print(returned.toString());
+        string returnedToString = returned is DatabaseError ? returned.toString() : returned.toString();
+        log:print(returnedToString.toString());
         test:assertFail("Validation Failure");
     }
 }
 
 @test:Config {
-    dependsOn: ["testGetDatabase"],
+    dependsOn: [ testGetDatabase ],
     groups: ["mongodb"]
 }
 public function testListCollections() returns Error? {
@@ -101,7 +102,7 @@ public function testListCollections() returns Error? {
 }
 
 @test:Config {
-    dependsOn: ["testListCollections"],
+    dependsOn: [ testListCollections ],
     groups: ["mongodb"]
 }
 public function testGetCollection() returns Error? {
@@ -111,13 +112,14 @@ public function testGetCollection() returns Error? {
     if (returned is ApplicationError) {
         log:print("Empty collection name validated successfully");
     } else {
-        log:print(returned.toString());
+        string returnedToString = returned is DatabaseError ? returned.toString() : returned.toString();
+        log:print(returnedToString.toString());
         test:assertFail("Empty collection name validation Failure");
     }
 }
 
 @test:Config {
-    dependsOn: ["testGetCollection"],
+    dependsOn: [ testGetCollection ],
     groups: ["mongodb"]
 }
 public function testInsertData() returns Error? {
@@ -145,7 +147,7 @@ public function testInsertData() returns Error? {
 }
 
 @test:Config {
-    dependsOn: ["testInsertData"],
+    dependsOn: [ testInsertData ],
     groups: ["mongodb"]
 }
 public function testCountDocuments() returns Error? {
@@ -175,7 +177,7 @@ public function testCountDocuments() returns Error? {
 }
 
 @test:Config {
-    dependsOn: ["testCountDocuments"],
+    dependsOn: [ testCountDocuments ],
     groups: ["mongodb"]
 }
 public function testListIndices() returns Error? {
@@ -193,7 +195,7 @@ public function testListIndices() returns Error? {
 }
 
 @test:Config {
-    dependsOn: ["testListIndices"],
+    dependsOn: [ testListIndices ],
     groups: ["mongodb"]
 }
 public function testFindData() returns Error? {
@@ -242,7 +244,7 @@ public function testFindData() returns Error? {
 }
 
 @test:Config {
-    dependsOn: ["testFindData"],
+    dependsOn: [ testFindData ],
     groups: ["mongodb"]
 }
 function testUpdateDocument() returns Error? {
@@ -276,7 +278,7 @@ function testUpdateDocument() returns Error? {
 }
 
 @test:Config {
-    dependsOn: ["testUpdateDocument"],
+    dependsOn: [ testUpdateDocument ],
     groups: ["mongodb"]
 }
 function testUpdateDocumentUpsertTrue() returns Error? {
@@ -309,7 +311,7 @@ function testUpdateDocumentUpsertTrue() returns Error? {
 }
 
 @test:Config {
-    dependsOn: ["testUpdateDocumentUpsertTrue"],
+    dependsOn: [ testUpdateDocumentUpsertTrue ],
     groups: ["mongodb"]
 }
 function testDelete() returns Error? {

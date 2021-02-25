@@ -27,7 +27,7 @@
     <groupId>org.wso2.ei</groupId>
     <artifactId>module-mongo</artifactId>
     <packaging>pom</packaging>
-    <version>2.0.3</version>
+    <version>2.0.4</version>
     <name>Ballerina MongoDB Module</name>
 
     <modules>
@@ -81,7 +81,7 @@
     <properties>
         <project-home>${project.basedir}</project-home>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <ballerina.version>2.0.0-Preview8</ballerina.version>
+        <ballerina.version>2.0.0-alpha2</ballerina.version>
         <maven.checkstyleplugin.excludes>**/generated/**</maven.checkstyleplugin.excludes>
         <maven.spotbugsplugin.exclude.file>spotbugs-exclude.xml</maven.spotbugsplugin.exclude.file>
         <slf4j.version>1.7.21</slf4j.version>
@@ -106,7 +106,7 @@
                             </execution>
                         </executions>
                         <configuration>
-                            <executable>ballerina</executable>
+                            <executable>bal</executable>
                             <arguments>
                                 <argument>compile</argument>
                             </arguments>
@@ -160,9 +160,9 @@
     </build>
     <repositories>
         <repository>
-            <id>wso2-nexus</id>
-            <name>WSO2 internal Repository</name>
-            <url>http://maven.wso2.org/nexus/content/groups/wso2-public/</url>
+            <id>github.releases</id>
+            <name>GitHub ballerina-platform Apache Maven Packages</name>
+            <url>https://maven.pkg.github.com/ballerina-platform/ballerina-lang</url>
             <releases>
                 <enabled>true</enabled>
                 <updatePolicy>daily</updatePolicy>
