@@ -16,6 +16,7 @@
 
 import ballerina/jballerina.java;
 
+@display {label: "MongoDB Collection"}
 public client class Collection {
     handle collection;
 
@@ -31,7 +32,9 @@ public client class Collection {
     #
     # + filter - Filter for the count ($where & $near can be used)
     # + return - Count of the documents in the collection or else `mongodb:DatabaseError` if unable to reach the DB
-    remote function countDocuments(map<json>? filter = ()) returns int|DatabaseError {
+    @display {label: "Get number of documents in the collection"}
+    remote function countDocuments(@display {label: "Filter"} map<json>? filter = ()) 
+                                   returns @display {label: "Number of documents"} int|DatabaseError {
         if (filter is ()) {
             return countDocuments(self.collection, ());
         }
@@ -45,7 +48,8 @@ public client class Collection {
     # ```
     #
     # + return - a JSON object with indices on success or else a `mongodb:DatabaseError` if unable to reach the DB
-    remote function listIndices() returns map<json>[]|DatabaseError {
+    @display {label: "List indices"}
+    remote function listIndices() returns @display {label: "List of indices"} map<json>[]|DatabaseError {
         return listIndices(self.collection);
     }
 
@@ -57,6 +61,7 @@ public client class Collection {
     #
     # + document - Document to be inserted
     # + return - `()` on success or else a `mongodb:DatabaseError` if unable to reach the DB
+    @display {label: "Insert a document"}
     remote function insert(map<json> document) returns DatabaseError? {
         string documentStr = document.toJsonString();
         return insert(self.collection, java:fromString(documentStr));
@@ -71,8 +76,11 @@ public client class Collection {
     # + sort - Sort options for the query
     # + limit - Limit options for the query results. No limit is applied for -1
     # + return - JSON array of the documents in the collection or else a `mongodb:DatabaseError` if unable to reach the DB
-    remote function find(map<json>? filter = (), map<json>? sort = (), int 'limit = -1)
-    returns map<json>[]|DatabaseError {
+    @display {label: "Query collection for documents"}
+    remote function find(@display {label: "Filter for the query"} map<json>? filter = (), 
+                         @display {label: "Sort options"} map<json>? sort = (), 
+                         @display {label: "Limit"} int 'limit = -1)
+                         returns @display {label: "List of documents"} map<json>[]|DatabaseError {
         if (filter is ()) {
             if (sort is ()) {
                 return find(self.collection, (), (), 'limit);
@@ -98,9 +106,12 @@ public client class Collection {
     # + isMultiple - Whether to update multiple documents
     # + upsert - Whether to insert if update cannot be achieved
     # + return - JSON array of the documents in the collection or else a `mongodb:DatabaseError` if unable to reach the DB
-    remote function update(map<json> set, map<json>? filter = (), boolean isMultiple = false,
-        boolean upsert = false)
-    returns int|DatabaseError {
+    @display {label: "Update a document"}
+    remote function update(@display {label: "Document for the update"} map<json> set, 
+                           @display {label: "Filter for the query"} map<json>? filter = (), 
+                           @display {label: "Is updating multiple clients"} boolean isMultiple = false,
+                           @display {label: "Insert if update cannot be acheived"} boolean upsert = false)
+                           returns @display {label: "MongoDB Client"} int|DatabaseError {
         string updateDoc = set.toJsonString();
         if (filter is ()) {
             return update(self.collection, java:fromString(updateDoc), (), isMultiple, upsert);
@@ -117,7 +128,10 @@ public client class Collection {
     # + filter - Filter for the query
     # + isMultiple - Delete multiple documents if the condition is matched
     # + return - The number of deleted documents or else a `mongodb:DatabaseError` if unable to reach the DB
-    remote function delete(map<json>? filter = (), boolean isMultiple = false) returns int|DatabaseError {
+    @display {label: "Delete a document"}
+    remote function delete(@display {label: "Filter"} map<json>? filter = (), 
+                           @display {label: "Is deleting multiple documents"} boolean isMultiple = false) 
+                           returns @display {label: "Number of deleted documents"} int|DatabaseError {
         if (filter is ()) {
             return delete(self.collection, (), isMultiple);
         }

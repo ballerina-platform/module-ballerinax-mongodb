@@ -18,8 +18,8 @@ import ballerina/crypto;
 import ballerina/jballerina.java;
 
 # Represents the MongoDB client.
+@display {label: "MongoDB Client"}
 public client class Client {
-
     handle datasource;
 
     # Initialises the `Client` object with the provided `ClientConfig` properties.
@@ -39,7 +39,8 @@ public client class Client {
     # ```
     #
     # + return - An array of database names on success or else a`mongodb:DatabaseError` if unable to reach the DB 
-    remote function getDatabasesNames() returns string[]|DatabaseError {
+    @display {label: "Get database names"}
+    remote function getDatabasesNames() returns @display {label: "Database names"} string[]|DatabaseError {
         return getDatabasesNames(self.datasource);
     }
 
@@ -50,7 +51,9 @@ public client class Client {
     # 
     # + name - Name of the database
     # + return - A database client object on success or else a `mongodb:Error` if unable to reach the DB
-    remote function getDatabase(string name) returns Database|Error {
+    @display {label: "Get database"}
+    remote function getDatabase(@display {label: "Name of the database"} string name) 
+                                returns @display {label: "Database"} Database|Error {
         if (name.trim().length() == 0) {
             return error ApplicationError("Database Name cannot be empty.");
         }
@@ -63,6 +66,7 @@ public client class Client {
     # ```ballerina
     # mongoClient->close();
     # ```
+    @display {label: "Close the client"}
     remote function close() {
         close(self.datasource);
     }

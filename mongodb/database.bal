@@ -16,6 +16,7 @@
 
 import ballerina/jballerina.java;
 
+@display {label: "MongoDB Database"}
 public client class Database {
     handle database;
 
@@ -30,7 +31,8 @@ public client class Database {
     # ```
     #
     # + return - An array of collection names on success or else a `mongodb:DatabaseError` if unable to reach the DB
-    remote function getCollectionNames() returns string[]|DatabaseError {
+    @display {label: "Get collection names"}
+    remote function getCollectionNames() returns @display {label: "List of collections"} string[]|DatabaseError {
         return getCollectionNames(self.database);
     }
 
@@ -41,7 +43,9 @@ public client class Database {
     # 
     # + name - Name of the collection
     # + return - A collection object on success or else a `mongodb:Error` if unable to reach the DB
-    remote function getCollection(string name) returns Collection|Error {
+    @display {label: "Get a collection"}
+    remote function getCollection(@display {label: "Name of the collection"} string name) 
+                                  returns @display {label: "Collection"} Collection|Error {
         if (name.trim().length() == 0) {
             return error ApplicationError("Collection Name cannot be empty.");
         }
