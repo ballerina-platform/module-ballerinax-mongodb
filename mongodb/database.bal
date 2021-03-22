@@ -16,7 +16,7 @@
 
 import ballerina/jballerina.java;
 
-@display {label: "MongoDB Database"}
+@display {label: "MongoDB Database", iconPath: "MongoDBLogo.png"}
 public client class Database {
     handle database;
 

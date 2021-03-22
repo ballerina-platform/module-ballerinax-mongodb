@@ -18,7 +18,7 @@ import ballerina/crypto;
 import ballerina/jballerina.java;
 
 # Represents the MongoDB client.
-@display {label: "MongoDB Client"}
+@display {label: "MongoDB Client", iconPath: "MongoDBLogo.png"}
 public client class Client {
     handle datasource;
 

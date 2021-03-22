@@ -16,7 +16,7 @@
 
 import ballerina/jballerina.java;
 
-@display {label: "MongoDB Collection"}
+@display {label: "MongoDB Collection", iconPath: "MongoDBLogo.png"}
 public client class Collection {
     handle collection;
 
