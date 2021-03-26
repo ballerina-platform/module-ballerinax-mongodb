@@ -72,9 +72,7 @@ public function testSSLConnection() returns Error? {
     map<json> insertDocument = {name: "The Lion King", year: "2019", rating: 8};
 
     Client mongoClient = check new (sslMongoConfig);
-    Database mongoDatabase = check mongoClient->getDatabase("admin");
-    Collection mongoCollection = check mongoDatabase->getCollection("test");
-    var returned = mongoCollection->insert(insertDocument);
+    var returned = mongoClient->insert("admin", "test", insertDocument);
     if (returned is DatabaseError) {
         log:print(returned.toString());
         test:assertFail("Inserting data failed!");
