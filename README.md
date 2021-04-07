@@ -26,13 +26,13 @@ The Mongo DB connector allows you to connect to a Mongo DB from Ballerina and pe
 
 * Java 11 Installed <br/> Java Development Kit (JDK) with version 11 is required.
 
-* Ballerina SLAlpha2 Installed <br/> Ballerina Swan Lake Alpha 2 is required.
+* Ballerina SLAlpha3 Installed <br/> Ballerina Swan Lake Alpha 3 is required.
 
 # Supported Versions 
 
 |                             |       Version               |
 |:---------------------------:|:---------------------------:|
-| Ballerina Language          | Swan Lake Alpha 2           |
+| Ballerina Language          | Swan Lake Alpha 3           |
 | Mongo DB                    | V4.2.0                      |
 
 
@@ -124,9 +124,9 @@ public function main() {
 
     mongodb:Client mongoClient = checkpanic new (mongoConfig);
     string [] dbNames = checkpanic mongoClient->getDatabasesNames();
-    log:print("------------------ Database Names -------------------");
+    log:printInfo("------------------ Database Names -------------------");
     foreach var dbName in dbNames {
-        log:print("Database Name : " + dbName);
+        log:printInfo("Database Name : " + dbName);
     }
      mongoClient->close();
 }
@@ -159,9 +159,9 @@ public function main() {
     mongodb:Client mongoClient = checkpanic new (mongoConfig);
     
     string [] collectionNames = checkpanic mongoClient->getCollectionNames(database);
-    log:print("------------------ Collection Names -------------------");
+    log:printInfo("------------------ Collection Names -------------------");
     foreach var collectionName in collectionNames {
-        log:print("Collection Name : " + collectionName);
+        log:printInfo("Collection Name : " + collectionName);
     }
      mongoClient->close();
 }
@@ -198,7 +198,7 @@ public function main() {
     map<json> doc2 = { "name": "Salesforce", "version": "0.99.5", "type" : "Enterprise" };
     map<json> doc3 = { "name": "Mongodb", "version": "0.89.5", "type" : "DataBase" };
 
-    log:print("------------------ Inserting Data -------------------");
+    log:printInfo("------------------ Inserting Data -------------------");
     checkpanic  mongoClient->insert(doc1, collection);
     checkpanic  mongoClient->insert(doc2, collection);
     checkpanic  mongoClient->insert(doc3, collection);
@@ -234,26 +234,26 @@ public function main() {
 
     mongodb:Client mongoClient = checkpanic new (mongoConfig, database);
 
-    log:print("------------------ Updating Data -------------------");
+    log:printInfo("------------------ Updating Data -------------------");
     map<json> replaceFilter = { "type": "DataBase" };
     map<json> replaceDoc = { "type": "Database" };
 
     int response = checkpanic mongoClient->update(replaceDoc, collection, (), replaceFilter, true);
     if (response > 0 ) {
-        log:print("Modified count: '" + response.toString() + "'.") ;
+        log:printInfo("Modified count: '" + response.toString() + "'.") ;
     } else {
-        log:print("Nothing modified.");
+        log:printInfo("Nothing modified.");
     }
 
-    log:print("------------------ Updating Data with another filter -------------------");
+    log:printInfo("------------------ Updating Data with another filter -------------------");
     map<json> replaceFilter2 = { "name": "Mongodb" };
     map<json> replaceDoc2 = { "name": "Mongodb", "version": "0.92.3", "type" : "Database" };
 
     int response2 = checkpanic mongoClient->update(replaceDoc2, collection, (), replaceFilter2, true);
     if (response2 > 0 ) {
-        log:print("Modified count with another filter: '" + response2.toString() + "'.") ;
+        log:printInfo("Modified count with another filter: '" + response2.toString() + "'.") ;
     } else {
-        log:print("Nothing modified with another filter.");
+        log:printInfo("Nothing modified with another filter.");
     }
 
     mongoClient->close();
@@ -286,14 +286,14 @@ public function main() {
     };
 
     mongodb:Client mongoClient = checkpanic new (mongoConfig, database);
-    log:print("------------------ Querying Data -------------------");
+    log:printInfo("------------------ Querying Data -------------------");
     map<json>[] jsonRet = checkpanic mongoClient->find(collection, (), ());
-    log:print("Returned documents '" + jsonRet.toString() + "'.");
+    log:printInfo("Returned documents '" + jsonRet.toString() + "'.");
 
-    log:print("------------------ Querying Data with Filter -------------------");
+    log:printInfo("------------------ Querying Data with Filter -------------------");
     map<json> queryString = {"name": "Gmail" };
     jsonRet = checkpanic mongoClient->find(collection, (), queryString);
-    log:print("Returned Filtered documents '" + jsonRet.toString() + "'.");
+    log:printInfo("Returned Filtered documents '" + jsonRet.toString() + "'.");
 
      mongoClient->close();
 }
@@ -327,9 +327,9 @@ public function main() {
 
     mongodb:Client mongoClient = checkpanic new (mongoConfig, database);
 
-    log:print("------------------ Counting Data -------------------");
+    log:printInfo("------------------ Counting Data -------------------");
     int count = checkpanic mongoClient->countDocuments(collection);
-    log:print("Count of the documents '" + count.toString() + "'.");
+    log:printInfo("Count of the documents '" + count.toString() + "'.");
     
     mongoClient->close();
 }
@@ -363,13 +363,13 @@ public function main() {
 
     mongodb:Client mongoClient = checkpanic new (mongoConfig, database);
 
-    log:print("------------------ Deleting Data -------------------");
+    log:printInfo("------------------ Deleting Data -------------------");
     map<json> deleteFilter = { "name": "Salesforce" };
     int deleteRet = checkpanic mongoClient->delete(collection, (), deleteFilter, true);
     if (deleteRet > 0 ) {
-        log:print("Delete count: '" + deleteRet.toString() + "'.") ;
+        log:printInfo("Delete count: '" + deleteRet.toString() + "'.") ;
     } else {
-        log:print("Error in deleting data");
+        log:printInfo("Error in deleting data");
     }
     
     mongoClient->close();
@@ -404,10 +404,10 @@ public function main() {
 
     mongodb:Client mongoClient = checkpanic new (mongoConfig, database);
 
-    log:print("------------------ List Indicies -------------------");
+    log:printInfo("------------------ List Indicies -------------------");
     map<json>[] indicies = checkpanic mongoClient->listIndices(collection);
     foreach var index in indicies {
-        log:print(index.toString());
+        log:printInfo(index.toString());
     }
     
     mongoClient->close();
@@ -439,44 +439,44 @@ public function main() {
     map<json> doc3 = { "name": "docerina", "type": "src" };
     map<json> doc4 = { "name": "test", "type": "artifacts" };
 
-    log:print("------------------ Inserting Data -------------------");
+    log:printInfo("------------------ Inserting Data -------------------");
     checkpanic mongoClient->insert(doc1,"projects");
     checkpanic mongoClient->insert(doc2,"projects");
     checkpanic mongoClient->insert(doc3,"projects");
     checkpanic mongoClient->insert(doc4,"projects");
   
-    log:print("------------------ Counting Data -------------------");
+    log:printInfo("------------------ Counting Data -------------------");
     int count = checkpanic mongoClient->countDocuments("projects",());
-    log:print("Count of the documents '" + count.toString() + "'.");
+    log:printInfo("Count of the documents '" + count.toString() + "'.");
 
 
-    log:print("------------------ Querying Data -------------------");
+    log:printInfo("------------------ Querying Data -------------------");
     map<json>[] jsonRet = checkpanic mongoClient->find("projects",(),());
-    log:print("Returned documents '" + jsonRet.toString() + "'.");
+    log:printInfo("Returned documents '" + jsonRet.toString() + "'.");
 
     map<json> queryString = {"name": "connectors" };
     jsonRet = checkpanic mongoClient->find("projects", (), queryString);
-    log:print("Returned Filtered documents '" + jsonRet.toString() + "'.");
+    log:printInfo("Returned Filtered documents '" + jsonRet.toString() + "'.");
 
 
-    log:print("------------------ Updating Data -------------------");
+    log:printInfo("------------------ Updating Data -------------------");
     map<json> replaceFilter = { "type": "artifacts" };
     map<json> replaceDoc = { "name": "main", "type": "artifacts" };
 
     int response = checkpanic mongoClient->update(replaceDoc,"projects", (), replaceFilter, true);
     if (response > 0 ) {
-        log:print("Modified count: '" + response.toString() + "'.") ;
+        log:printInfo("Modified count: '" + response.toString() + "'.") ;
     } else {
-        log:print("Error in replacing data");
+        log:printInfo("Error in replacing data");
     }
 
-   log:print("------------------ Deleting Data -------------------");
+   log:printInfo("------------------ Deleting Data -------------------");
    map<json> deleteFilter = { "name": "ballerina" };
    int deleteRet = checkpanic mongoClient->delete("projects", (), deleteFilter, true);
    if (deleteRet > 0 ) {
-       log:print("Delete count: '" + deleteRet.toString() + "'.") ;
+       log:printInfo("Delete count: '" + deleteRet.toString() + "'.") ;
    } else {
-       log:print("Error in deleting data");
+       log:printInfo("Error in deleting data");
    }
 
      mongoClient->close();
@@ -495,7 +495,7 @@ public function main() {
 
         > **Note:** Set the JAVA_HOME environment variable to the path name of the directory into which you installed JDK.
 
-2. Download and install [Ballerina Swann Lake Alpha2](https://ballerina.io/). 
+2. Download and install [Ballerina Swann Lake Alpha3](https://ballerina.io/). 
 
 ## Building the Source
 

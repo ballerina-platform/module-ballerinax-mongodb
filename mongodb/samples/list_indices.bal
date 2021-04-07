@@ -20,10 +20,10 @@ public function main() {
 
     mongodb:Client mongoClient = checkpanic new (mongoConfig, database);
 
-    log:print("------------------ List Indicies -------------------");
+    log:printInfo("------------------ List Indicies -------------------");
     map<json>[] indicies = checkpanic mongoClient->listIndices(collection);
     foreach var index in indicies {
-        log:print(index.toString());
+        log:printInfo(index.toString());
     }
     
     mongoClient->close();

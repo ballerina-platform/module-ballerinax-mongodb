@@ -24,7 +24,7 @@ public function main() {
     map<json> doc2 = { "name": "Salesforce", "version": "0.99.5", "type" : "Enterprise" };
     map<json> doc3 = { "name": "Mongodb", "version": "0.89.5", "type" : "DataBase" };
 
-    log:print("------------------ Inserting Data -------------------");
+    log:printInfo("------------------ Inserting Data -------------------");
     checkpanic  mongoClient->insert(doc1, collection);
     checkpanic  mongoClient->insert(doc2, collection);
     checkpanic  mongoClient->insert(doc3, collection);

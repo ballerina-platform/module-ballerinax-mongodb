@@ -2,7 +2,7 @@
 
 | Ballerina Language Version  | MongoDB Version |
 | ----------------------------| -------------------------------|
-|  Swan Lake Alpha 2          |   4.2.0                        |
+|  Swan Lake Alpha 3          |   4.2.0                        |
 
 ## Running Tests in Docker Containers
 
@@ -15,7 +15,7 @@ The MongoDB functionality are tested with the docker base test framework. The te
       These commands retrieve content from get.docker.com web in a quiet output-document mode and install.Then we need to stop docker service as it needs to restart docker in daemon mode. After that, we need to export docker daemon host.
 
             wget -qO- https://get.docker.com/ | sh
-            sudo service dockerd stop
+            sudo service docker stop
             export DOCKER_HOST=tcp://172.17.0.1:4326
             sudo dockerd -H tcp://172.17.0.1:4326
 

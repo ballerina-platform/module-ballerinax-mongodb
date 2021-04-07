@@ -20,26 +20,26 @@ public function main() {
 
     mongodb:Client mongoClient = checkpanic new (mongoConfig, database);
 
-    log:print("------------------ Updating Data -------------------");
+    log:printInfo("------------------ Updating Data -------------------");
     map<json> replaceFilter = { "type": "DataBase" };
     map<json> replaceDoc = { "type": "Database" };
 
     int response = checkpanic mongoClient->update(replaceDoc, collection, (), replaceFilter, true);
     if (response > 0 ) {
-        log:print("Modified count: '" + response.toString() + "'.") ;
+        log:printInfo("Modified count: '" + response.toString() + "'.") ;
     } else {
-        log:print("Nothing modified.");
+        log:printInfo("Nothing modified.");
     }
 
-    log:print("------------------ Updating Data with another filter -------------------");
+    log:printInfo("------------------ Updating Data with another filter -------------------");
     map<json> replaceFilter2 = { "name": "Mongodb" };
     map<json> replaceDoc2 = { "name": "Mongodb", "version": "0.92.3", "type" : "Database" };
 
     int response2 = checkpanic mongoClient->update(replaceDoc2, collection, (), replaceFilter2, true);
     if (response2 > 0 ) {
-        log:print("Modified count with another filter: '" + response2.toString() + "'.") ;
+        log:printInfo("Modified count with another filter: '" + response2.toString() + "'.") ;
     } else {
-        log:print("Nothing modified with another filter.");
+        log:printInfo("Nothing modified with another filter.");
     }
 
     mongoClient->close();

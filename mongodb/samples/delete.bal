@@ -20,13 +20,13 @@ public function main() {
 
     mongodb:Client mongoClient = checkpanic new (mongoConfig, database);
 
-    log:print("------------------ Deleting Data -------------------");
+    log:printInfo("------------------ Deleting Data -------------------");
     map<json> deleteFilter = { "name": "Salesforce" };
     int deleteRet = checkpanic mongoClient->delete(collection, (), deleteFilter, true);
     if (deleteRet > 0 ) {
-        log:print("Delete count: '" + deleteRet.toString() + "'.") ;
+        log:printInfo("Delete count: '" + deleteRet.toString() + "'.") ;
     } else {
-        log:print("Error in deleting data");
+        log:printInfo("Error in deleting data");
     }
     
     mongoClient->close();

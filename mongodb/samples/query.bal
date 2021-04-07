@@ -19,14 +19,14 @@ public function main() {
     };
 
     mongodb:Client mongoClient = checkpanic new (mongoConfig, database);
-    log:print("------------------ Querying Data -------------------");
+    log:printInfo("------------------ Querying Data -------------------");
     map<json>[] jsonRet = checkpanic mongoClient->find(collection, (), ());
-    log:print("Returned documents '" + jsonRet.toString() + "'.");
+    log:printInfo("Returned documents '" + jsonRet.toString() + "'.");
 
-    log:print("------------------ Querying Data with Filter -------------------");
+    log:printInfo("------------------ Querying Data with Filter -------------------");
     map<json> queryString = {"name": "Gmail" };
     jsonRet = checkpanic mongoClient->find(collection, (), queryString);
-    log:print("Returned Filtered documents '" + jsonRet.toString() + "'.");
+    log:printInfo("Returned Filtered documents '" + jsonRet.toString() + "'.");
 
      mongoClient->close();
 }

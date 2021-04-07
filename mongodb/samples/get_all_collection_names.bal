@@ -20,9 +20,9 @@ public function main() {
     mongodb:Client mongoClient = checkpanic new (mongoConfig);
     
     string [] collectionNames = checkpanic mongoClient->getCollectionNames(database);
-    log:print("------------------ Collection Names -------------------");
+    log:printInfo("------------------ Collection Names -------------------");
     foreach var collectionName in collectionNames {
-        log:print("Collection Name : " + collectionName);
+        log:printInfo("Collection Name : " + collectionName);
     }
      mongoClient->close();
 }

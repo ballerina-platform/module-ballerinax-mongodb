@@ -20,9 +20,9 @@ public function main() {
 
     mongodb:Client mongoClient = checkpanic new (mongoConfig, database);
 
-    log:print("------------------ Counting Data -------------------");
+    log:printInfo("------------------ Counting Data -------------------");
     int count = checkpanic mongoClient->countDocuments(collection);
-    log:print("Count of the documents '" + count.toString() + "'.");
+    log:printInfo("Count of the documents '" + count.toString() + "'.");
     
     mongoClient->close();
 }

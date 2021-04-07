@@ -18,9 +18,9 @@ public function main() {
 
     mongodb:Client mongoClient = checkpanic new (mongoConfig);
     string [] dbNames = checkpanic mongoClient->getDatabasesNames();
-    log:print("------------------ Database Names -------------------");
+    log:printInfo("------------------ Database Names -------------------");
     foreach var dbName in dbNames {
-        log:print("Database Name : " + dbName);
+        log:printInfo("Database Name : " + dbName);
     }
      mongoClient->close();
 }
