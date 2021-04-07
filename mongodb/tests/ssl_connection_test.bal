@@ -54,7 +54,7 @@ ClientConfig sslMongoConfig = {
 }
 public function initializeInValidConfig() {
     log:print("Start initialization test failure");
-    Client|ApplicationError mongoClient = new (mongoConfigInvalid);
+    Client|Error mongoClient = new (mongoConfigInvalid);
     if (mongoClient is ApplicationError) {
         log:print("Creating client failed '" + mongoClient.message() + "'.");
     } else {
@@ -71,8 +71,8 @@ public function testSSLConnection() returns Error? {
     log:print("------------------ Inserting Data on SSL Connection ------------------");
     map<json> insertDocument = {name: "The Lion King", year: "2019", rating: 8};
 
-    Client mongoClient = check new (sslMongoConfig);
-    var returned = mongoClient->insert("admin", "test", insertDocument);
+    Client mongoClient = check new (sslMongoConfig,"admin");
+    var returned = mongoClient->insert(insertDocument, "test");
     if (returned is DatabaseError) {
         log:print(returned.toString());
         test:assertFail("Inserting data failed!");

@@ -18,14 +18,14 @@ public function main() {
         options: {sslEnabled: false, serverSelectionTimeout: 5000}
     };
 
-    mongodb:Client mongoClient = checkpanic new (mongoConfig);
+    mongodb:Client mongoClient = checkpanic new (mongoConfig, database);
     log:print("------------------ Querying Data -------------------");
-    map<json>[] jsonRet = checkpanic mongoClient->find(database, collection, ());
+    map<json>[] jsonRet = checkpanic mongoClient->find(collection, (), ());
     log:print("Returned documents '" + jsonRet.toString() + "'.");
 
     log:print("------------------ Querying Data with Filter -------------------");
     map<json> queryString = {"name": "Gmail" };
-    jsonRet = checkpanic mongoClient->find(database, collection, queryString);
+    jsonRet = checkpanic mongoClient->find(collection, (), queryString);
     log:print("Returned Filtered documents '" + jsonRet.toString() + "'.");
 
      mongoClient->close();

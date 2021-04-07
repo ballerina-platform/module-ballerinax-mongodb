@@ -18,13 +18,13 @@ public function main() {
         options: {sslEnabled: false, serverSelectionTimeout: 5000}
     };
 
-    mongodb:Client mongoClient = checkpanic new (mongoConfig);
+    mongodb:Client mongoClient = checkpanic new (mongoConfig, database);
 
     log:print("------------------ Updating Data -------------------");
     map<json> replaceFilter = { "type": "DataBase" };
     map<json> replaceDoc = { "type": "Database" };
 
-    int response = checkpanic mongoClient->update(database, collection, replaceDoc, replaceFilter, true);
+    int response = checkpanic mongoClient->update(replaceDoc, collection, (), replaceFilter, true);
     if (response > 0 ) {
         log:print("Modified count: '" + response.toString() + "'.") ;
     } else {
@@ -35,7 +35,7 @@ public function main() {
     map<json> replaceFilter2 = { "name": "Mongodb" };
     map<json> replaceDoc2 = { "name": "Mongodb", "version": "0.92.3", "type" : "Database" };
 
-    int response2 = checkpanic mongoClient->update(database, collection, replaceDoc2, replaceFilter2, true);
+    int response2 = checkpanic mongoClient->update(replaceDoc2, collection, (), replaceFilter2, true);
     if (response2 > 0 ) {
         log:print("Modified count with another filter: '" + response2.toString() + "'.") ;
     } else {

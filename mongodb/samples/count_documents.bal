@@ -18,10 +18,10 @@ public function main() {
         options: {sslEnabled: false, serverSelectionTimeout: 5000}
     };
 
-    mongodb:Client mongoClient = checkpanic new (mongoConfig);
+    mongodb:Client mongoClient = checkpanic new (mongoConfig, database);
 
     log:print("------------------ Counting Data -------------------");
-    int count = checkpanic mongoClient->countDocuments(database, collection,());
+    int count = checkpanic mongoClient->countDocuments(collection);
     log:print("Count of the documents '" + count.toString() + "'.");
     
     mongoClient->close();

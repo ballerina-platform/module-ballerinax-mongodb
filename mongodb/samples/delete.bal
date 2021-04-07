@@ -18,11 +18,11 @@ public function main() {
         options: {sslEnabled: false, serverSelectionTimeout: 5000}
     };
 
-    mongodb:Client mongoClient = checkpanic new (mongoConfig);
+    mongodb:Client mongoClient = checkpanic new (mongoConfig, database);
 
     log:print("------------------ Deleting Data -------------------");
     map<json> deleteFilter = { "name": "Salesforce" };
-    int deleteRet = checkpanic mongoClient->delete(database, collection, deleteFilter, true);
+    int deleteRet = checkpanic mongoClient->delete(collection, (), deleteFilter, true);
     if (deleteRet > 0 ) {
         log:print("Delete count: '" + deleteRet.toString() + "'.") ;
     } else {

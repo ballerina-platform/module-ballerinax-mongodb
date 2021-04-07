@@ -18,10 +18,10 @@ public function main() {
         options: {sslEnabled: false, serverSelectionTimeout: 5000}
     };
 
-    mongodb:Client mongoClient = checkpanic new (mongoConfig);
+    mongodb:Client mongoClient = checkpanic new (mongoConfig, database);
 
     log:print("------------------ List Indicies -------------------");
-    map<json>[] indicies = checkpanic mongoClient->listIndices(database, collection);
+    map<json>[] indicies = checkpanic mongoClient->listIndices(collection);
     foreach var index in indicies {
         log:print(index.toString());
     }

@@ -18,16 +18,16 @@ public function main() {
         options: {sslEnabled: false, serverSelectionTimeout: 5000}
     };
 
-    mongodb:Client mongoClient = checkpanic new (mongoConfig);
+    mongodb:Client mongoClient = checkpanic new (mongoConfig, database);
 
     map<json> doc1 = { "name": "Gmail", "version": "0.99.1", "type" : "Service" };
     map<json> doc2 = { "name": "Salesforce", "version": "0.99.5", "type" : "Enterprise" };
     map<json> doc3 = { "name": "Mongodb", "version": "0.89.5", "type" : "DataBase" };
 
     log:print("------------------ Inserting Data -------------------");
-    checkpanic  mongoClient->insert(database, collection, doc1);
-    checkpanic  mongoClient->insert(database, collection, doc2);
-    checkpanic  mongoClient->insert(database, collection, doc3);
+    checkpanic  mongoClient->insert(doc1, collection);
+    checkpanic  mongoClient->insert(doc2, collection);
+    checkpanic  mongoClient->insert(doc3, collection);
     
     mongoClient->close();
 }

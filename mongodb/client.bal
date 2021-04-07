@@ -21,16 +21,22 @@ import ballerina/jballerina.java;
 public client class Client {
 
     handle datasource;
+    handle database = java:createNull();
 
     # Initialises the `Client` object with the provided `ClientConfig` properties.
     # 
-    # + return - An `ApplicationError` if there is any error in the provided configurations 
-    public function init(ClientConfig config) returns ApplicationError? {
+    # + config - `ClientConfig` properties
+    # + databaseName - Database name to connect
+    # + return - A `mongodb:Error` if there is any error in the provided configurations or database name
+    public function init(ClientConfig config, string? databaseName = ()) returns Error? {
         if (config.options.sslEnabled && config.options.secureSocket is ()) {
             return error ApplicationError("The connection property `secureSocket` is mandatory " +
                 "when ssl is enabled for connection.");
         }
         self.datasource = check initClient(config);
+        if (databaseName is string){
+            self.database = check self->getDatabase(databaseName);            
+        }
     }
 
     //Database management operations
@@ -45,7 +51,7 @@ public client class Client {
     # 
     # + databaseName - Name of the database
     # + return - A database handle on success or else a `mongodb:Error` if unable to reach the DB
-    public function getDatabase(string databaseName) returns handle|Error {
+    function getDatabase(string databaseName) returns handle|Error {
         if (databaseName.trim().length() == 0) {
             return error ApplicationError("Database Name cannot be empty.");
         }
@@ -56,23 +62,23 @@ public client class Client {
     //Collection management operations 
     # Lists the collection names in the MongoDB database.
     #
-    # + databaseName - Name of the database
+    # + databaseName - Name of the database 
     # + return - An array of collection names on success or else a `mongodb:Error` if unable to reach the DB
-    remote function getCollectionNames(string databaseName) returns string[]|Error {
-        handle database = check self.getDatabase(databaseName);        
-        return getCollectionNames(database);
+    remote function getCollectionNames(string? databaseName = ()) returns string[]|Error {
+        handle database = check self.getCurrentDatabase(databaseName);        
+        return getCollectionNames(database); 
     }
 
     # Returns the collection handle.
     # 
-    # + databaseName - Name of the database  
+    # + databaseName - Name of the database 
     # + collectionName - Name of the collection
     # + return - A collection object on success or else a `mongodb:Error` if unable to reach the DB
-    public function getCollection(string databaseName,string collectionName) returns handle|Error {
+    function getCollection(string collectionName, string? databaseName = ()) returns handle|Error {
         if (collectionName.trim().length() == 0) {
             return error ApplicationError("Collection Name cannot be empty.");
         }
-        handle database = check self.getDatabase(databaseName);
+        handle database = check self.getCurrentDatabase(databaseName);
         handle collection = check getCollection(database, collectionName);
         return collection;
     }
@@ -80,12 +86,13 @@ public client class Client {
     // Collection service operations
     # Counts the documents based on the filter. When the filter is (), it counts all the documents in the collection.
     #
-    # + databaseName - Name of the database  
+    # + databaseName - Name of the database 
     # + collectionName - Name of the collection
     # + filter - Filter for the count ($where & $near can be used)
     # + return - Count of the documents in the collection or else `mongodb:Error` if unable to reach the DB
-    remote function countDocuments(string databaseName,string collectionName, map<json>? filter = ()) returns int|Error {
-        handle collection = check self.getCollection(databaseName, collectionName);
+    remote function countDocuments(string collectionName, string? databaseName = (), map<json>? filter = ()) 
+    returns int|Error {
+        handle collection = check self.getCollection(collectionName, databaseName);
         if (filter is ()) {
             return countDocuments(collection, ());
         }
@@ -94,39 +101,39 @@ public client class Client {
     }
 
     # Lists the indices associated with the collection.
-    #
-    # + databaseName - Name of the database  
+    # 
+    # + databaseName - Name of the database 
     # + collectionName - Name of the collection
     # + return - a JSON object with indices on success or else a `mongodb:Error` if unable to reach the DB
-    remote function listIndices(string databaseName,string collectionName) returns map<json>[]|Error {
-        handle collection = check self.getCollection(databaseName, collectionName);
+    remote function listIndices(string collectionName, string? databaseName = ()) returns map<json>[]|Error {
+        handle collection = check self.getCollection(collectionName, databaseName);
         return listIndices(collection);
     }
 
 
     # Inserts one document.
-    #
-    # + databaseName - Name of the database  
+    # 
+    # + databaseName - Name of the database 
     # + collectionName - Name of the collection
     # + document - Document to be inserted
     # + return - `()` on success or else a `mongodb:Error` if unable to reach the DB
-    remote function insert(string databaseName,string collectionName,map<json> document) returns Error? {
+    remote function insert(map<json> document, string collectionName, string? databaseName = ()) returns Error? {
+        handle collection = check self.getCollection(collectionName, databaseName);
         string documentStr = document.toJsonString();
-        handle collection = check self.getCollection(databaseName, collectionName);
         return insert(collection, java:fromString(documentStr));
     }
 
     # The queries collection for documents, which sorts and limits the returned results.
     #
-    # + databaseName - Name of the database  
+    # + databaseName - Name of the database 
     # + collectionName - Name of the collection
     # + filter - Filter for the query
     # + sort - Sort options for the query
     # + limit - Limit options for the query results. No limit is applied for -1
     # + return - JSON array of the documents in the collection or else a `mongodb:Error` if unable to reach the DB
-    remote function find(string databaseName,string collectionName,map<json>? filter = (), map<json>? sort = (), 
+    remote function find(string collectionName, string? databaseName = (),map<json>? filter = (), map<json>? sort = (), 
     int 'limit = -1) returns map<json>[]|Error {
-        handle collection = check self.getCollection(databaseName, collectionName);
+        handle collection = check self.getCollection(collectionName, databaseName);
         if (filter is ()) {
             if (sort is ()) {
                 return find(collection, (), (), 'limit);
@@ -144,17 +151,17 @@ public client class Client {
 
     # Updates a document based on a condition.
     #
-    # + databaseName - Name of the database  
+    # + databaseName - Name of the database 
     # + collectionName - Name of the collection
     # + set - Document for the update condition
     # + filter - Filter for the query
     # + isMultiple - Whether to update multiple documents
     # + upsert - Whether to insert if update cannot be achieved
     # + return - JSON array of the documents in the collection or else a `mongodb:Error` if unable to reach the DB
-    remote function update(string databaseName,string collectionName,map<json> set, map<json>? filter = (), 
+    remote function update(map<json> set,string collectionName, string? databaseName = (), map<json>? filter = (), 
     boolean isMultiple = false, boolean upsert = false) returns int|Error {
+        handle collection = check self.getCollection(collectionName, databaseName);
         string updateDoc = set.toJsonString();
-        handle collection = check self.getCollection(databaseName, collectionName);
         if (filter is ()) {
             return update(collection, java:fromString(updateDoc), (), isMultiple, upsert);
         }
@@ -163,15 +170,15 @@ public client class Client {
     }
 
     # Deletes a document based on a condition.
-    #
-    # + databaseName - Name of the database  
+    # 
+    # + databaseName - Name of the database 
     # + collectionName - Name of the collection
     # + filter - Filter for the query
     # + isMultiple - Delete multiple documents if the condition is matched
     # + return - The number of deleted documents or else a `mongodb:Error` if unable to reach the DB
-    remote function delete(string databaseName,string collectionName,map<json>? filter = (), boolean isMultiple = false)
+    remote function delete(string collectionName, string? databaseName = (),map<json>? filter = (), boolean isMultiple = false)
      returns int|Error {
-        handle collection = check self.getCollection(databaseName, collectionName);
+        handle collection = check self.getCollection(collectionName, databaseName);
         if (filter is ()) {
             return delete(collection, (), isMultiple);
         }
@@ -183,7 +190,19 @@ public client class Client {
     remote function close() {
         close(self.datasource);
     }
-   
+
+    function getCurrentDatabase(string? databaseName) returns handle|Error {
+        if(databaseName is string) {
+            handle database = check self.getDatabase(databaseName);
+            return database;
+        } else {
+            if(!java:isNull(self.database)) {
+                return self.database;
+            } else {
+                return error ApplicationError("No database is set. Set a database.");
+            }
+        }
+    }
 }
 
 function initClient(ClientConfig config) returns handle|ApplicationError = @java:Method {

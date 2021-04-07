@@ -71,7 +71,7 @@ collection = "<COLLECTION_NAME>"
 
 ### Step 3: Initialize the Mongodb Client giving necessary credentials
 
-You can now enter the credentials in the Gmail client config.
+You can now enter the credentials in the mongo client config. If you use this client for a particular database then you can pass the database name along with config during client initialization(It is optional). Otherwise you can pass the database name for each remote method call. This is not recommended unless you need to connect more than one database using a client. You need to set the database using atleast one of these methods.
 ```ballerina
 mongodb:ClientConfig mongoConfig = {
         host: host,
@@ -81,14 +81,14 @@ mongodb:ClientConfig mongoConfig = {
         options: {sslEnabled: false, serverSelectionTimeout: 5000}
     };
 
-    mongodb:Client mongoClient = checkpanic new (mongoConfig);
+    mongodb:Client mongoClient = checkpanic new (mongoConfig, database);
 ```
 ### Step 4: Insert the document
 You can invoke the remote method `insert` to insert the document.
 ```ballerina
 map<json> doc = { "name": "Gmail", "version": "0.99.1", "type" : "Service" };
 
-    checkpanic  mongoClient->insert(database, collection, doc);
+    checkpanic  mongoClient->insert(doc, collection);
 ```
 ### Step 5: Close the db client connection. 
 
@@ -192,16 +192,16 @@ public function main() {
         options: {sslEnabled: false, serverSelectionTimeout: 5000}
     };
 
-    mongodb:Client mongoClient = checkpanic new (mongoConfig);
+    mongodb:Client mongoClient = checkpanic new (mongoConfig, database);
 
     map<json> doc1 = { "name": "Gmail", "version": "0.99.1", "type" : "Service" };
     map<json> doc2 = { "name": "Salesforce", "version": "0.99.5", "type" : "Enterprise" };
     map<json> doc3 = { "name": "Mongodb", "version": "0.89.5", "type" : "DataBase" };
 
     log:print("------------------ Inserting Data -------------------");
-    checkpanic  mongoClient->insert(database, collection, doc1);
-    checkpanic  mongoClient->insert(database, collection, doc2);
-    checkpanic  mongoClient->insert(database, collection, doc3);
+    checkpanic  mongoClient->insert(doc1, collection);
+    checkpanic  mongoClient->insert(doc2, collection);
+    checkpanic  mongoClient->insert(doc3, collection);
     
     mongoClient->close();
 }
@@ -232,13 +232,13 @@ public function main() {
         options: {sslEnabled: false, serverSelectionTimeout: 5000}
     };
 
-    mongodb:Client mongoClient = checkpanic new (mongoConfig);
+    mongodb:Client mongoClient = checkpanic new (mongoConfig, database);
 
     log:print("------------------ Updating Data -------------------");
     map<json> replaceFilter = { "type": "DataBase" };
     map<json> replaceDoc = { "type": "Database" };
 
-    int response = checkpanic mongoClient->update(database, collection, replaceDoc, replaceFilter, true);
+    int response = checkpanic mongoClient->update(replaceDoc, collection, (), replaceFilter, true);
     if (response > 0 ) {
         log:print("Modified count: '" + response.toString() + "'.") ;
     } else {
@@ -249,7 +249,7 @@ public function main() {
     map<json> replaceFilter2 = { "name": "Mongodb" };
     map<json> replaceDoc2 = { "name": "Mongodb", "version": "0.92.3", "type" : "Database" };
 
-    int response2 = checkpanic mongoClient->update(database, collection, replaceDoc2, replaceFilter2, true);
+    int response2 = checkpanic mongoClient->update(replaceDoc2, collection, (), replaceFilter2, true);
     if (response2 > 0 ) {
         log:print("Modified count with another filter: '" + response2.toString() + "'.") ;
     } else {
@@ -285,14 +285,14 @@ public function main() {
         options: {sslEnabled: false, serverSelectionTimeout: 5000}
     };
 
-    mongodb:Client mongoClient = checkpanic new (mongoConfig);
+    mongodb:Client mongoClient = checkpanic new (mongoConfig, database);
     log:print("------------------ Querying Data -------------------");
-    map<json>[] jsonRet = checkpanic mongoClient->find(database, collection, ());
+    map<json>[] jsonRet = checkpanic mongoClient->find(collection, (), ());
     log:print("Returned documents '" + jsonRet.toString() + "'.");
 
     log:print("------------------ Querying Data with Filter -------------------");
     map<json> queryString = {"name": "Gmail" };
-    jsonRet = checkpanic mongoClient->find(database, collection, queryString);
+    jsonRet = checkpanic mongoClient->find(collection, (), queryString);
     log:print("Returned Filtered documents '" + jsonRet.toString() + "'.");
 
      mongoClient->close();
@@ -325,10 +325,10 @@ public function main() {
         options: {sslEnabled: false, serverSelectionTimeout: 5000}
     };
 
-    mongodb:Client mongoClient = checkpanic new (mongoConfig);
+    mongodb:Client mongoClient = checkpanic new (mongoConfig, database);
 
     log:print("------------------ Counting Data -------------------");
-    int count = checkpanic mongoClient->countDocuments(database, collection,());
+    int count = checkpanic mongoClient->countDocuments(collection);
     log:print("Count of the documents '" + count.toString() + "'.");
     
     mongoClient->close();
@@ -361,11 +361,11 @@ public function main() {
         options: {sslEnabled: false, serverSelectionTimeout: 5000}
     };
 
-    mongodb:Client mongoClient = checkpanic new (mongoConfig);
+    mongodb:Client mongoClient = checkpanic new (mongoConfig, database);
 
     log:print("------------------ Deleting Data -------------------");
     map<json> deleteFilter = { "name": "Salesforce" };
-    int deleteRet = checkpanic mongoClient->delete(database, collection, deleteFilter, true);
+    int deleteRet = checkpanic mongoClient->delete(collection, (), deleteFilter, true);
     if (deleteRet > 0 ) {
         log:print("Delete count: '" + deleteRet.toString() + "'.") ;
     } else {
@@ -402,10 +402,10 @@ public function main() {
         options: {sslEnabled: false, serverSelectionTimeout: 5000}
     };
 
-    mongodb:Client mongoClient = checkpanic new (mongoConfig);
+    mongodb:Client mongoClient = checkpanic new (mongoConfig, database);
 
     log:print("------------------ List Indicies -------------------");
-    map<json>[] indicies = checkpanic mongoClient->listIndices(database, collection);
+    map<json>[] indicies = checkpanic mongoClient->listIndices(collection);
     foreach var index in indicies {
         log:print(index.toString());
     }
@@ -432,7 +432,7 @@ public function main() {
         options: {sslEnabled: false, serverSelectionTimeout: 5000}
     };
 
-    mongodb:Client mongoClient = checkpanic new (mongoConfig);
+    mongodb:Client mongoClient = checkpanic new (mongoConfig, "Ballerina");
 
     map<json> doc1 = { "name": "ballerina", "type": "src" };
     map<json> doc2 = { "name": "connectors", "type": "artifacts" };
@@ -440,22 +440,22 @@ public function main() {
     map<json> doc4 = { "name": "test", "type": "artifacts" };
 
     log:print("------------------ Inserting Data -------------------");
-    checkpanic mongoClient->insert("Ballerina","projects",doc1);
-    checkpanic mongoClient->insert("Ballerina","projects",(doc2));
-    checkpanic mongoClient->insert("Ballerina","projects",doc3);
-    checkpanic mongoClient->insert("Ballerina","projects",doc4);
+    checkpanic mongoClient->insert(doc1,"projects");
+    checkpanic mongoClient->insert(doc2,"projects");
+    checkpanic mongoClient->insert(doc3,"projects");
+    checkpanic mongoClient->insert(doc4,"projects");
   
     log:print("------------------ Counting Data -------------------");
-    int count = checkpanic mongoClient->countDocuments("Ballerina","projects",());
+    int count = checkpanic mongoClient->countDocuments("projects",());
     log:print("Count of the documents '" + count.toString() + "'.");
 
 
     log:print("------------------ Querying Data -------------------");
-    map<json>[] jsonRet = checkpanic mongoClient->find("Ballerina","projects",());
+    map<json>[] jsonRet = checkpanic mongoClient->find("projects",(),());
     log:print("Returned documents '" + jsonRet.toString() + "'.");
 
     map<json> queryString = {"name": "connectors" };
-    jsonRet = checkpanic mongoClient->find("Ballerina","projects",queryString);
+    jsonRet = checkpanic mongoClient->find("projects", (), queryString);
     log:print("Returned Filtered documents '" + jsonRet.toString() + "'.");
 
 
@@ -463,7 +463,7 @@ public function main() {
     map<json> replaceFilter = { "type": "artifacts" };
     map<json> replaceDoc = { "name": "main", "type": "artifacts" };
 
-    int response = checkpanic mongoClient->update("Ballerina","projects",replaceDoc, replaceFilter, true);
+    int response = checkpanic mongoClient->update(replaceDoc,"projects", (), replaceFilter, true);
     if (response > 0 ) {
         log:print("Modified count: '" + response.toString() + "'.") ;
     } else {
@@ -472,7 +472,7 @@ public function main() {
 
    log:print("------------------ Deleting Data -------------------");
    map<json> deleteFilter = { "name": "ballerina" };
-   int deleteRet = checkpanic mongoClient->delete("Ballerina","projects" , deleteFilter, true);
+   int deleteRet = checkpanic mongoClient->delete("projects", (), deleteFilter, true);
    if (deleteRet > 0 ) {
        log:print("Delete count: '" + deleteRet.toString() + "'.") ;
    } else {
@@ -482,6 +482,7 @@ public function main() {
      mongoClient->close();
 }
 ```
+
 # Building from the Source
 
 ## Setting Up the Prerequisites
