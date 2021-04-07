@@ -221,8 +221,8 @@ public function testFindData() returns Error? {
     map<json> insertDocument1 = {name: "Joker", year: "2019", rating: 7};
     map<json> insertDocument2 = {name: "Black Panther", year: "2018", rating: 7};
 
-    var returned1 = mongoClient->insert(insertDocument1, COLLECTION_NAME);
-    var returned2 = mongoClient->insert(insertDocument2, COLLECTION_NAME);
+    check mongoClient->insert(insertDocument1, COLLECTION_NAME);
+    check mongoClient->insert(insertDocument2, COLLECTION_NAME);
 
     map<json> findDoc = {year: "2019"};
     var returned = mongoClient->find(COLLECTION_NAME,(),filter = findDoc);
