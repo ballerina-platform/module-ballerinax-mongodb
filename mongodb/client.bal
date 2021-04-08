@@ -91,7 +91,7 @@ public client class Client {
     # + filter - Filter for the count ($where & $near can be used)
     # + return - Count of the documents in the collection or else `mongodb:Error` if unable to reach the DB
     remote function countDocuments(string collectionName, string? databaseName = (), map<json>? filter = ()) 
-    returns int|Error {
+                                   returns int|Error {
         handle collection = check self.getCollection(collectionName, databaseName);
         if (filter is ()) {
             return countDocuments(collection, ());
@@ -131,8 +131,8 @@ public client class Client {
     # + sort - Sort options for the query
     # + limit - Limit options for the query results. No limit is applied for -1
     # + return - JSON array of the documents in the collection or else a `mongodb:Error` if unable to reach the DB
-    remote function find(string collectionName, string? databaseName = (),map<json>? filter = (), map<json>? sort = (), 
-    int 'limit = -1) returns map<json>[]|Error {
+    remote function find(string collectionName, string? databaseName = (),map<json>? filter = (), map<json>? sort = (),
+                         int 'limit = -1) returns map<json>[]|Error {
         handle collection = check self.getCollection(collectionName, databaseName);
         if (filter is ()) {
             if (sort is ()) {
@@ -159,7 +159,7 @@ public client class Client {
     # + upsert - Whether to insert if update cannot be achieved
     # + return - JSON array of the documents in the collection or else a `mongodb:Error` if unable to reach the DB
     remote function update(map<json> set,string collectionName, string? databaseName = (), map<json>? filter = (), 
-    boolean isMultiple = false, boolean upsert = false) returns int|Error {
+                           boolean isMultiple = false, boolean upsert = false) returns int|Error {
         handle collection = check self.getCollection(collectionName, databaseName);
         string updateDoc = set.toJsonString();
         if (filter is ()) {
@@ -176,8 +176,8 @@ public client class Client {
     # + filter - Filter for the query
     # + isMultiple - Delete multiple documents if the condition is matched
     # + return - The number of deleted documents or else a `mongodb:Error` if unable to reach the DB
-    remote function delete(string collectionName, string? databaseName = (),map<json>? filter = (), boolean isMultiple = false)
-     returns int|Error {
+    remote function delete(string collectionName, string? databaseName = (),map<json>? filter = (), 
+                           boolean isMultiple = false) returns int|Error {
         handle collection = check self.getCollection(collectionName, databaseName);
         if (filter is ()) {
             return delete(collection, (), isMultiple);
@@ -192,11 +192,11 @@ public client class Client {
     }
 
     function getCurrentDatabase(string? databaseName) returns handle|Error {
-        if(databaseName is string) {
+        if (databaseName is string) {
             handle database = check self.getDatabase(databaseName);
             return database;
         } else {
-            if(!java:isNull(self.database)) {
+            if (!java:isNull(self.database)) {
                 return self.database;
             } else {
                 return error ApplicationError("No database is set. Set a database.");
@@ -245,12 +245,12 @@ function insert(handle collection, handle document) returns DatabaseError? = @ja
 } external;
 
 function find(handle collection, handle? filter, handle? sort, int 'limit)
-returns map<json>[]|DatabaseError = @java:Method {
+              returns map<json>[]|DatabaseError = @java:Method {
     'class: "org.wso2.mongo.MongoDBCollectionUtil"
 } external;
 
 function update(handle collection, handle update, handle? filter, boolean isMultiple, boolean upsert)
-returns int|DatabaseError = @java:Method {
+                returns int|DatabaseError = @java:Method {
     'class: "org.wso2.mongo.MongoDBCollectionUtil"
 } external;
 
