@@ -35,18 +35,18 @@ ClientConfig mongoConfigError = {
     }
 };
 
-Client mongoClient = check new (mongoConfig);
 const DATABASE_NAME = "moviecollection";
 const COLLECTION_NAME = "moviedetails";
+Client mongoClient = check new (mongoConfig, DATABASE_NAME);
 
 @test:Config {
         groups: ["mongodb"]
 }
 public function initializeInValidClient() {
-    log:print("Start initialization test failure");
-    Client|ApplicationError mongoClient = new (mongoConfigError);
+    log:printInfo("Start initialization test failure");
+    Client|Error mongoClient = new (mongoConfigError,"MyDb");
     if (mongoClient is ApplicationError) {
-        log:print("Creating client failed '" + mongoClient.message() + "'.");
+        log:printInfo("Creating client failed '" + mongoClient.message() + "'.");
     } else {
         test:assertFail("Error expected when url is invalid.");
     }
@@ -57,13 +57,13 @@ public function initializeInValidClient() {
     groups: ["mongodb"]
 }
 public function testListDatabaseNames() {
-    log:print("----------------- List Databases------------------");
+    log:printInfo("----------------- List Databases------------------");
     var returned = mongoClient->getDatabasesNames();
 
     if (returned is string[]) {
-        log:print("Database Names " + returned.toString());
+        log:printInfo("Database Names " + returned.toString());
     } else {
-        log:print(returned.toString());
+        log:printInfo(returned.toString());
         test:assertFail("List databases failed!");
     }
 }
@@ -73,13 +73,13 @@ public function testListDatabaseNames() {
     groups: ["mongodb"]
 }
 public function testGetDatabase() {
-    log:print("----------------- Get Database------------------");
-    var returned = mongoClient->getDatabase("  ");
+    log:printInfo("----------------- Get Database------------------");
+    var returned = mongoClient.getDatabase("  ");
     if (returned is ApplicationError) {
-        log:print("Empty dbName validated successfully");
+        log:printInfo("Empty dbName validated successfully");
     } else {
         string returnedToString = returned is DatabaseError ? returned.toString() : returned.toString();
-        log:print(returnedToString.toString());
+        log:printInfo(returnedToString.toString());
         test:assertFail("Validation Failure");
     }
 }
@@ -89,14 +89,13 @@ public function testGetDatabase() {
     groups: ["mongodb"]
 }
 public function testListCollections() returns Error? {
-    log:print("----------------- List Collections------------------");
-    Database mongoDatabase = check mongoClient->getDatabase(DATABASE_NAME);
-    var returned = mongoDatabase->getCollectionNames();
+    log:printInfo("----------------- List Collections------------------");
+    var returned = mongoClient->getCollectionNames("admin");
 
     if (returned is string[]) {
-        log:print("Database Names " + returned.toString());
+        log:printInfo("Collection Names " + returned.toString());
     } else {
-        log:print(returned.toString());
+        log:printInfo(returned.toString());
         test:assertFail("List collections failed!");
     }
 }
@@ -106,14 +105,13 @@ public function testListCollections() returns Error? {
     groups: ["mongodb"]
 }
 public function testGetCollection() returns Error? {
-    log:print("----------------- Get Collection------------------");
-    Database mongoDatabase = check mongoClient->getDatabase(DATABASE_NAME);
-    var returned = mongoDatabase->getCollection("  ");
+    log:printInfo("----------------- Get Collection------------------");
+    var returned = mongoClient->getCollection("  ");
     if (returned is ApplicationError) {
-        log:print("Empty collection name validated successfully");
+        log:printInfo("Empty collection name validated successfully");
     } else {
         string returnedToString = returned is DatabaseError ? returned.toString() : returned.toString();
-        log:print(returnedToString.toString());
+        log:printInfo(returnedToString.toString());
         test:assertFail("Empty collection name validation Failure");
     }
 }
@@ -123,55 +121,76 @@ public function testGetCollection() returns Error? {
     groups: ["mongodb"]
 }
 public function testInsertData() returns Error? {
-    log:print("------------------ Inserting Data ------------------");
+    log:printInfo("------------------ Inserting Data ------------------");
     map<json> insertDocument = {name: "The Lion King", year: "2019", rating: 8};
     map<json> insertDocument2 = {name: "Black Panther", year: "2018", rating: 7};
 
-    Database mongoDatabase = check mongoClient->getDatabase(DATABASE_NAME);
-    Collection mongoCollection = check mongoDatabase->getCollection(COLLECTION_NAME);
-    var returned = mongoCollection->insert(insertDocument);
-    if (returned is DatabaseError) {
-        log:print(returned.toString());
+    var returned = mongoClient->insert(insertDocument, COLLECTION_NAME);
+    if (returned is Error) {
+        log:printInfo(returned.toString());
         test:assertFail("Inserting data failed!");
     } else {
-        log:print("Successfully inserted document into collection");
+        log:printInfo("Successfully inserted document into collection");
     }
 
-    returned = mongoCollection->insert(insertDocument2);
-    if (returned is DatabaseError) {
-        log:print(returned.toString());
+    returned = mongoClient->insert(insertDocument2, COLLECTION_NAME);
+    if (returned is Error) {
+        log:printInfo(returned.toString());
         test:assertFail("Inserting data failed!");
     } else {
-        log:print("Successfully inserted document into collection");
+        log:printInfo("Successfully inserted document into collection");
     }
 }
-
 @test:Config {
     dependsOn: [ testInsertData ],
     groups: ["mongodb"]
 }
-public function testCountDocuments() returns Error? {
-    log:print("----------------- Count Documents------------------");
-    Database mongoDatabase = check mongoClient->getDatabase(DATABASE_NAME);
-    Collection mongoCollection = check mongoDatabase->getCollection(COLLECTION_NAME);
+public function testInsertDataWithDbName() returns Error? {
+    log:printInfo("------------------ Inserting Data With Second Database ------------------");
+    map<json> insertDocument = {name: "The Lion King", year: "2019", rating: 8};
+    map<json> insertDocument2 = {name: "Black Panther", year: "2018", rating: 7};
 
-    var returned = mongoCollection->countDocuments(());
+    var returned = mongoClient->insert(insertDocument, COLLECTION_NAME, "anothermoviecollection");
+    if (returned is Error) {
+        log:printInfo(returned.toString());
+        test:assertFail("Inserting data failed!");
+    } else {
+        log:printInfo("Successfully inserted document into collection");
+    }
+
+    returned = mongoClient->insert(insertDocument2, COLLECTION_NAME, "anothermoviecollection");
+    if (returned is Error) {
+        log:printInfo(returned.toString());
+        test:assertFail("Inserting data failed!");
+    } else {
+        log:printInfo("Successfully inserted document into collection");
+    }
+}
+
+@test:Config {
+    dependsOn: [ testInsertDataWithDbName ],
+    groups: ["mongodb"]
+}
+public function testCountDocuments() returns Error? {
+    log:printInfo("----------------- Count Documents------------------");
+
+    var returned = mongoClient->countDocuments(COLLECTION_NAME, (),());
     if (returned is int) {
-        log:print("Documents counted successfully '" + returned.toString() + "'");
+        log:printInfo("Documents counted successfully '" + returned.toString() + "'");
         test:assertEquals(2, returned);
     } else {
-        log:print(returned.toString());
+        log:printInfo(returned.toString());
         test:assertFail("Count Failure");
     }
 
-    returned = mongoCollection->countDocuments({
+    returned = mongoClient->countDocuments(COLLECTION_NAME,() , {
         year: "2018"
     });
     if (returned is int) {
-        log:print("Documents counted successfully '" + returned.toString() + "'");
+        log:printInfo("Documents counted successfully '" + returned.toString() + "'");
         test:assertEquals(1, returned);
     } else {
-        log:print(returned.toString());
+        log:printInfo(returned.toString());
         test:assertFail("Count Failure");
     }
 }
@@ -181,15 +200,13 @@ public function testCountDocuments() returns Error? {
     groups: ["mongodb"]
 }
 public function testListIndices() returns Error? {
-    log:print("----------------- Count Documents------------------");
-    Database mongoDatabase = check mongoClient->getDatabase(DATABASE_NAME);
-    Collection mongoCollection = check mongoDatabase->getCollection(COLLECTION_NAME);
-    var returned = mongoCollection->listIndices();
+    log:printInfo("----------------- List Indices------------------");
+    var returned = mongoClient->listIndices(COLLECTION_NAME);
     if (returned is map<json>[]) {
-        log:print("Indices returned successfully '" + returned.toString() + "'");
+        log:printInfo("Indices returned successfully '" + returned.toString() + "'");
         test:assertEquals(1, returned.length());
     } else {
-        log:print(returned.toString());
+        log:printInfo(returned.toString());
         test:assertFail("Indices List Failure");
     }
 }
@@ -199,45 +216,42 @@ public function testListIndices() returns Error? {
     groups: ["mongodb"]
 }
 public function testFindData() returns Error? {
-    log:print("----------------- Querying Data ----------------");
-
-    Database mongoDatabase = check mongoClient->getDatabase(DATABASE_NAME);
-    Collection mongoCollection = check mongoDatabase->getCollection(COLLECTION_NAME);
+    log:printInfo("----------------- Querying Data ----------------");
 
     map<json> insertDocument1 = {name: "Joker", year: "2019", rating: 7};
     map<json> insertDocument2 = {name: "Black Panther", year: "2018", rating: 7};
 
-    var returned1 = mongoCollection->insert(insertDocument1);
-    var returned2 = mongoCollection->insert(insertDocument2);
+    check mongoClient->insert(insertDocument1, COLLECTION_NAME);
+    check mongoClient->insert(insertDocument2, COLLECTION_NAME);
 
     map<json> findDoc = {year: "2019"};
-    var returned = mongoCollection->find(filter = findDoc);
+    var returned = mongoClient->find(COLLECTION_NAME,(),filter = findDoc);
     if (returned is map<json>[]) {
-        log:print(returned.toString());
+        log:printInfo(returned.toString());
         test:assertEquals(returned.length(), 2, msg = "Querying year 2019 filter failed");
     } else {
-        log:print(returned.toString());
+        log:printInfo(returned.toString());
         test:assertFail("Finding data failed");
     }
 
     map<json> sortDoc = {name: 1};
-    returned = mongoCollection->find(filter = findDoc, sort = sortDoc);
+    returned = mongoClient->find(COLLECTION_NAME, (), filter = findDoc, sort = sortDoc);
     if (returned is map<json>[]) {
-        log:print(returned.toString());
+        log:printInfo(returned.toString());
         test:assertEquals(returned.length(), 2, "Querying year 2019 sort data failed");
         test:assertEquals(returned[0].name, "Joker");
     } else {
-        log:print(returned.toString());
+        log:printInfo(returned.toString());
         test:assertFail("Finding data sort failed");
     }
 
-    returned = mongoCollection->find(findDoc, sortDoc, 1);
+    returned = mongoClient->find(COLLECTION_NAME, (), findDoc, sortDoc, 1);
     if (returned is map<json>[]) {
-        log:print(returned.toString());
+        log:printInfo(returned.toString());
         test:assertEquals(returned.length(), 1, "Querying filtered sort and limit failed");
         test:assertEquals(returned[0].name, "Joker");
     } else {
-        log:print(returned.toString());
+        log:printInfo(returned.toString());
         test:assertFail("Finding data limit failed");
     }
 
@@ -248,31 +262,29 @@ public function testFindData() returns Error? {
     groups: ["mongodb"]
 }
 function testUpdateDocument() returns Error? {
-    log:print("------------------ Updating Data -------------------");
-    Database mongoDatabase = check mongoClient->getDatabase(DATABASE_NAME);
-    Collection mongoCollection = check mongoDatabase->getCollection(COLLECTION_NAME);
+    log:printInfo("------------------ Updating Data -------------------");
 
     map<json> replaceFilter = {name: "The Lion King"};
     map<json> replaceDoc = {name: "The Lion King", year: "2019", rating: 6};
 
-    var modifiedCount = mongoCollection->update(replaceDoc, replaceFilter, false);
+    var modifiedCount = mongoClient->update(replaceDoc, COLLECTION_NAME, (), replaceFilter, false);
     if (modifiedCount is int) {
-        log:print("Modified count: " + modifiedCount.toString());
+        log:printInfo("Modified count: " + modifiedCount.toString());
         test:assertEquals(modifiedCount, 1, "Document modification failed");
     } else {
-        log:print(modifiedCount.toString());
+        log:printInfo(modifiedCount.toString());
         test:assertFail("Document modification failed");
     }
 
     replaceFilter = {rating: 7};
     replaceDoc = {rating: 9};
 
-    modifiedCount = mongoCollection->update(replaceDoc, replaceFilter, true);
+    modifiedCount = mongoClient->update(replaceDoc, COLLECTION_NAME, (), replaceFilter, true);
     if (modifiedCount is int) {
-        log:print("Modified count: " + modifiedCount.toString());
+        log:printInfo("Modified count: " + modifiedCount.toString());
         test:assertEquals(modifiedCount, 3, "Document modification multiple failed");
     } else {
-        log:print(modifiedCount.toString());
+        log:printInfo(modifiedCount.toString());
         test:assertFail("Document modification multiple failed");
     }
 }
@@ -282,30 +294,28 @@ function testUpdateDocument() returns Error? {
     groups: ["mongodb"]
 }
 function testUpdateDocumentUpsertTrue() returns Error? {
-    log:print("------------------ Updating Data (Upsert) -------------------");
-    Database mongoDatabase = check mongoClient->getDatabase(DATABASE_NAME);
-    Collection mongoCollection = check mongoDatabase->getCollection(COLLECTION_NAME);
+    log:printInfo("------------------ Updating Data (Upsert) -------------------");
 
     map<json> replaceFilter = {name: "The Lion King 2"};
     map<json> replaceDoc = {name: "The Lion King 2", year: "2019", rating: 7};
 
-    var modifiedCount = mongoCollection->update(replaceDoc, replaceFilter, true, true);
+    var modifiedCount = mongoClient->update(replaceDoc, COLLECTION_NAME, (), replaceFilter, true, true);
     if (modifiedCount is int) {
-        log:print("Modified count: " + modifiedCount.toString());
+        log:printInfo("Modified count: " + modifiedCount.toString());
         test:assertEquals(modifiedCount, 0, "Document modification failed");
 
         map<json> findOneDoc = {name: "The Lion King 2"};
-        var returned = mongoCollection->find(filter = findOneDoc);
+        var returned = mongoClient->find(COLLECTION_NAME, (), filter = findOneDoc);
         if (returned is json) {
-            log:print("Queried data " + returned.toString());
+            log:printInfo("Queried data " + returned.toString());
             test:assertNotEquals(returned.toString(), "null", "Querying one data failed");
         } else {
-            log:print(returned.toString());
+            log:printInfo(returned.toString());
             test:assertFail("Finding data failed");
         }
 
     } else {
-        log:print(modifiedCount.toString());
+        log:printInfo(modifiedCount.toString());
         test:assertFail("Replacing data failed");
     }
 }
@@ -315,27 +325,35 @@ function testUpdateDocumentUpsertTrue() returns Error? {
     groups: ["mongodb"]
 }
 function testDelete() returns Error? {
-    log:print("------------------ Deleting Data -------------------");
-    Database mongoDatabase = check mongoClient->getDatabase(DATABASE_NAME);
-    Collection mongoCollection = check mongoDatabase->getCollection(COLLECTION_NAME);
+    log:printInfo("------------------ Deleting Data -------------------");
 
     map<json> deleteFilter = {"rating": 9};
 
-    var deleteRet = mongoCollection->delete(deleteFilter, true);
+    var deleteRet = mongoClient->delete(COLLECTION_NAME, (), deleteFilter, true);
     if (deleteRet is int) {
-        log:print("Deleted count: " + deleteRet.toString());
+        log:printInfo("Deleted count: " + deleteRet.toString());
         test:assertEquals(deleteRet, 3, msg = "Document deletion multiple failed");
     } else {
-        log:print(deleteRet.toString());
+        log:printInfo(deleteRet.toString());
         test:assertFail("Deleting filter multiple failed");
     }
 
-    deleteRet = mongoCollection->delete((), true);
+    deleteRet = mongoClient->delete(COLLECTION_NAME, (), (), true);
     if (deleteRet is int) {
-        log:print("Deleted count: " + deleteRet.toString());
+        log:printInfo("Deleted count: " + deleteRet.toString());
         test:assertEquals(deleteRet, 2, msg = "Document deletion failed");
     } else {
-        log:print(deleteRet.toString());
+        log:printInfo(deleteRet.toString());
+        test:assertFail("Deleting data failed");
+    }
+
+    log:printInfo("------------------ Deleting Data From Second Database-------------------");
+    deleteRet = mongoClient->delete(COLLECTION_NAME, "anothermoviecollection", (), true);
+    if (deleteRet is int) {
+        log:printInfo("Deleted count: " + deleteRet.toString());
+        test:assertEquals(deleteRet, 2, msg = "Document deletion failed");
+    } else {
+        log:printInfo(deleteRet.toString());
         test:assertFail("Deleting data failed");
     }
 

@@ -1,4 +1,4 @@
-# Ballerina MongoDB Connector
+# Ballerina MongoDB Module
 
 Connects to MongoDB from ballerina 
 

@@ -16,8 +16,8 @@ services:
   - docker
 
 script:
-  - wget http://dist-dev.ballerina.io/downloads/swan-lake-alpha2/ballerina-linux-installer-x64-swan-lake-alpha2.deb
-  - sudo dpkg -i ballerina-linux-installer-x64-swan-lake-alpha2.deb
+  - wget http://dist-dev.ballerina.io/downloads/swan-lake-alpha4/ballerina-linux-installer-x64-swan-lake-alpha4.deb
+  - sudo dpkg -i ballerina-linux-installer-x64-swan-lake-alpha4.deb
   - sudo apt-get install -f
   - export JAVA_OPTS="-DBALLERINA_DEV_COMPILE_BALLERINA_ORG=true"
   - mvn clean install

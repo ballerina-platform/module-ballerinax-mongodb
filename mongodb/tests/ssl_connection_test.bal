@@ -53,10 +53,10 @@ ClientConfig sslMongoConfig = {
     groups: ["mongodb-ssl"]
 }
 public function initializeInValidConfig() {
-    log:print("Start initialization test failure");
-    Client|ApplicationError mongoClient = new (mongoConfigInvalid);
+    log:printInfo("Start initialization test failure");
+    Client|Error mongoClient = new (mongoConfigInvalid);
     if (mongoClient is ApplicationError) {
-        log:print("Creating client failed '" + mongoClient.message() + "'.");
+        log:printInfo("Creating client failed '" + mongoClient.message() + "'.");
     } else {
         test:assertFail("Error expected when url is invalid.");
     }
@@ -68,17 +68,15 @@ public function initializeInValidConfig() {
 }
 public function testSSLConnection() returns Error? {
 
-    log:print("------------------ Inserting Data on SSL Connection ------------------");
+    log:printInfo("------------------ Inserting Data on SSL Connection ------------------");
     map<json> insertDocument = {name: "The Lion King", year: "2019", rating: 8};
 
-    Client mongoClient = check new (sslMongoConfig);
-    Database mongoDatabase = check mongoClient->getDatabase("admin");
-    Collection mongoCollection = check mongoDatabase->getCollection("test");
-    var returned = mongoCollection->insert(insertDocument);
+    Client mongoClient = check new (sslMongoConfig,"admin");
+    var returned = mongoClient->insert(insertDocument, "test");
     if (returned is DatabaseError) {
-        log:print(returned.toString());
+        log:printInfo(returned.toString());
         test:assertFail("Inserting data failed!");
     } else {
-        log:print("Successfully inserted document into collection");
+        log:printInfo("Successfully inserted document into collection");
     }
 }
