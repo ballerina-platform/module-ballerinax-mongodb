@@ -106,7 +106,7 @@ public function testListCollections() returns Error? {
 }
 public function testGetCollection() returns Error? {
     log:printInfo("----------------- Get Collection------------------");
-    var returned = mongoClient->getCollection("  ");
+    var returned = mongoClient.getCollection("  ");
     if (returned is ApplicationError) {
         log:printInfo("Empty collection name validated successfully");
     } else {
