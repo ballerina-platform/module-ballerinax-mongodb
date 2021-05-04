@@ -52,8 +52,8 @@ jobs:
                           <servers>
                             <server>
                               <id>github</id>
-                              <username>${{ secrets.USERNAME }}</username>
-                              <password>${{ secrets.PERSONAL_TOKEN }}</password>
+                              <username>${{ secrets.BALLERINA_BOT_USERNAME }}</username>
+                              <password>${{ secrets.BALLERINA_BOT_TOKEN }}</password>
                             </server>
                           </servers>
                         </settings>' > ~/.m2/settings.xml

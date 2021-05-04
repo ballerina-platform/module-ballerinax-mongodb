@@ -2,7 +2,7 @@
 
 | Ballerina Language Version  | MongoDB Version |
 | ----------------------------| -------------------------------|
-|  Swan Lake Alpha 4          |   4.2.0                        |
+|  Swan Lake Alpha 5          |   4.2.0                        |
 
 ## Running Tests in Docker Containers
 

@@ -36,7 +36,7 @@ public client class Client {
         }
         self.datasource = check initClient(config);
         if (databaseName is string){
-            self.database = check self->getDatabase(databaseName);            
+            self.database = check self.getDatabase(databaseName);            
         }
     }
 
