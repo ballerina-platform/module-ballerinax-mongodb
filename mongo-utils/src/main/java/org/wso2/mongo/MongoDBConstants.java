@@ -22,7 +22,7 @@ import io.ballerina.runtime.api.Module;
  * Constants used in the module-mongodb.
  */
 public class MongoDBConstants {
-    public static final Module BAL_PACKAGE = new Module("ballerinax", "mongodb", "2.0.6");
+    public static final Module BAL_PACKAGE = new Module("ballerinax", "mongodb", "2.0.7");
 
     /**
      * Constants related to `mongodb:DatabaseError`.
