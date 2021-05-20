@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.wso2.mongo;
+package org.ballerinalang.mongodb;
 
 import com.mongodb.client.MongoCursor;
 import io.ballerina.runtime.api.PredefinedTypes;

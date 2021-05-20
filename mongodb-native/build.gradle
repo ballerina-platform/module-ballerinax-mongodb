@@ -1,0 +1,27 @@
+plugins {
+    id 'java'
+    id "com.github.johnrengelman.shadow"
+}
+
+repositories {
+    mavenCentral()
+
+    maven {
+        url = 'https://maven.pkg.github.com/ballerina-platform/ballerina-lang'
+        credentials {
+            username System.getenv("packageUser")
+            password System.getenv("packagePAT")
+        }
+    }
+}
+
+dependencies {
+    implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.21'
+    compile group: 'org.ballerinalang', name: 'ballerina-lang', version: project.ballerinaLangVersion
+    compile (group: 'org.ballerinalang', name: 'ballerina-runtime', version: project.ballerinaLangVersion) {
+        transitive = false
+    }
+    compile group: 'org.mongodb', name: 'mongo-java-driver', version: '3.8.2'
+}
+
+build.dependsOn(shadowJar)

@@ -21,62 +21,62 @@ import ballerina/test;
 string jksFilePath = check file:getAbsolutePath("tests/resources/mongodb-client.jks");
 
 ClientConfig mongoConfigInvalid = {
-    host: testHostName,
-    username: testUser,
-    options: {
-        sslEnabled: true
-    }
+   host: testHostName,
+   username: testUser,
+   options: {
+       sslEnabled: true
+   }
 };
 
 ClientConfig sslMongoConfig = {
-    host: testHostName,
-    username: testUser,
-    options: {
-        socketTimeout: 10000,
-        authMechanism: "MONGODB-X509",
-        sslEnabled: true,
-        sslInvalidHostNameAllowed: true,
-        secureSocket: {
-            trustStore: {
-                path: jksFilePath,
-                password: "123456"
-            },
-            keyStore: {
-                path: jksFilePath,
-                password: "123456"
-            }
-        }
-    }
+   host: testHostName,
+   username: testUser,
+   options: {
+       socketTimeout: 10000,
+       authMechanism: "MONGODB-X509",
+       sslEnabled: true,
+       sslInvalidHostNameAllowed: true,
+       secureSocket: {
+           trustStore: {
+               path: jksFilePath,
+               password: "123456"
+           },
+           keyStore: {
+               path: jksFilePath,
+               password: "123456"
+           }
+       }
+   }
 };
 
 @test:Config {
-    groups: ["mongodb-ssl"]
+   groups: ["mongodb-ssl"]
 }
 public function initializeInValidConfig() {
-    log:printInfo("Start initialization test failure");
-    Client|Error mongoClient = new (mongoConfigInvalid);
-    if (mongoClient is ApplicationError) {
-        log:printInfo("Creating client failed '" + mongoClient.message() + "'.");
-    } else {
-        test:assertFail("Error expected when url is invalid.");
-    }
+   log:printInfo("Start initialization test failure");
+   Client|Error mongoClient = new (mongoConfigInvalid);
+   if (mongoClient is ApplicationError) {
+       log:printInfo("Creating client failed '" + mongoClient.message() + "'.");
+   } else {
+       test:assertFail("Error expected when url is invalid.");
+   }
 }
 
 @test:Config {
-    dependsOn: [ initializeInValidConfig ],
-    groups: ["mongodb-ssl"]
+   dependsOn: [ initializeInValidConfig ],
+   groups: ["mongodb-ssl"]
 }
 public function testSSLConnection() returns Error? {
 
-    log:printInfo("------------------ Inserting Data on SSL Connection ------------------");
-    map<json> insertDocument = {name: "The Lion King", year: "2019", rating: 8};
+   log:printInfo("------------------ Inserting Data on SSL Connection ------------------");
+   map<json> insertDocument = {name: "The Lion King", year: "2019", rating: 8};
 
-    Client mongoClient = check new (sslMongoConfig,"admin");
-    var returned = mongoClient->insert(insertDocument, "test");
-    if (returned is DatabaseError) {
-        log:printInfo(returned.toString());
-        test:assertFail("Inserting data failed!");
-    } else {
-        log:printInfo("Successfully inserted document into collection");
-    }
+   Client mongoClient = check new (sslMongoConfig,"admin");
+   var returned = mongoClient->insert(insertDocument, "test");
+   if (returned is DatabaseError) {
+       log:printInfo(returned.toString());
+       test:assertFail("Inserting data failed!");
+   } else {
+       log:printInfo("Successfully inserted document into collection");
+   }
 }

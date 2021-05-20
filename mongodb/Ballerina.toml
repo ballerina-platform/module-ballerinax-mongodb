@@ -1,15 +1,14 @@
 [package]
 org = "ballerinax"
 name = "mongodb"
-version = "2.0.7"
+version = "2.0.8-SNAPSHOT"
 license= ["Apache-2.0"]
 authors = ["Ballerina"]
 keywords = ["MongoDB", "NoSQL"]
 repository = "https://github.com/ballerina-platform/module-ballerinax-mongodb"
 
 [[platform.java11.dependency]]
-path = "../mongo-utils/target/mongo-utils-2.0.7.jar"
-groupId = "org.wso2.ei"
-artifactId = "mongo-utils"
-version = "2.0.7"
-
+path = "../mongodb-native/build/libs/mongodb-native-2.0.8-SNAPSHOT-all.jar"
+groupId = "org.ballerinalang"
+artifactId = "mongodb-native"
+version = "2.0.8-SNAPSHOT"

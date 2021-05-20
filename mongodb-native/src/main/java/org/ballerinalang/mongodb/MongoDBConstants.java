@@ -14,7 +14,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package org.wso2.mongo;
+package org.ballerinalang.mongodb;
 
 import io.ballerina.runtime.api.Module;
 
@@ -22,7 +22,7 @@ import io.ballerina.runtime.api.Module;
  * Constants used in the module-mongodb.
  */
 public class MongoDBConstants {
-    public static final Module BAL_PACKAGE = new Module("ballerinax", "mongodb", "2.0.7");
+    public static final Module BAL_PACKAGE = new Module("ballerinax", "mongodb", "2.0.8-SNAPSHOT");
 
     /**
      * Constants related to `mongodb:DatabaseError`.

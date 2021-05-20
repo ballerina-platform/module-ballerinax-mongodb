@@ -1,8 +1,9 @@
-name: Deployment
+name: Daily build
 
+# Controls when the action will run.
 on: 
-  release:
-    types: [published]
+  schedule:
+    - cron: '30 2 * * *'
 
 jobs:
     build:
@@ -18,13 +19,18 @@ jobs:
             image: rzhilkibaev/mongo-x509-auth-ssl:latest
         steps:
             - uses: actions/checkout@v2
+            
+            # Set up Java Environment
             - name: Set up JDK 11
               uses: actions/setup-java@v1
               with:
-                java-version: 11
+                java-version: 11 
+            
+            # Grant execute permission to the gradlew script
             - name: Grant execute permission for gradlew
               run: chmod +x gradlew
 
+            # Build the project with Gradle
             - name: Build with Gradle
               env:
                 packageUser: ${{ secrets.BALLERINA_BOT_USERNAME }}
@@ -32,8 +38,9 @@ jobs:
                 JAVA_OPTS: -DBALLERINA_DEV_COMPILE_BALLERINA_ORG=true
               run: |
                 ./gradlew build
+            
             - name: Ballerina Build W/ tests
-              uses: ballerina-platform/ballerina-action/@master
+              uses: ballerina-platform/ballerina-action/@nightly
               with:
                 args:
                   test --groups mongodb mongodb
@@ -43,8 +50,9 @@ jobs:
                 MONGODB_HOST: mongodb
                 MONGODB_USER: admin
                 MONGODB_PASSWORD: admin
+            
             - name: Ballerina Build W/ tests (SSL)
-              uses: ballerina-platform/ballerina-action/@master
+              uses: ballerina-platform/ballerina-action/@nightly
               with:
                 args:
                   test --groups mongodb-ssl
@@ -54,20 +62,24 @@ jobs:
                 WORKING_DIR: ./mongodb
                 MONGODB_HOST: mongodb-ssl
                 MONGODB_USER: C=US,ST=CA,L=San Francisco,O=Jaspersoft,OU=JSDev,CN=admin
+            
             - name: Ballerina Build W/O tests
-              uses: ballerina-platform/ballerina-action/@master
+              uses: ballerina-platform/ballerina-action/@nightly
               with:
                 args:
                   build --skip-tests -c mongodb
               env:
                 JAVA_HOME: /usr/lib/jvm/default-jvm
                 JAVA_OPTS: -DBALLERINA_DEV_COMPILE_BALLERINA_ORG=true
-            - name: Ballerina Push
-              uses: ballerina-platform/ballerina-action/@master
-              with:
-                  args:
-                      push
+            
+            # Publish Github Package
+            - name: Publish Github Package
               env:
-                  JAVA_HOME: /usr/lib/jvm/default-jvm
-                  WORKING_DIR: ./mongodb
-                  BALLERINA_CENTRAL_ACCESS_TOKEN: ${{ secrets.BALLERINA_CENTRAL_ACCESS_TOKEN }}
+                packageUser: ${{ secrets.BALLERINA_BOT_USERNAME }}
+                packagePAT: ${{ secrets.BALLERINA_BOT_TOKEN }}
+                publishUser: ${{ secrets.BALLERINA_BOT_USERNAME }}
+                publishPAT: ${{ secrets.CONNECTOR_PUBLISH_PAT }}
+                JAVA_OPTS: -DBALLERINA_DEV_COMPILE_BALLERINA_ORG=true
+              run: |
+                ./gradlew publish
+                
