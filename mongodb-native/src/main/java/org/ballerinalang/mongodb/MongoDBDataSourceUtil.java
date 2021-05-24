@@ -14,7 +14,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package org.wso2.mongo;
+package org.ballerinalang.mongodb;
 
 import com.mongodb.AuthenticationMechanism;
 import com.mongodb.MongoClient;
@@ -35,8 +35,8 @@ import io.ballerina.runtime.api.values.BValue;
 import io.ballerina.runtime.internal.values.HandleValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.wso2.mongo.exceptions.BallerinaErrorGenerator;
-import org.wso2.mongo.exceptions.MongoDBClientException;
+import org.ballerinalang.mongodb.exceptions.BallerinaErrorGenerator;
+import org.ballerinalang.mongodb.exceptions.MongoDBClientException;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;

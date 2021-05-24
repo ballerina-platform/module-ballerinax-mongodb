@@ -1,0 +1,2 @@
+rootProject.name = 'module-ballerinax-mongodb'
+include ':mongodb-native'

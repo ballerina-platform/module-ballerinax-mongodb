@@ -505,7 +505,7 @@ Execute the commands below to build the connector from the source after setting 
 
 Execute the following command from root directory
 ```shell script
-    mvn clean install
+    ./gradlew build
 ```
 
 2. To build the ballerina module only without the tests:
