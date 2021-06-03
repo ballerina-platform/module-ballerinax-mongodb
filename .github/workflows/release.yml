@@ -59,7 +59,7 @@ jobs:
                         </settings>' > ~/.m2/settings.xml
             - run: mvn clean install -pl mongo-utils
             - name: Ballerina Build W/ tests
-              uses: ballerina-platform/ballerina-action/@master
+              uses: ballerina-platform/ballerina-action/@slalpha5
               with:
                 args:
                   test --groups mongodb mongodb
@@ -70,7 +70,7 @@ jobs:
                 MONGODB_USER: admin
                 MONGODB_PASSWORD: admin
             - name: Ballerina Build W/ tests (SSL)
-              uses: ballerina-platform/ballerina-action/@master
+              uses: ballerina-platform/ballerina-action/@slalpha5
               with:
                 args:
                   test --groups mongodb-ssl
@@ -81,7 +81,7 @@ jobs:
                 MONGODB_HOST: mongodb-ssl
                 MONGODB_USER: C=US,ST=CA,L=San Francisco,O=Jaspersoft,OU=JSDev,CN=admin
             - name: Ballerina Build W/O tests
-              uses: ballerina-platform/ballerina-action/@master
+              uses: ballerina-platform/ballerina-action/@slalpha5
               with:
                 args:
                   build --skip-tests -c mongodb
@@ -89,7 +89,7 @@ jobs:
                 JAVA_HOME: /usr/lib/jvm/default-jvm
                 JAVA_OPTS: -DBALLERINA_DEV_COMPILE_BALLERINA_ORG=true
             - name: Ballerina Push
-              uses: ballerina-platform/ballerina-action/@master
+              uses: ballerina-platform/ballerina-action/@slalpha5
               with:
                   args:
                       push
