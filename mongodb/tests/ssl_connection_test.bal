@@ -29,24 +29,25 @@ ClientConfig mongoConfigInvalid = {
 };
 
 ClientConfig sslMongoConfig = {
-   host: testHostName,
-   username: testUser,
-   options: {
-       socketTimeout: 10000,
-       authMechanism: "MONGODB-X509",
-       sslEnabled: true,
-       sslInvalidHostNameAllowed: true,
-       secureSocket: {
-           trustStore: {
-               path: jksFilePath,
-               password: "123456"
-           },
-           keyStore: {
-               path: jksFilePath,
-               password: "123456"
-           }
-       }
-   }
+    host: testHostName,
+    username: testUser,
+    options: {
+        socketTimeout: 10000,
+        authMechanism: "MONGODB-X509",
+        sslEnabled: true,
+        sslInvalidHostNameAllowed: true,
+        secureSocket: {
+            trustStore: {
+                path: jksFilePath,
+                password: "123456"
+            },
+            keyStore: {
+                path: jksFilePath,
+                password: "123456"
+            },
+            protocol:"TLS"
+        }
+    }
 };
 
 @test:Config {

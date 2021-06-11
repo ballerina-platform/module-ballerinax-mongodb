@@ -30,9 +30,14 @@ public client class Client {
     # + databaseName - Database name to connect
     # + return - A `mongodb:Error` if there is any error in the provided configurations or database name
     public function init(ClientConfig config, string? databaseName = ()) returns Error? {
-        if (config.options.sslEnabled && config.options.secureSocket is ()) {
-            return error ApplicationError("The connection property `secureSocket` is mandatory " +
-                "when ssl is enabled for connection.");
+        var configOptions = config?.options;
+        if (configOptions is ConnectionProperties) {
+            if (configOptions?.sslEnabled is boolean) {
+                if (<boolean>configOptions?.sslEnabled && configOptions?.secureSocket is ()) {
+                    return error ApplicationError("The connection property `secureSocket` is mandatory " +
+                    "when ssl is enabled for connection.");
+                }
+            }
         }
         self.datasource = check initClient(config);
         if (databaseName is string){
@@ -303,11 +308,11 @@ function delete(handle collection, handle? filter, boolean isMultiple) returns i
 # + password - Password for the database connection
 # + options - Properties for the connection configuration
 public type ClientConfig record {|
-    string host = "127.0.0.1";
-    int port = 27017;
+    string host?;
+    int port?;
     string username?;
     string password?;
-    ConnectionProperties options = {};
+    ConnectionProperties options?;
 |};
 
 # MongoDB connection pool properties
@@ -338,29 +343,29 @@ public type ClientConfig record {|
 # + heartbeatFrequency - The heartbeat frequency (ms). This is the frequency that the driver will attempt to
 #                        determine the current state of each server in the cluster.
 public type ConnectionProperties record {|
-    string url = "";
-    string readConcern = "";
-    string writeConcern = "";
-    string readPreference = "";
-    string authSource = "admin";
-    string authMechanism = "";
-    string gssapiServiceName = "";
-    string replicaSet = "";
-    boolean sslEnabled = false;
-    boolean sslInvalidHostNameAllowed = false;
-    SecureSocket? secureSocket = ();
-    boolean retryWrites = false;
-    int socketTimeout = -1;
-    int connectionTimeout = -1;
-    int maxPoolSize = -1;
-    int serverSelectionTimeout = -1;
-    int maxIdleTime = -1;
-    int maxLifeTime = -1;
-    int minPoolSize = -1;
-    int waitQueueMultiple = -1;
-    int waitQueueTimeout = -1;
-    int localThreshold = -1;
-    int heartbeatFrequency = -1;
+    string url?;
+    string readConcern?;
+    string writeConcern?;
+    string readPreference?;
+    string authSource?;
+    string authMechanism?;
+    string gssapiServiceName?;
+    string replicaSet?;
+    boolean sslEnabled?;
+    boolean sslInvalidHostNameAllowed?;
+    SecureSocket? secureSocket?;
+    boolean retryWrites?;
+    int socketTimeout?;
+    int connectionTimeout?;
+    int maxPoolSize?;
+    int serverSelectionTimeout?;
+    int maxIdleTime?;
+    int maxLifeTime?;
+    int minPoolSize?;
+    int waitQueueMultiple?;
+    int waitQueueTimeout?;
+    int localThreshold?;
+    int heartbeatFrequency?;
 |};
 
 # Configurations related to facilitating secure connection.
@@ -371,5 +376,5 @@ public type ConnectionProperties record {|
 public type SecureSocket record {|
     crypto:TrustStore trustStore;
     crypto:KeyStore keyStore;
-    string protocol = "TLS";
+    string protocol;
 |};
