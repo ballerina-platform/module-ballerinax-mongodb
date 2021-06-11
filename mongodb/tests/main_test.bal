@@ -26,7 +26,7 @@ ClientConfig mongoConfig = {
     host: testHostName,
     username: testUser,
     password: testPass,
-    options: {sslEnabled: false, serverSelectionTimeout: 5000}
+    options: {sslEnabled: false, serverSelectionTimeout: 15000}
 };
 
 ClientConfig mongoConfigError = {
