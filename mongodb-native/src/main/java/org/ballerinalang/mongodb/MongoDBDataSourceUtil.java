@@ -60,23 +60,23 @@ import static io.ballerina.runtime.api.utils.StringUtils.fromString;
 public class MongoDBDataSourceUtil {
     private static final Logger log = LoggerFactory.getLogger(MongoDBDataSourceUtil.class);
 
+    private static final BString HOST = fromString("host");
+    private static final BString PORT = fromString("port");
+    private static final BString USERNAME = fromString("username");
+    private static final BString PASSWORD = fromString("password");
+    private static final BString OPTIONS = fromString("options");
+
     private MongoDBDataSourceUtil() {
     }
 
     public static Object initClient(BMap<BString, BValue> config) {
-        String host = config.containsKey(fromString("host")) ? config.getStringValue(fromString("host")).getValue() 
-                      : "";
-        long port = config.containsKey(fromString("port")) ? config.getIntValue(fromString("port")) : 0;
-        String username = "";
-        // Optional Fields
-        if (config.containsKey(fromString("username"))) {
-            username = config.getStringValue(fromString("username")).getValue();
-        }
-        String password = "";
-        if (config.containsKey(fromString("password"))) {
-            password = config.getStringValue(fromString("password")).getValue();
-        }
-        BMap options = config.containsKey(fromString("options")) ? config.getMapValue(fromString("options")) : null;
+        String host = config.containsKey(HOST) ? config.getStringValue(HOST).getValue() : "";
+        long port = config.containsKey(PORT) ? config.getIntValue(PORT) : 0;
+
+        String username = config.containsKey(USERNAME) ? config.getStringValue(USERNAME).getValue() : "";
+        String password = config.containsKey(PASSWORD) ? config.getStringValue(PASSWORD).getValue() : "";
+        
+        BMap options = config.containsKey(OPTIONS) ? config.getMapValue(OPTIONS) : null;
 
         try {
             return init(host, port, username, password, options);

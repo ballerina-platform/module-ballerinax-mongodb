@@ -14,7 +14,6 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import ballerina/crypto;
 import ballerina/jballerina.java;
 
 # Represents the MongoDB client.
@@ -29,7 +28,7 @@ public client class Client {
     # + config - `ClientConfig` properties
     # + databaseName - Database name to connect
     # + return - A `mongodb:Error` if there is any error in the provided configurations or database name
-    public function init(ClientConfig config, string? databaseName = ()) returns Error? {
+    public isolated function init(ClientConfig config, string? databaseName = ()) returns Error? {
         var configOptions = config?.options;
         if (configOptions is ConnectionProperties) {
             if (configOptions?.sslEnabled is boolean) {
@@ -50,7 +49,7 @@ public client class Client {
     #
     # + return - An array of database names on success or else a `mongodb:DatabaseError` if unable to reach the DB
     @display {label: "Get database names"}
-    remote function getDatabasesNames() returns @display {label: "Database names"} string[]|DatabaseError {
+    remote isolated function getDatabasesNames() returns @display {label: "Database names"} string[]|DatabaseError {
         return getDatabasesNames(self.datasource);
     }
 
@@ -59,7 +58,7 @@ public client class Client {
     # + databaseName - Name of the database
     # + return - A database handle on success or else a `mongodb:Error` if unable to reach the DB
     @display {label: "Get a database"}
-    function getDatabase(@display {label: "Database name"} string databaseName)
+    isolated function getDatabase(@display {label: "Database name"} string databaseName) 
                          returns @display {label: "Database"} handle|Error {
         if (databaseName.trim().length() == 0) {
             return error ApplicationError("Database Name cannot be empty.");
@@ -68,13 +67,13 @@ public client class Client {
         return database;
     }
 
-    //Collection management operations
+    //Collection management operations 
     # Lists the collection names in the MongoDB database.
     #
-    # + databaseName - Name of the database
+    # + databaseName - Name of the database 
     # + return - An array of collection names on success or else a `mongodb:Error` if unable to reach the DB
     @display {label: "Get collection names"}
-    remote function getCollectionNames(@display {label: "Database name"} string? databaseName = ())
+    remote isolated function getCollectionNames(@display {label: "Database name"} string? databaseName = ())
                                        returns @display {label: "List of collections"} string[]|Error {
         handle database = check self.getCurrentDatabase(databaseName);
         return getCollectionNames(database);
@@ -82,11 +81,11 @@ public client class Client {
 
     # Returns the collection handle.
     #
-    # + databaseName - Name of the database
+    # + databaseName - Name of the database 
     # + collectionName - Name of the collection
     # + return - A collection object on success or else a `mongodb:Error` if unable to reach the DB
     @display {label: "Get a collection"}
-    function getCollection(@display {label: "Collection name"} string collectionName,
+    isolated function getCollection(@display {label: "Collection name"} string collectionName,
                            @display {label: "Database name"} string? databaseName = ())
                            returns @display {label: "Collection"} handle|Error {
         if (collectionName.trim().length() == 0) {
@@ -105,7 +104,7 @@ public client class Client {
     # + filter - Filter for the count ($where & $near can be used)
     # + return - Count of the documents in the collection or else `mongodb:Error` if unable to reach the DB
     @display {label: "Get number of documents in the collection"}
-    remote function countDocuments(@display {label: "Collection name"} string collectionName,
+    remote isolated function countDocuments(@display {label: "Collection name"} string collectionName,
                                    @display {label: "Database name"} string? databaseName = (),
                                    @display {label: "Filter"} map<json>? filter = ())
                                    returns @display {label: "Number of documents"} int|Error {
@@ -123,7 +122,7 @@ public client class Client {
     # + collectionName - Name of the collection
     # + return - a JSON object with indices on success or else a `mongodb:Error` if unable to reach the DB
     @display {label: "List indices"}
-    remote function listIndices(@display {label: "Collection name"} string collectionName,
+    remote isolated function listIndices(@display {label: "Collection name"} string collectionName,
                                 @display {label: "Database name"} string? databaseName = ())
                                 returns @display {label: "List of indices"} map<json>[]|Error {
         handle collection = check self.getCollection(collectionName, databaseName);
@@ -138,7 +137,7 @@ public client class Client {
     # + document - Document to be inserted
     # + return - `()` on success or else a `mongodb:Error` if unable to reach the DB
     @display {label: "Insert a document"}
-    remote function insert(@display {label: "Document"} map<json> document,
+    remote isolated function insert(@display {label: "Document"} map<json> document,
                            @display {label: "Collection name"} string collectionName,
                            @display {label: "Database name"} string? databaseName = ()) returns Error? {
         handle collection = check self.getCollection(collectionName, databaseName);
@@ -155,7 +154,7 @@ public client class Client {
     # + limit - Limit options for the query results. No limit is applied for -1
     # + return - JSON array of the documents in the collection or else a `mongodb:Error` if unable to reach the DB
     @display {label: "Query collection for documents"}
-    remote function find(@display {label: "Collection name"} string collectionName,
+    remote isolated function find(@display {label: "Collection name"} string collectionName,
                          @display {label: "Database name"} string? databaseName = (),
                          @display {label: "Filter for the query"} map<json>? filter = (),
                          @display {label: "Sort options"} map<json>? sort = (),
@@ -187,7 +186,7 @@ public client class Client {
     # + upsert - Whether to insert if update cannot be achieved
     # + return - JSON array of the documents in the collection or else a `mongodb:Error` if unable to reach the DB
     @display {label: "Update a document"}
-    remote function update(@display {label: "Document for the update"} map<json> set,
+    remote isolated function update(@display {label: "Document for the update"} map<json> set,
                            @display {label: "Collection name"} string collectionName,
                            @display {label: "Database name"} string? databaseName = (),
                            @display {label: "Filter for the query"} map<json>? filter = (),
@@ -211,7 +210,7 @@ public client class Client {
     # + isMultiple - Delete multiple documents if the condition is matched
     # + return - The number of deleted documents or else a `mongodb:Error` if unable to reach the DB
     @display {label: "Delete a document"}
-    remote function delete(@display {label: "Collection name"} string collectionName,
+    remote isolated function delete(@display {label: "Collection name"} string collectionName,
                            @display {label: "Database name"} string? databaseName = (),
                            @display {label: "Filter"} map<json>? filter = (),
                            @display {label: "Is deleting multiple documents"} boolean isMultiple = false)
@@ -226,12 +225,12 @@ public client class Client {
 
     # Closes the client.
     @display {label: "Close the client"}
-    remote function close() {
+    remote isolated function close() {
         close(self.datasource);
     }
 
     @display {label: "Get current database"}
-    function getCurrentDatabase(@display {label: "Database name"} string? databaseName)
+    isolated function getCurrentDatabase(@display {label: "Database name"} string? databaseName)
                                 returns @display {label: "Database"} handle|Error {
         if (databaseName is string) {
             handle database = check self.getDatabase(databaseName);
@@ -246,135 +245,56 @@ public client class Client {
     }
 }
 
-function initClient(ClientConfig config) returns handle|ApplicationError = @java:Method {
+isolated function initClient(ClientConfig config) returns handle|ApplicationError = @java:Method {
     'class: "org.ballerinalang.mongodb.MongoDBDataSourceUtil"
 } external;
 
-function getDatabasesNames(handle datasource) returns string[]|DatabaseError = @java:Method {
+isolated function getDatabasesNames(handle datasource) returns string[]|DatabaseError = @java:Method {
     'class: "org.ballerinalang.mongodb.MongoDBDataSourceUtil"
 } external;
 
-function getDatabase(handle datasource, string databaseName) returns handle|Error = @java:Method {
+isolated function getDatabase(handle datasource, string databaseName) returns handle|Error = @java:Method {
     'class: "org.ballerinalang.mongodb.MongoDBDataSourceUtil"
 } external;
 
-function close(handle datasource) = @java:Method {
+isolated function close(handle datasource) = @java:Method {
     'class: "org.ballerinalang.mongodb.MongoDBDataSourceUtil"
 } external;
 
-//Database Client Java
+//Database Client Java 
 
-function getCollectionNames(handle database) returns string[]|DatabaseError = @java:Method {
+isolated function getCollectionNames(handle database) returns string[]|DatabaseError = @java:Method {
     'class: "org.ballerinalang.mongodb.MongoDBDatabaseUtil"
 } external;
 
-function getCollection(handle database, string collectionName) returns handle|DatabaseError = @java:Method {
+isolated function getCollection(handle database, string collectionName) returns handle|DatabaseError = @java:Method {
     'class: "org.ballerinalang.mongodb.MongoDBDatabaseUtil"
 } external;
 
 // Collection Client Java
-function countDocuments(handle collection, handle? filter) returns int|DatabaseError = @java:Method {
+isolated function countDocuments(handle collection, handle? filter) returns int|DatabaseError = @java:Method {
     'class: "org.ballerinalang.mongodb.MongoDBCollectionUtil"
 } external;
 
-function listIndices(handle collection) returns map<json>[]|DatabaseError = @java:Method {
+isolated function listIndices(handle collection) returns map<json>[]|DatabaseError = @java:Method {
     'class: "org.ballerinalang.mongodb.MongoDBCollectionUtil"
 } external;
 
-function insert(handle collection, handle document) returns DatabaseError? = @java:Method {
+isolated function insert(handle collection, handle document) returns DatabaseError? = @java:Method {
     'class: "org.ballerinalang.mongodb.MongoDBCollectionUtil"
 } external;
 
-function find(handle collection, handle? filter, handle? sort, int 'limit)
+isolated function find(handle collection, handle? filter, handle? sort, int 'limit)
               returns map<json>[]|DatabaseError = @java:Method {
     'class: "org.ballerinalang.mongodb.MongoDBCollectionUtil"
 } external;
 
-function update(handle collection, handle update, handle? filter, boolean isMultiple, boolean upsert)
+isolated function update(handle collection, handle update, handle? filter, boolean isMultiple, boolean upsert)
                 returns int|DatabaseError = @java:Method {
     'class: "org.ballerinalang.mongodb.MongoDBCollectionUtil"
 } external;
 
 
-function delete(handle collection, handle? filter, boolean isMultiple) returns int|DatabaseError = @java:Method {
+isolated function delete(handle collection, handle? filter, boolean isMultiple) returns int|DatabaseError = @java:Method {
     'class: "org.ballerinalang.mongodb.MongoDBCollectionUtil"
 } external;
-
-# The Client configurations for MongoDB.
-#
-# + host - The database's host address
-# + port - The port on which the database is running
-# + username - Username for the database connection
-# + password - Password for the database connection
-# + options - Properties for the connection configuration
-public type ClientConfig record {|
-    string host?;
-    int port?;
-    string username?;
-    string password?;
-    ConnectionProperties options?;
-|};
-
-# MongoDB connection pool properties
-#
-# + url - MongoDB URL for connecting to replicas
-# + readConcern - The read concern to use
-# + writeConcern - The write concern to use. The default value is `WriteConcern.ACKNOWLEDGED`
-# + readPreference - The read preference for the replica set
-# + authSource - The source in which the user is defined
-# + authMechanism - Authentication mechanism to use.
-#                   Possible values are PLAIN, SCRAM_SHA_1, SCRAM_SHA_256, MONGODB-X509, or GSSAPI
-# + gssapiServiceName - Authentications GSSAPI Service name
-# + replicaSet - The replica set name if it is to connect to replicas
-# + sslEnabled - Whether SSL connection is enabled
-# + sslInvalidHostNameAllowed - Whether invalid host names should be allowed
-# + secureSocket - Configurations related to facilitating secure connection
-# + retryWrites - Whether to retry writing failures
-# + maxPoolSize - Maximum connection pool size
-# + minPoolSize - Minimum connection pool size
-# + socketTimeout - The socket timeout in milliseconds
-# + connectionTimeout - The connection timeout in milliseconds
-# + serverSelectionTimeout - The server selection timeout in milliseconds
-# + maxIdleTime - The maximum idle time for a pooled connection in milliseconds
-# + maxLifeTime - The maximum life time for a pooled connection in milliseconds
-# + waitQueueMultiple - The multiplier for the number of threads allowed to block waiting for a connection
-# + waitQueueTimeout - The maximum time that a thread will block waiting for a connection in milliseconds
-# + localThreshold - The local threshold latency in milliseconds
-# + heartbeatFrequency - The heartbeat frequency (ms). This is the frequency that the driver will attempt to
-#                        determine the current state of each server in the cluster.
-public type ConnectionProperties record {|
-    string url?;
-    string readConcern?;
-    string writeConcern?;
-    string readPreference?;
-    string authSource?;
-    string authMechanism?;
-    string gssapiServiceName?;
-    string replicaSet?;
-    boolean sslEnabled?;
-    boolean sslInvalidHostNameAllowed?;
-    SecureSocket? secureSocket?;
-    boolean retryWrites?;
-    int socketTimeout?;
-    int connectionTimeout?;
-    int maxPoolSize?;
-    int serverSelectionTimeout?;
-    int maxIdleTime?;
-    int maxLifeTime?;
-    int minPoolSize?;
-    int waitQueueMultiple?;
-    int waitQueueTimeout?;
-    int localThreshold?;
-    int heartbeatFrequency?;
-|};
-
-# Configurations related to facilitating secure connection.
-#
-# + trustStore - Configurations associated with the TrustStore
-# + keyStore - Configurations associated with the KeyStore
-# + protocol - The standard name of the requested protocol
-public type SecureSocket record {|
-    crypto:TrustStore trustStore;
-    crypto:KeyStore keyStore;
-    string protocol;
-|};
