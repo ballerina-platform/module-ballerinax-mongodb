@@ -23,11 +23,17 @@ import ballerina/crypto;
 # + username - Username for the database connection
 # + password - Password for the database connection
 # + options - Properties for the connection configuration
+@display {label: "Client Config"}
 public type ClientConfig record {|
+    @display {label: "Host"}
     string host?;
+    @display {label: "Port"}
     int port?;
+    @display {label: "Username"}
     string username?;
+    @display {label: "Password"}
     string password?;
+    @display {label: "Connection Options"}
     ConnectionProperties options?;
 |};
 
@@ -58,29 +64,53 @@ public type ClientConfig record {|
 # + localThreshold - The local threshold latency in milliseconds
 # + heartbeatFrequency - The heartbeat frequency (ms). This is the frequency that the driver will attempt to 
 #                        determine the current state of each server in the cluster.
+@display {label: "Connection Properties"}
 public type ConnectionProperties record {|
+    @display {label: "URL"}
     string url?;
+    @display {label: "Read Concern"}
     string readConcern?;
+    @display {label: "Write Concern"}
     string writeConcern?;
+    @display {label: "Read Preference"}
     string readPreference?;
+    @display {label: "Auth Source"}
     string authSource?;
+    @display {label: "Auth Mechanism"}
     string authMechanism?;
+    @display {label: "GSS API Service Name"}
     string gssapiServiceName?;
+    @display {label: "Replica Set"}
     string replicaSet?;
+    @display {label: "SSL Enabled"}
     boolean sslEnabled?;
+    @display {label: "SSL Invalid Host Name Allowed"}
     boolean sslInvalidHostNameAllowed?;
+    @display {label: "Secure Socket"}
     SecureSocket? secureSocket?;
+    @display {label: "Retry Writes"}
     boolean retryWrites?;
+    @display {label: "Socket Timeout"}
     int socketTimeout?;
+    @display {label: "Connection Timeout"}
     int connectionTimeout?;
+    @display {label: "Maximum Pool Size"}
     int maxPoolSize?;
+    @display {label: "Server Selection Timeout"}
     int serverSelectionTimeout?;
+    @display {label: "Maximum Idle Time"}
     int maxIdleTime?;
+    @display {label: "Maximum Life Time"}
     int maxLifeTime?;
+    @display {label: "Minimum Pool Size"}
     int minPoolSize?;
+    @display {label: "Wait Queue Multiple"}
     int waitQueueMultiple?;
+    @display {label: "Wait Queue Timeout"}
     int waitQueueTimeout?;
+    @display {label: "Local Threshold"}
     int localThreshold?;
+    @display {label: "Heartbeat Frequency"}
     int heartbeatFrequency?;
 |};
 
@@ -89,8 +119,12 @@ public type ConnectionProperties record {|
 # + trustStore - Configurations associated with the TrustStore
 # + keyStore - Configurations associated with the KeyStore
 # + protocol - The standard name of the requested protocol
+@display {label: "Secure Socket"}
 public type SecureSocket record {|
+    @display {label: "Trust Store"}
     crypto:TrustStore trustStore;
+    @display {label: "Key Store"}
     crypto:KeyStore keyStore;
+    @display {label: "Protocol"}
     string protocol;
 |};
