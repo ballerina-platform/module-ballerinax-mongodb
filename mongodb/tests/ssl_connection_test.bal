@@ -44,7 +44,8 @@ ClientConfig sslMongoConfig = {
             keyStore: {
                 path: jksFilePath,
                 password: "123456"
-            }
+            },
+            protocol:"TLS"
         }
     }
 };
