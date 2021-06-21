@@ -138,7 +138,20 @@ public client class Client {
 
     # Inserts one document.
     # 
-    # + document - Document to be inserted
+    # ```ballerina
+    #   mongodb:ClientConfig mongoConfig = {
+    #       host: host,
+    #       port: port,
+    #       username: username,
+    #       password: password,
+    #       options: {sslEnabled: false, serverSelectionTimeout: 5000}
+    #   };
+    #   mongodb:Client mongoClient = checkpanic new (mongoConfig, database);
+    #   map<json> document = { "name": "Gmail", "version": "0.99.1", "type" : "Service" };
+    #   checkpanic  mongoClient->insert(doc, collection);
+    # ```
+    # 
+    # + document - Document to be inserted as a JSON map
     # + collectionName - Name of the collection
     # + databaseName - Name of the database 
     # + return - `()` on success or else a `mongodb:Error` if unable to reach the DB
@@ -197,7 +210,7 @@ public client class Client {
                                     @display {label: "Database Name"} string? databaseName = (),
                                     @display {label: "Filter for Query"} map<json>? filter = (), 
                                     @display {label: "Is Multiple Documents"} boolean isMultiple = false,
-                                    @display {label: "Upsert"} boolean upsert = false) 
+                                    @display {label: "Is Upsert"} boolean upsert = false) 
                                     returns @display {label: "Number of Updated Documents"} int|Error {
         handle collection = check self.getCollection(collectionName, databaseName);
         string updateDoc = set.toJsonString();
