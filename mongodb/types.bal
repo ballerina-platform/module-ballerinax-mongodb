@@ -16,7 +16,7 @@
 
 import ballerina/crypto;
 
-# The Client configurations for MongoDB.
+# Represents the Client configurations for MongoDB.
 #
 # + host - The database's host address
 # + port - The port on which the database is running
@@ -37,7 +37,7 @@ public type ClientConfig record {|
     ConnectionProperties options?;
 |};
 
-# MongoDB connection pool properties
+# Represents the MongoDB connection pool properties
 # 
 # + url - MongoDB URL for connecting to replicas
 # + readConcern - The read concern to use
@@ -114,7 +114,7 @@ public type ConnectionProperties record {|
     int heartbeatFrequency?;
 |};
 
-# Configurations related to facilitating secure connection.
+# Represents the configurations related to facilitating secure connection.
 #
 # + trustStore - Configurations associated with the TrustStore
 # + keyStore - Configurations associated with the KeyStore
