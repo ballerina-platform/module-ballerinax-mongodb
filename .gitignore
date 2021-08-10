@@ -33,7 +33,9 @@ target
 *.iml
 *.ipr
 *.iws
-
+.gradle
+*/build
+build
 
 mongo-utils/dependency-reduced-pom.xml
 /mongodb/resources

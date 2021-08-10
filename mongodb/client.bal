@@ -16,12 +16,16 @@
 
 import ballerina/jballerina.java;
 
-# Represents the MongoDB client.
-@display {label: "MongoDB Client", iconPath: "MongoDBLogo.png"}
-public client class Client {
+# Ballerina MongoDB connector provides the capability to perform the MongoDB CRUD operations.
+# The connector let you to interact with MongoDB from Ballerina.
+#
+# + datasource - The datasource handle
+# + database   - Name of the database
+@display {label: "MongoDB", iconPath: "logo.png"}
+public isolated client class Client {
 
-    handle datasource;
-    handle database = java:createNull();
+    private final handle datasource;
+    private final string database;
 
     # Initialises the `Client` object with the provided `ClientConfig` properties.
     # 
@@ -35,19 +39,18 @@ public client class Client {
     # + return - A `mongodb:Error` if there is any error in the provided configurations or database name
     public isolated function init(ClientConfig config, @display {label: "Database Name"} string? databaseName = ())
                                   returns Error? {
-        var configOptions = config?.options;
+        final ConnectionProperties? configOptions = config?.options;
         if (configOptions is ConnectionProperties) {
-            if (configOptions?.sslEnabled is boolean) {
-                if (<boolean>configOptions?.sslEnabled && configOptions?.secureSocket is ()) {
+            final boolean? sslEnabled = configOptions?.sslEnabled;
+            if (sslEnabled is boolean) {
+                if (sslEnabled && configOptions?.secureSocket is ()) {
                     return error ApplicationError("The connection property `secureSocket` is mandatory " +
                     "when ssl is enabled for connection.");
                 }
             }
         }
         self.datasource = check initClient(config);
-        if (databaseName is string){
-            self.database = check self.getDatabase(databaseName);            
-        }
+        self.database = databaseName is string ? databaseName : "";
     }
 
     //Database management operations
@@ -63,9 +66,7 @@ public client class Client {
     # 
     # + databaseName - Name of the database
     # + return - A database handle on success or else a `mongodb:Error` if unable to reach the DB
-    @display {label: "Get Database"}
-    isolated function getDatabase(@display {label: "Database Name"} string databaseName) 
-                         returns @display {label: "Database"} handle|Error {
+    isolated function getDatabase(string databaseName) returns handle|Error {
         if (databaseName.trim().length() == 0) {
             return error ApplicationError("Database Name cannot be empty.");
         }
@@ -90,10 +91,7 @@ public client class Client {
     # + collectionName - Name of the collection
     # + databaseName - Name of the database 
     # + return - A collection object on success or else a `mongodb:Error` if unable to reach the DB
-    @display {label: "Get Collection"}
-    isolated function getCollection(@display {label: "Collection Name"} string collectionName, 
-                           @display {label: "Database Name"} string? databaseName = ()) 
-                           returns @display {label: "Collection"} handle|Error {
+    isolated function getCollection(string collectionName, string? databaseName = ()) returns handle|Error {
         if (collectionName.trim().length() == 0) {
             return error ApplicationError("Collection Name cannot be empty.");
         }
@@ -126,7 +124,7 @@ public client class Client {
     #
     # + collectionName - Name of the collection
     # + databaseName - Name of the database 
-    # + return - a JSON object with indices on success or else a `mongodb:Error` if unable to reach the DB
+    # + return - A JSON object with indices on success or else a `mongodb:Error` if unable to reach the DB
     @display {label: "List Indices"}
     remote isolated function listIndices(@display {label: "Collection Name"} string collectionName, 
                                 @display {label: "Database Name"} string? databaseName = ()) 
@@ -136,20 +134,7 @@ public client class Client {
     }
 
 
-    # Inserts one document.
-    # 
-    # ```ballerina
-    #   mongodb:ClientConfig mongoConfig = {
-    #       host: host,
-    #       port: port,
-    #       username: username,
-    #       password: password,
-    #       options: {sslEnabled: false, serverSelectionTimeout: 5000}
-    #   };
-    #   mongodb:Client mongoClient = checkpanic new (mongoConfig, database);
-    #   map<json> document = { "name": "Gmail", "version": "0.99.1", "type" : "Service" };
-    #   checkpanic  mongoClient->insert(doc, collection);
-    # ```
+    # Inserts a document.
     # 
     # + document - Document to be inserted as a JSON map
     # + collectionName - Name of the collection
@@ -164,13 +149,13 @@ public client class Client {
         return insert(collection, java:fromString(documentStr));
     }
 
-    # The queries collection for documents, which sorts and limits the returned results.
+    # Queries collection for documents, which sorts and limits the returned results.
     #
     # + collectionName - Name of the collection
     # + databaseName - Name of the database 
     # + filter - Filter for the query
     # + sort - Sort options for the query
-    # + limit - Limit options for the query results. No limit is applied for -1
+    # + limit - Limit options for the query results. No limit is applied for -1.
     # + return - JSON array of the documents in the collection or else a `mongodb:Error` if unable to reach the DB
     @display {label: "Query for Documents"}
     remote isolated function find(@display {label: "Collection Name"} string collectionName, 
@@ -248,15 +233,17 @@ public client class Client {
         close(self.datasource);
     }
 
-    @display {label: "Get Current Database"}
-    isolated function getCurrentDatabase(@display {label: "Database Name"} string? databaseName) 
-                                returns @display {label: "Database"} handle|Error {
+    # Returns the `Current Database` handle.
+    # 
+    # + databaseName - Name of the database
+    # + return - A database handle on success or else a `mongodb:Error` if unable to get the DB
+    isolated function getCurrentDatabase(string? databaseName) returns handle|Error {
         if (databaseName is string) {
             handle database = check self.getDatabase(databaseName);
             return database;
         } else {
-            if (!java:isNull(self.database)) {
-                return self.database;
+            if (self.database !== "") {
+                return check self.getDatabase(self.database);
             } else {
                 return error ApplicationError("No database is set. Set a database.");
             }

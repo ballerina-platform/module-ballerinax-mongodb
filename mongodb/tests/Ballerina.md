@@ -1,10 +1,10 @@
 # Compatibility
 
 | Ballerina Language Version  | MongoDB Version |
-| ----------------------------| -------------------------------|
-|  Swan Lake Alpha 5          |   4.2.0                        |
+| ----------------------------| ----------------|
+|  Swan Lake Beta2            |   4.2.0         |
 
-## Running Tests using Docker Image of MongoDB
+## Running tests using Docker image of MongoDB
 
 1. [Install Docker on your machine.](https://docs.docker.com/get-docker/)
 

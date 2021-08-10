@@ -1,155 +1,57 @@
-# Ballerina MongoDB Module
+## Overview
+MongoDB is a document database designed to cater to modern application requirements. It is a scalable and a flexible solution that inherently supports distributed system design. Ballerina MongoDB Connector allows you to perform the MongoDB CRUD operations.
 
-Connects to MongoDB from ballerina 
-
-## Module Overview
-
-The Mongo DB connector allows you to connect to a Mongo DB from Ballerina and perform various operations such as `getDatabaseNames`, `getCollectionNames`, `count`, `listIndices`, `find`, `insert`, `update`, and `delete`.
+This module supports [MongoDB version 4.2](https://docs.mongodb.com/v4.2/).
 
 ## Prerequisites
 
-* A mongodb with username and password
+Before using this connector in your Ballerina application, complete the following:
 
-* Java 11 Installed <br/> Java Development Kit (JDK) with version 11 is required.
+1. Make sure a MongoDB is available to connect.
 
-* Ballerina SLAlpha5 Installed <br/> Ballerina Swan Lake Alpha 5 is required.
+2. Obtain connection details such as connection URL or hostname, port number, username, and password to connect the database.
 
-## Compatibility
+## Quickstart
 
-|                             |       Version               |
-|:---------------------------:|:---------------------------:|
-| Ballerina Language          | Swan Lake Alpha 5           |
-| Mongo DB                    | V4.2.0                      |
+To use the `MongoDB` connector in your Ballerina application, update the .bal file as follows:
 
-
-## Quickstart(s)
-
-## Insert a document
-
-### Step 1: Import the Mongo DB module
-First, import the `ballerinax/mongodb` module into the Ballerina project.
+### Step 1: Import connector
+Import the `ballerinax/mongodb` module into the Ballerina project.
 ```ballerina
 import ballerinax/mongodb;
 ```
-### Step 2: Set up configurable values
-You can add required variables as configurable values in the ballerina file and can add those values in `Config.toml` file. 
-1. In Ballerina file 
-```ballerina
-configurable string host = ?;
-configurable int port = ?;
-configurable string username = ?;
-configurable string password = ?;
-configurable string database = ?;
-configurable string collection = ?;
-```
-2. In Config.toml
 
-```
-host = "<YOUR_HOST_NAME>""
-port = <PORT>
-username = "<DB_USERNAME>"
-password = "<DB_PASSWORD>"
+### Step 2: Create a new connector instance
+Create a `mongodb:ClientConfig` with connection details obtained, and initialize the connector with it.
 
-database = "<DATABASE_NAME>"
-collection = "<COLLECTION_NAME>"
-```
+To use the MongoDB client you need to specify the database it needs to connect to. If you plan to use this client to connect to single database then you can pass the database name along with the other configurations required for client initialization(optional). Alternatively, you can pass the database name for each remote method call. This is not recommended unless you need to connect to more than one database using the client.
 
-### Step 3: Initialize the Mongodb Client giving necessary credentials
-
-You can now enter the credentials in the mongo client config. If you use this client for a particular database then you can pass the database name along with config during client initialization(It is optional). Otherwise you can pass the database name for each remote method call. This is not recommended unless you need to connect more than one database using a client. You need to set the database using atleast one of these methods.
 ```ballerina
 mongodb:ClientConfig mongoConfig = {
-        host: host,
-        port: port,
-        username: username,
-        password: password,
-        options: {sslEnabled: false, serverSelectionTimeout: 5000}
-    };
-
-    mongodb:Client mongoClient = checkpanic new (mongoConfig, database);
-```
-### Step 4: Insert the document
-You can invoke the remote method `insert` to insert the document.
-```ballerina
-map<json> doc = { "name": "Gmail", "version": "0.99.1", "type" : "Service" };
-
-    checkpanic  mongoClient->insert(doc, collection);
-```
-### Step 5: Close the db client connection. 
-
-```ballerina
-mongoClient->close();
+    host: <YOUR_HOST_NAME>,
+    port: <PORT>,
+    username: <DB_USERNAME>,
+    password: <DB_PASSWORD>,
+    options: {sslEnabled: false, serverSelectionTimeout: 5000}
+};
+string database = <DATABASE_NAME>
+mongodb:Client mongoClient = check new (mongoConfig, database);
 ```
 
-## Sample
+### Step 3: Invoke connector operation
+1. Now you can use the operations available within the connector. Note that they are in the form of remote operations.  
+Following is an example on how to insert a document into a collection using the connector.
+    ```ballerina
+    public function main() returns error? {
+        
+        string collection = "<COLLECTION_NAME>"
+        map<json> doc = { "name": "Gmail", "version": "0.99.1", "type" : "Service" };
 
-You can find samples here : https://github.com/ballerina-platform/module-ballerinax-mongodb/blob/master/mongodb/samples/
+        check mongoClient->insert(doc, collection);
 
-### All operations in a single sample
-
-First, import the `ballerinax/mongodb` module into the Ballerina project.
-
-```ballerina
-import ballerina/log;
-import ballerinax/mongodb;
-
-public function main() {
-
-    mongodb:ClientConfig mongoConfig = {
-        host: "localhost",
-        port: 27017,
-        username: "admin",
-        password: "admin",
-        options: {sslEnabled: false, serverSelectionTimeout: 5000}
-    };
-
-    mongodb:Client mongoClient = checkpanic new (mongoConfig, "Ballerina");
-
-    map<json> doc1 = { "name": "ballerina", "type": "src" };
-    map<json> doc2 = { "name": "connectors", "type": "artifacts" };
-    map<json> doc3 = { "name": "docerina", "type": "src" };
-    map<json> doc4 = { "name": "test", "type": "artifacts" };
-
-    log:printInfo("------------------ Inserting Data -------------------");
-    checkpanic mongoClient->insert(doc1,"projects");
-    checkpanic mongoClient->insert(doc2,"projects");
-    checkpanic mongoClient->insert(doc3,"projects");
-    checkpanic mongoClient->insert(doc4,"projects");
-  
-    log:printInfo("------------------ Counting Data -------------------");
-    int count = checkpanic mongoClient->countDocuments("projects",());
-    log:printInfo("Count of the documents '" + count.toString() + "'.");
-
-
-    log:printInfo("------------------ Querying Data -------------------");
-    map<json>[] jsonRet = checkpanic mongoClient->find("projects",(),());
-    log:printInfo("Returned documents '" + jsonRet.toString() + "'.");
-
-    map<json> queryString = {"name": "connectors" };
-    jsonRet = checkpanic mongoClient->find("projects", (), queryString);
-    log:printInfo("Returned Filtered documents '" + jsonRet.toString() + "'.");
-
-
-    log:printInfo("------------------ Updating Data -------------------");
-    map<json> replaceFilter = { "type": "artifacts" };
-    map<json> replaceDoc = { "name": "main", "type": "artifacts" };
-
-    int response = checkpanic mongoClient->update(replaceDoc,"projects", (), replaceFilter, true);
-    if (response > 0 ) {
-        log:printInfo("Modified count: '" + response.toString() + "'.") ;
-    } else {
-        log:printInfo("Error in replacing data");
+        mongoClient->close();
     }
+    ```
+2. Use `bal run` command to compile and run the Ballerina program.
 
-   log:printInfo("------------------ Deleting Data -------------------");
-   map<json> deleteFilter = { "name": "ballerina" };
-   int deleteRet = checkpanic mongoClient->delete("projects", (), deleteFilter, true);
-   if (deleteRet > 0 ) {
-       log:printInfo("Delete count: '" + deleteRet.toString() + "'.") ;
-   } else {
-       log:printInfo("Error in deleting data");
-   }
-
-     mongoClient->close();
-}
-```
+**[You can find a list of samples here](https://github.com/ballerina-platform/module-ballerinax-mongodb/blob/master/mongodb/samples/)**
