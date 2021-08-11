@@ -21,7 +21,7 @@ For more information, go to the module(s).
     > **Note:** Set the JAVA_HOME environment variable to the path name of the directory into which you installed
     JDK.
  
-2. Download and install [Ballerina Swan Lake Beta2](https://ballerina.io/)
+2. Download and install [Ballerina Swan Lake Beta3](https://ballerina.io/)
 
 3. Download and install Gradle.
 
