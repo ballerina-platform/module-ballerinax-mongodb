@@ -21,7 +21,7 @@ import ballerina/jballerina.java;
 #
 # + datasource - The datasource handle
 # + database   - Name of the database
-@display {label: "MongoDB", iconPath: "logo.png"}
+@display {label: "MongoDB", iconPath: "resources/mongodb.svg"}
 public isolated client class Client {
 
     private final handle datasource;
