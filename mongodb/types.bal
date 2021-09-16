@@ -23,8 +23,8 @@ import ballerina/crypto;
 # + username - Username for the database connection
 # + password - Password for the database connection
 # + options - Properties for the connection configuration
-@display {label: "Client Config"}
-public type ClientConfig record {|
+@display {label: "Connection Config"}
+public type ConnectionConfig record {|
     @display {label: "Host"}
     string host?;
     @display {label: "Port"}

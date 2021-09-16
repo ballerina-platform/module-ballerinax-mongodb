@@ -27,9 +27,9 @@ public isolated client class Client {
     private final handle datasource;
     private final string database;
 
-    # Initialises the `Client` object with the provided `ClientConfig` properties.
+    # Initialises the `Client` object with the provided `ConnectionConfig` properties.
     # 
-    # + config - `ClientConfig` properties. Even though all fields are optional, in order to authenticate the database, 
+    # + config - `ConnectionConfig` properties. Even though all fields are optional, in order to authenticate the database, 
     #             relavent fields should be given in config record. Following are some examples :
     #             (1) Username, Password
     #             (2) URL - Connection URL
@@ -37,7 +37,7 @@ public isolated client class Client {
     #             
     # + databaseName - Database name to connect
     # + return - A `mongodb:Error` if there is any error in the provided configurations or database name
-    public isolated function init(ClientConfig config, @display {label: "Database Name"} string? databaseName = ())
+    public isolated function init(ConnectionConfig config, @display {label: "Database Name"} string? databaseName = ())
                                   returns Error? {
         final ConnectionProperties? configOptions = config?.options;
         if (configOptions is ConnectionProperties) {
@@ -251,7 +251,7 @@ public isolated client class Client {
     }
 }
 
-isolated function initClient(ClientConfig config) returns handle|ApplicationError = @java:Method {
+isolated function initClient(ConnectionConfig config) returns handle|ApplicationError = @java:Method {
     'class: "org.ballerinalang.mongodb.MongoDBDataSourceUtil"
 } external;
 

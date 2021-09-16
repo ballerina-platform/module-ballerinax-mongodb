@@ -22,14 +22,14 @@ string testHostName = os:getEnv("MONGODB_HOST") != "" ? os:getEnv("MONGODB_HOST"
 string testUser = os:getEnv("MONGODB_USER") != "" ? os:getEnv("MONGODB_USER") : "";
 string testPass = os:getEnv("MONGODB_PASSWORD") != "" ? os:getEnv("MONGODB_PASSWORD") : "";
 
-ClientConfig mongoConfig = {
+ConnectionConfig mongoConfig = {
     host: testHostName,
     username: testUser,
     password: testPass,
     options: {sslEnabled: false, serverSelectionTimeout: 15000}
 };
 
-ClientConfig mongoConfigError = {
+ConnectionConfig mongoConfigError = {
     options: {
         url: "asdakjdk"
     }

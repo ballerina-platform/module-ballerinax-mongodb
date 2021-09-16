@@ -22,12 +22,12 @@ import ballerinax/mongodb;
 ```
 
 ### Step 2: Create a new connector instance
-Create a `mongodb:ClientConfig` with connection details obtained, and initialize the connector with it.
+Create a `mongodb:ConnectionConfig` with connection details obtained, and initialize the connector with it.
 
 To use the MongoDB client you need to specify the database it needs to connect to. If you plan to use this client to connect to single database then you can pass the database name along with the other configurations required for client initialization(optional). Alternatively, you can pass the database name for each remote method call. This is not recommended unless you need to connect to more than one database using the client.
 
 ```ballerina
-mongodb:ClientConfig mongoConfig = {
+mongodb:ConnectionConfig mongoConfig = {
     host: <YOUR_HOST_NAME>,
     port: <PORT>,
     username: <DB_USERNAME>,

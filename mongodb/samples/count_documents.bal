@@ -10,7 +10,7 @@ configurable string collection = ?;
 
 public function main() {
     
-    mongodb:ClientConfig mongoConfig = {
+    mongodb:ConnectionConfig mongoConfig = {
         host: host,
         port: port,
         username: username,

@@ -20,7 +20,7 @@ import ballerina/test;
 
 string jksFilePath = check file:getAbsolutePath("tests/resources/mongodb-client.jks");
 
-ClientConfig mongoConfigInvalid = {
+ConnectionConfig mongoConfigInvalid = {
    host: testHostName,
    username: testUser,
    options: {
@@ -28,7 +28,7 @@ ClientConfig mongoConfigInvalid = {
    }
 };
 
-ClientConfig sslMongoConfig = {
+ConnectionConfig sslMongoConfig = {
     host: testHostName,
     username: testUser,
     options: {
