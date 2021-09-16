@@ -4,7 +4,7 @@ name = "mongodb"
 version = "2.0.8-SNAPSHOT"
 license= ["Apache-2.0"]
 authors = ["Ballerina"]
-keywords = ["MongoDB", "NoSQL"]
+keywords = ["dev tools/databases", "cost/freemium"]
 repository = "https://github.com/ballerina-platform/module-ballerinax-mongodb"
 
 [[platform.java11.dependency]]

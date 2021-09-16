@@ -38,6 +38,6 @@ target
 build
 
 mongo-utils/dependency-reduced-pom.xml
-/mongodb/resources
+/mongodb/resources/*.json
 
 Ballerina.lock
