@@ -71,15 +71,17 @@ jobs:
               env:
                 JAVA_HOME: /usr/lib/jvm/default-jvm
                 JAVA_OPTS: -DBALLERINA_DEV_COMPILE_BALLERINA_ORG=true
-            
-            # Publish Github Package
-            - name: Publish Github Package
-              env:
-                packageUser: ${{ secrets.BALLERINA_BOT_USERNAME }}
-                packagePAT: ${{ secrets.BALLERINA_BOT_TOKEN }}
-                publishUser: ${{ secrets.BALLERINA_BOT_USERNAME }}
-                publishPAT: ${{ secrets.CONNECTOR_PUBLISH_PAT }}
-                JAVA_OPTS: -DBALLERINA_DEV_COMPILE_BALLERINA_ORG=true
+
+            # Send notification when build fails
+            - name: Notify failure
+              if: ${{ failure() }}
               run: |
-                ./gradlew publish
-                
+                curl \
+                -X POST 'https://chat.googleapis.com/v1/spaces/${{secrets.BALLERINA_CHAT_ID}}/messages?key=${{secrets.BALLERINA_CHAT_KEY}}&token=${{secrets.BALLERINA_CHAT_TOKEN}}' \
+                --header 'Content-Type: application/json' \
+                -d '{"text": "*module-ballerinax-mongodb* daily build failure \nPlease visit <https://github.com/ballerina-platform/module-ballerinax-mongodb/actions?query=workflow%3A%22Daily+build%22|the daily build page> for more information"}'
+
+                curl \
+                -X POST 'https://chat.googleapis.com/v1/spaces/${{secrets.CONNECTOR_CHAT_ID}}/messages?key=${{secrets.CONNECTOR_CHAT_KEY}}&token=${{secrets.CONNECTOR_CHAT_TOKEN}}' \
+                --header 'Content-Type: application/json' \
+                -d '{"text": "*module-ballerinax-mongodb* daily build failure \nPlease visit <https://github.com/ballerina-platform/module-ballerinax-mongodb/actions?query=workflow%3A%22Daily+build%22|the daily build page> for more information"}'
