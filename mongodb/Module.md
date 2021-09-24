@@ -12,13 +12,13 @@ The Mongo DB connector allows you to connect to a Mongo DB from Ballerina and pe
 
 * Java 11 Installed <br/> Java Development Kit (JDK) with version 11 is required.
 
-* Ballerina SLAlpha5 Installed <br/> Ballerina Swan Lake Alpha 5 is required.
+* Ballerina SLbeta3 Installed <br/> Ballerina Swan Lake Beta 3 is required.
 
 ## Compatibility
 
 |                             |       Version               |
 |:---------------------------:|:---------------------------:|
-| Ballerina Language          | Swan Lake Alpha 5           |
+| Ballerina Language          | Swan Lake Beta 3            |
 | Mongo DB                    | V4.2.0                      |
 
 
