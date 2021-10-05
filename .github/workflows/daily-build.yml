@@ -1,9 +1,9 @@
 name: Daily build
 
 # Controls when the action will run.
-on: 
-  schedule:
-    - cron: '30 2 * * *'
+on: pull_request
+#  schedule:
+#    - cron: '30 2 * * *'
 
 jobs:
     build:
@@ -19,8 +19,14 @@ jobs:
             image: rzhilkibaev/mongo-x509-auth-ssl:latest
         steps:
             - uses: actions/checkout@v2
-            
-            # Set up Java Environment
+            - id: codeowner
+              uses: SvanBoxel/codeowners-action@v1
+              with:
+                path: './.github/CODEOWNERS'
+            - run: |
+                echo ${{ steps.codeowners.outputs.codeowners }};
+
+          # Set up Java Environment
             - name: Set up JDK 11
               uses: actions/setup-java@v1
               with:
@@ -72,7 +78,7 @@ jobs:
                 JAVA_HOME: /usr/lib/jvm/default-jvm
                 JAVA_OPTS: -DBALLERINA_DEV_COMPILE_BALLERINA_ORG=true
 
-            # Send notification when build fails
+          # Send notification when build fails
             - name: Notify failure
               if: ${{ failure() }}
               run: |
@@ -85,3 +91,9 @@ jobs:
                 -X POST 'https://chat.googleapis.com/v1/spaces/${{secrets.CONNECTOR_CHAT_ID}}/messages?key=${{secrets.CONNECTOR_CHAT_KEY}}&token=${{secrets.CONNECTOR_CHAT_TOKEN}}' \
                 --header 'Content-Type: application/json' \
                 -d '{"text": "*module-ballerinax-mongodb* daily build failure \nPlease visit <https://github.com/ballerina-platform/module-ballerinax-mongodb/actions?query=workflow%3A%22Daily+build%22|the daily build page> for more information"}'
+
+            - name: code owner
+              uses: SvanBoxel/codeowners-action@v1
+            - name: print code owners
+              run: |
+                echo ${{ steps.codeowners.outputs.codeowners }};
