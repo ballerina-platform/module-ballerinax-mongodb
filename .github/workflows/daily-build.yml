@@ -1,7 +1,7 @@
 name: Daily build
 
 # Controls when the action will run.
-on: 
+on:
   schedule:
     - cron: '30 2 * * *'
 
@@ -72,16 +72,23 @@ jobs:
                 JAVA_HOME: /usr/lib/jvm/default-jvm
                 JAVA_OPTS: -DBALLERINA_DEV_COMPILE_BALLERINA_ORG=true
 
-            # Send notification when build fails
-            - name: Notify failure
-              if: ${{ failure() }}
-              run: |
-                curl \
-                -X POST 'https://chat.googleapis.com/v1/spaces/${{secrets.BALLERINA_CHAT_ID}}/messages?key=${{secrets.BALLERINA_CHAT_KEY}}&token=${{secrets.BALLERINA_CHAT_TOKEN}}' \
-                --header 'Content-Type: application/json' \
-                -d '{"text": "*module-ballerinax-mongodb* daily build failure \nPlease visit <https://github.com/ballerina-platform/module-ballerinax-mongodb/actions?query=workflow%3A%22Daily+build%22|the daily build page> for more information"}'
+            # Notify failure with code owner tag
+            - name: Setup Python
+              uses: actions/setup-python@v2
+              with:
+                python-version: '3.x'
 
-                curl \
-                -X POST 'https://chat.googleapis.com/v1/spaces/${{secrets.CONNECTOR_CHAT_ID}}/messages?key=${{secrets.CONNECTOR_CHAT_KEY}}&token=${{secrets.CONNECTOR_CHAT_TOKEN}}' \
-                --header 'Content-Type: application/json' \
-                -d '{"text": "*module-ballerinax-mongodb* daily build failure \nPlease visit <https://github.com/ballerina-platform/module-ballerinax-mongodb/actions?query=workflow%3A%22Daily+build%22|the daily build page> for more information"}'
+            - name: Install Python packages
+              run: |
+                pip install cryptography
+                pip install httplib2
+
+            - name: Notify failure
+              if: ${{ failure()}}
+              run: |
+                python notify_failure.py
+              env:
+                ENV_NOTIFICATIONS_CHAT_ID: ${{secrets.NOTIFICATIONS_CHAT_ID}}
+                ENV_NOTIFICATIONS_CHAT_KEY: ${{secrets.NOTIFICATIONS_CHAT_KEY}}
+                ENV_NOTIFICATIONS_CHAT_TOKEN: ${{secrets.NOTIFICATIONS_CHAT_TOKEN}}
+                ENV_USER_ENCRYPTION_KEY: ${{secrets.USER_ENCRYPTION_KEY}}
