@@ -1,10 +1,10 @@
 [package]
 org = "ballerinax"
 name = "mongodb"
-version = "2.0.8-SNAPSHOT"
+version = "3.0.0"
 license= ["Apache-2.0"]
 authors = ["Ballerina"]
-keywords = ["it operations/databases", "cost/freemium"]
+keywords = ["IT Operations/Databases", "Cost/Freemium"]
 repository = "https://github.com/ballerina-platform/module-ballerinax-mongodb"
 
 [[platform.java11.dependency]]
