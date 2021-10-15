@@ -8,7 +8,7 @@ configurable string password = ?;
 configurable string database = ?;
 configurable string collection = ?;
 
-public function main() {
+public function main() returns error? {
     
     mongodb:ConnectionConfig mongoConfig = {
         host: host,
@@ -18,10 +18,10 @@ public function main() {
         options: {sslEnabled: false, serverSelectionTimeout: 5000}
     };
 
-    mongodb:Client mongoClient = checkpanic new (mongoConfig, database);
+    mongodb:Client mongoClient = check new (mongoConfig, database);
 
     log:printInfo("------------------ Counting Data -------------------");
-    int count = checkpanic mongoClient->countDocuments(collection);
+    int count = check mongoClient->countDocuments(collection);
     log:printInfo("Count of the documents '" + count.toString() + "'.");
     
     mongoClient->close();

@@ -7,7 +7,7 @@ configurable string username = ?;
 configurable string password = ?;
 configurable string database = ?;
 
-public function main() {
+public function main() returns error? {
     
     mongodb:ConnectionConfig mongoConfig = {
         host: host,
@@ -17,9 +17,9 @@ public function main() {
         options: {sslEnabled: false, serverSelectionTimeout: 5000}
     };
 
-    mongodb:Client mongoClient = checkpanic new (mongoConfig);
+    mongodb:Client mongoClient = check new (mongoConfig);
     
-    string [] collectionNames = checkpanic mongoClient->getCollectionNames(database);
+    string [] collectionNames = check mongoClient->getCollectionNames(database);
     log:printInfo("------------------ Collection Names -------------------");
     foreach var collectionName in collectionNames {
         log:printInfo("Collection Name : " + collectionName);

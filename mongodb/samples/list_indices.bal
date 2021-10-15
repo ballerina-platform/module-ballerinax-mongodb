@@ -8,7 +8,13 @@ configurable string password = ?;
 configurable string database = ?;
 configurable string collection = ?;
 
-public function main() {
+type Index record {
+    int v;
+    json key;
+    string name;
+    string ns;
+};
+public function main() returns error? {
     
     mongodb:ConnectionConfig mongoConfig = {
         host: host,
@@ -18,13 +24,13 @@ public function main() {
         options: {sslEnabled: false, serverSelectionTimeout: 5000}
     };
 
-    mongodb:Client mongoClient = checkpanic new (mongoConfig, database);
+    mongodb:Client mongoClient = check new (mongoConfig, database);
 
     log:printInfo("------------------ List Indicies -------------------");
-    map<json>[] indicies = checkpanic mongoClient->listIndices(collection);
-    foreach var index in indicies {
-        log:printInfo(index.toString());
-    }
+    stream<Index, error?> indicies = check mongoClient->listIndices(collection);
+    check indicies.forEach(function(Index index){
+        log:printInfo(index.name);
+    });
     
     mongoClient->close();
 }
