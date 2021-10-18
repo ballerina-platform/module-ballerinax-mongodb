@@ -72,22 +72,6 @@ public function testListDatabaseNames() {
     dependsOn: [ testListDatabaseNames ],
     groups: ["mongodb"]
 }
-public function testGetDatabase() {
-    log:printInfo("----------------- Get Database------------------");
-    var returned = mongoClient.getDatabase("  ");
-    if (returned is ApplicationError) {
-        log:printInfo("Empty dbName validated successfully");
-    } else {
-        string returnedToString = returned is DatabaseError ? returned.toString() : returned.toString();
-        log:printInfo(returnedToString.toString());
-        test:assertFail("Validation Failure");
-    }
-}
-
-@test:Config {
-    dependsOn: [ testGetDatabase ],
-    groups: ["mongodb"]
-}
 public function testListCollections() returns Error? {
     log:printInfo("----------------- List Collections------------------");
     var returned = mongoClient->getCollectionNames("admin");
@@ -102,22 +86,6 @@ public function testListCollections() returns Error? {
 
 @test:Config {
     dependsOn: [ testListCollections ],
-    groups: ["mongodb"]
-}
-public function testGetCollection() returns Error? {
-    log:printInfo("----------------- Get Collection------------------");
-    var returned = mongoClient.getCollection("  ");
-    if (returned is ApplicationError) {
-        log:printInfo("Empty collection name validated successfully");
-    } else {
-        string returnedToString = returned is DatabaseError ? returned.toString() : returned.toString();
-        log:printInfo(returnedToString.toString());
-        test:assertFail("Empty collection name validation Failure");
-    }
-}
-
-@test:Config {
-    dependsOn: [ testGetCollection ],
     groups: ["mongodb"]
 }
 public function testInsertData() returns Error? {
@@ -199,23 +167,20 @@ public function testCountDocuments() returns Error? {
     dependsOn: [ testCountDocuments ],
     groups: ["mongodb"]
 }
-public function testListIndices() returns Error? {
+public function testListIndices() returns error? {
     log:printInfo("----------------- List Indices------------------");
-    var returned = mongoClient->listIndices(COLLECTION_NAME);
-    if (returned is map<json>[]) {
-        log:printInfo("Indices returned successfully '" + returned.toString() + "'");
-        test:assertEquals(1, returned.length());
-    } else {
-        log:printInfo(returned.toString());
-        test:assertFail("Indices List Failure");
-    }
+    stream<Index, error?> returned = check mongoClient->listIndices(COLLECTION_NAME);
+    check returned.forEach(function(Index data){
+        log:printInfo(data.ns);
+    });
+    log:printInfo("Indices returned successfully '");
 }
 
 @test:Config {
     dependsOn: [ testListIndices ],
     groups: ["mongodb"]
 }
-public function testFindData() returns Error? {
+public function testFindData() returns error? {
     log:printInfo("----------------- Querying Data ----------------");
 
     map<json> insertDocument1 = {name: "Joker", year: "2019", rating: 7};
@@ -225,35 +190,28 @@ public function testFindData() returns Error? {
     check mongoClient->insert(insertDocument2, COLLECTION_NAME);
 
     map<json> findDoc = {year: "2019"};
-    var returned = mongoClient->find(COLLECTION_NAME,(),filter = findDoc);
-    if (returned is map<json>[]) {
-        log:printInfo(returned.toString());
-        test:assertEquals(returned.length(), 2, msg = "Querying year 2019 filter failed");
-    } else {
-        log:printInfo(returned.toString());
-        test:assertFail("Finding data failed");
-    }
+    stream<Movie, error?> returned = check mongoClient->find(COLLECTION_NAME,filter = findDoc);
+    check returned.forEach(function(Movie data){
+        log:printInfo(data.year.toString());
+        test:assertEquals(data.year,"2019","Querying year 2019 filter failed");
+    });
+    log:printInfo("Querying year 2019 filter tested successfully");
 
     map<json> sortDoc = {name: 1};
-    returned = mongoClient->find(COLLECTION_NAME, (), filter = findDoc, sort = sortDoc);
-    if (returned is map<json>[]) {
-        log:printInfo(returned.toString());
-        test:assertEquals(returned.length(), 2, "Querying year 2019 sort data failed");
-        test:assertEquals(returned[0].name, "Joker");
-    } else {
-        log:printInfo(returned.toString());
-        test:assertFail("Finding data sort failed");
-    }
+    returned = check mongoClient->find(COLLECTION_NAME, filter = findDoc, sort = sortDoc);
+    check returned.forEach(function(Movie data){
+        log:printInfo(data.name);
+    });
+    log:printInfo("Querying year 2019 sort data tested successfully");
 
-    returned = mongoClient->find(COLLECTION_NAME, (), findDoc, sortDoc, 1);
-    if (returned is map<json>[]) {
-        log:printInfo(returned.toString());
-        test:assertEquals(returned.length(), 1, "Querying filtered sort and limit failed");
-        test:assertEquals(returned[0].name, "Joker");
-    } else {
-        log:printInfo(returned.toString());
-        test:assertFail("Finding data limit failed");
-    }
+    returned = check mongoClient->find(COLLECTION_NAME, filter=findDoc, sort=sortDoc, 'limit=1);
+    int count = 0;
+    check returned.forEach(function(Movie data){
+        count = count+1;
+        log:printInfo(data.name);
+    });
+    test:assertEquals(count, 1, "Querying filtered sort and limit failed");
+    log:printInfo("Querying filtered sort and limit tested successfully");
 
 }
 
@@ -303,17 +261,6 @@ function testUpdateDocumentUpsertTrue() returns Error? {
     if (modifiedCount is int) {
         log:printInfo("Modified count: " + modifiedCount.toString());
         test:assertEquals(modifiedCount, 0, "Document modification failed");
-
-        map<json> findOneDoc = {name: "The Lion King 2"};
-        var returned = mongoClient->find(COLLECTION_NAME, (), filter = findOneDoc);
-        if (returned is json) {
-            log:printInfo("Queried data " + returned.toString());
-            test:assertNotEquals(returned.toString(), "null", "Querying one data failed");
-        } else {
-            log:printInfo(returned.toString());
-            test:assertFail("Finding data failed");
-        }
-
     } else {
         log:printInfo(modifiedCount.toString());
         test:assertFail("Replacing data failed");
@@ -359,3 +306,16 @@ function testDelete() returns Error? {
 
     mongoClient->close();
 }
+
+type Movie record {
+    string name;
+    string year;
+    int rating;
+};
+
+type Index record {
+    int v;
+    json key;
+    string name;
+    string ns;
+};

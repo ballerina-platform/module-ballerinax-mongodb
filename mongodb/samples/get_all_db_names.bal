@@ -6,7 +6,7 @@ configurable int port = ?;
 configurable string username = ?;
 configurable string password = ?;
 
-public function main() {
+public function main() returns error? {
     
     mongodb:ConnectionConfig mongoConfig = {
         host: host,
@@ -16,8 +16,8 @@ public function main() {
         options: {sslEnabled: false, serverSelectionTimeout: 5000}
     };
 
-    mongodb:Client mongoClient = checkpanic new (mongoConfig);
-    string [] dbNames = checkpanic mongoClient->getDatabasesNames();
+    mongodb:Client mongoClient = check new (mongoConfig);
+    string [] dbNames = check mongoClient->getDatabasesNames();
     log:printInfo("------------------ Database Names -------------------");
     foreach var dbName in dbNames {
         log:printInfo("Database Name : " + dbName);

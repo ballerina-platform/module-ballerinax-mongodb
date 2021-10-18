@@ -21,8 +21,18 @@ package org.ballerinalang.mongodb;
 import com.mongodb.MongoException;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
+import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.UpdateOptions;
+
+import io.ballerina.runtime.api.Environment;
+import io.ballerina.runtime.api.PredefinedTypes;
+import io.ballerina.runtime.api.creators.TypeCreator;
 import io.ballerina.runtime.api.creators.ValueCreator;
+import io.ballerina.runtime.api.types.RecordType;
+import io.ballerina.runtime.api.values.BObject;
+import io.ballerina.runtime.api.values.BStream;
+import io.ballerina.runtime.api.values.BString;
+import io.ballerina.runtime.api.values.BTypedesc;
 import io.ballerina.runtime.internal.values.HandleValue;
 import org.bson.Document;
 import org.ballerinalang.mongodb.exceptions.BallerinaErrorGenerator;
@@ -51,13 +61,26 @@ public class MongoDBCollectionUtil {
         }
     }
 
-    public static Object listIndices(HandleValue collection) {
-        MongoCollection<Document> mongoCollection = (MongoCollection<Document>) collection.getValue();
+    public static Object listIndices(Environment env, BObject client, BString collectionName, Object databaseName,
+                                      BTypedesc recordType) {
         try {
+            MongoDatabase mongoDatabase = MongoDBDatabaseUtil.getCurrentDatabase(env, client, databaseName);
+            MongoCollection<Document> mongoCollection = mongoDatabase.getCollection(collectionName.getValue());
             MongoCursor<Document> iterator = mongoCollection.listIndexes().iterator();
-            return ValueCreator.createStreamingJsonValue(new MongoDBIterator(iterator));
+            RecordType streamConstraint = (RecordType) recordType.getDescribingType();
+            BObject bObject = ValueCreator.createObjectValue(ModuleUtils.getModule(), 
+                            MongoDBConstants.RESULT_ITERATOR_OBJECT,null, ValueCreator.createObjectValue(
+                            ModuleUtils.getModule(), MongoDBConstants.MONGO_RESULT_ITERATOR_OBJECT));
+            bObject.addNativeData(MongoDBConstants.RESULT_SET_NATIVE_DATA_FIELD, iterator);
+            bObject.addNativeData(MongoDBConstants.RECORD_TYPE_DATA_FIELD, streamConstraint);
+            
+            BStream bStreamValue = ValueCreator.createStreamValue(TypeCreator.createStreamType(streamConstraint,
+                                PredefinedTypes.TYPE_NULL), bObject);
+            return bStreamValue;
         } catch (MongoException e) {
             return BallerinaErrorGenerator.createBallerinaDatabaseError(e);
+        } catch (Exception e) {
+            return BallerinaErrorGenerator.createBallerinaApplicationError(e);
         }
     }
 
@@ -75,8 +98,8 @@ public class MongoDBCollectionUtil {
         }
     }
 
-    public static Object find(HandleValue collection, Object filter, Object sort, long limit) {
-
+    public static Object find(Environment env, BObject client, BString collectionName, Object databaseName,
+                               Object filter, Object sort, long limit , BTypedesc recordType) {
         if (filter == null) {
             filter = EMPTY_JSON;
         }
@@ -86,16 +109,25 @@ public class MongoDBCollectionUtil {
             sort = EMPTY_JSON;
         }
         Document sortDoc = Document.parse(sort.toString());
-
-        MongoCollection<Document> mongoCollection = (MongoCollection<Document>) collection.getValue();
-        MongoCursor<Document> results;
         try {
+            MongoDatabase mongoDatabase = MongoDBDatabaseUtil.getCurrentDatabase(env, client, databaseName);
+            MongoCollection<Document> mongoCollection = mongoDatabase.getCollection(collectionName.getValue());
+            MongoCursor<Document> results;
             if (limit != -1) {
                 results = mongoCollection.find(filterDoc).sort(sortDoc).limit((int) limit).iterator();
             } else {
                 results = mongoCollection.find(filterDoc).sort(sortDoc).iterator();
             }
-            return ValueCreator.createStreamingJsonValue(new MongoDBIterator(results));
+            RecordType streamConstraint = (RecordType) recordType.getDescribingType();
+            BObject bObject = ValueCreator.createObjectValue(ModuleUtils.getModule(), 
+                              MongoDBConstants.RESULT_ITERATOR_OBJECT,null, ValueCreator.createObjectValue(
+                            ModuleUtils.getModule(), MongoDBConstants.MONGO_RESULT_ITERATOR_OBJECT));
+            bObject.addNativeData(MongoDBConstants.RESULT_SET_NATIVE_DATA_FIELD, results);
+            bObject.addNativeData(MongoDBConstants.RECORD_TYPE_DATA_FIELD, streamConstraint);
+            
+            BStream bStreamValue = ValueCreator.createStreamValue(TypeCreator.createStreamType(streamConstraint,
+                                   PredefinedTypes.TYPE_NULL), bObject);
+            return bStreamValue;
         } catch (MongoException e) {
             return BallerinaErrorGenerator.createBallerinaDatabaseError(e);
         } catch (Exception e) {

@@ -8,7 +8,7 @@ configurable string password = ?;
 configurable string database = ?;
 configurable string collection = ?;
 
-public function main() {
+public function main() returns error? {
     
     mongodb:ConnectionConfig mongoConfig = {
         host: host,
@@ -18,11 +18,11 @@ public function main() {
         options: {sslEnabled: false, serverSelectionTimeout: 5000}
     };
 
-    mongodb:Client mongoClient = checkpanic new (mongoConfig, database);
+    mongodb:Client mongoClient = check new (mongoConfig, database);
 
     log:printInfo("------------------ Deleting Data -------------------");
     map<json> deleteFilter = { "name": "Salesforce" };
-    int deleteRet = checkpanic mongoClient->delete(collection, (), deleteFilter, true);
+    int deleteRet = check mongoClient->delete(collection, (), deleteFilter, true);
     if (deleteRet > 0 ) {
         log:printInfo("Delete count: '" + deleteRet.toString() + "'.") ;
     } else {

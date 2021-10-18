@@ -18,12 +18,17 @@
 
 package org.ballerinalang.mongodb;
 
+import com.mongodb.MongoClient;
 import com.mongodb.MongoException;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
+
+import io.ballerina.runtime.api.Environment;
+import io.ballerina.runtime.api.creators.ErrorCreator;
 import io.ballerina.runtime.api.creators.ValueCreator;
+import io.ballerina.runtime.api.values.BError;
+import io.ballerina.runtime.api.values.BObject;
 import io.ballerina.runtime.api.values.BString;
-import io.ballerina.runtime.internal.values.HandleValue;
 import org.ballerinalang.mongodb.exceptions.BallerinaErrorGenerator;
 
 import java.util.ArrayList;
@@ -35,27 +40,62 @@ import static io.ballerina.runtime.api.utils.StringUtils.fromString;
  */
 public class MongoDBDatabaseUtil {
 
-    public static Object getCollectionNames(HandleValue database) {
-        MongoDatabase mongoDatabase = (MongoDatabase) database.getValue();
+    public static Object getCollectionNames(Environment env, BObject client, Object databaseName) {
         try {
-            MongoCursor<String> iterator = mongoDatabase.listCollectionNames().iterator();
-            ArrayList<BString> collectionNames = new ArrayList<>();
-            while (iterator.hasNext()) {
-                collectionNames.add(fromString(iterator.next()));
+            MongoDatabase mongoDatabase = getCurrentDatabase(env, client, databaseName);
+            try {
+                MongoCursor<String> iterator = mongoDatabase.listCollectionNames().iterator();
+                ArrayList<BString> collectionNames = new ArrayList<>();
+                while (iterator.hasNext()) {
+                    collectionNames.add(fromString(iterator.next()));
+                }
+                return ValueCreator.createArrayValue(collectionNames.toArray(new BString[0]));
+            } catch (MongoException e) {
+                return BallerinaErrorGenerator.createBallerinaDatabaseError(e);
             }
-            return ValueCreator.createArrayValue(collectionNames.toArray(new BString[0]));
-        } catch (MongoException e) {
-            return BallerinaErrorGenerator.createBallerinaDatabaseError(e);
+        } catch (Exception e) {
+            return BallerinaErrorGenerator.createBallerinaApplicationError(e);
         }
     }
 
-    public static Object getCollection(HandleValue database, BString collectionName) {
+    public static Object getCollection(Environment env, BObject client, BString collectionName, Object databaseName) {
 
         try {
-            MongoDatabase mongoDatabase = (MongoDatabase) database.getValue();
-            return mongoDatabase.getCollection(collectionName.getValue());
-        } catch (MongoException e) {
-            return BallerinaErrorGenerator.createBallerinaDatabaseError(e);
+            MongoDatabase mongoDatabase = getCurrentDatabase(env, client, databaseName);
+            try {
+                return mongoDatabase.getCollection(collectionName.getValue());
+            } catch (MongoException e) {
+                return BallerinaErrorGenerator.createBallerinaDatabaseError(e);
+            }
+        } catch (Exception e) {
+            return BallerinaErrorGenerator.createBallerinaApplicationError(e);
+        }
+    }
+
+    public static MongoDatabase getCurrentDatabase(Environment env, BObject client, Object databaseName) throws BError {
+        if (databaseName == null) {
+            Object database = client.getNativeData(MongoDBConstants.MONGO_DATABASE);
+            if (database == null) {
+                throw ErrorCreator.createError(fromString("Error while getting database object from client native " + 
+                                                "data. There is no database object available."));
+            }
+            return (MongoDatabase) database;
+        } else {
+            if (MongoDBConstants.EMPTY_STRING.equals(databaseName.toString().trim())) {
+                Object database = client.getNativeData(MongoDBConstants.MONGO_DATABASE);
+                if (database == null) {
+                    throw ErrorCreator.createError(fromString("Error while getting Database object from client " + 
+                                                    "native data. There is no Database object available."));
+                }
+                return (MongoDatabase) database;
+            } else {
+                Object mongoClient = client.getNativeData(MongoDBConstants.MONGO_CLIENT);
+                if (mongoClient == null) {
+                    throw ErrorCreator.createError(fromString("Error while getting MongoClient object from client " + 
+                                                    "native data. There is no MongoClient object available."));
+                }
+                return ((MongoClient) mongoClient).getDatabase(databaseName.toString().trim());
+            }            
         }
     }
 }

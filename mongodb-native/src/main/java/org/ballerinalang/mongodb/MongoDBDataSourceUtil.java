@@ -28,11 +28,14 @@ import com.mongodb.ReadPreference;
 import com.mongodb.ServerAddress;
 import com.mongodb.WriteConcern;
 import com.mongodb.client.MongoCursor;
+import com.mongodb.client.MongoDatabase;
+
+import io.ballerina.runtime.api.Environment;
 import io.ballerina.runtime.api.creators.ValueCreator;
 import io.ballerina.runtime.api.values.BMap;
+import io.ballerina.runtime.api.values.BObject;
 import io.ballerina.runtime.api.values.BString;
 import io.ballerina.runtime.api.values.BValue;
-import io.ballerina.runtime.internal.values.HandleValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.ballerinalang.mongodb.exceptions.BallerinaErrorGenerator;
@@ -69,7 +72,8 @@ public class MongoDBDataSourceUtil {
     private MongoDBDataSourceUtil() {
     }
 
-    public static Object initClient(BMap<BString, BValue> config) {
+    public static Object initClient(Environment env, BObject client, BMap<BString, BValue> config,
+                                    Object databaseName) {
         String host = config.containsKey(HOST) ? config.getStringValue(HOST).getValue() : "";
         long port = config.containsKey(PORT) ? config.getIntValue(PORT) : 0;
 
@@ -79,14 +83,20 @@ public class MongoDBDataSourceUtil {
         BMap options = config.containsKey(OPTIONS) ? config.getMapValue(OPTIONS) : null;
 
         try {
-            return init(host, port, username, password, options);
+            MongoClient mongoClient = init(host, port, username, password, options);
+            client.addNativeData(MongoDBConstants.MONGO_CLIENT, mongoClient);
+            if (databaseName != null && !(MongoDBConstants.EMPTY_STRING.equals(databaseName.toString()))) {
+                MongoDatabase database = mongoClient.getDatabase(databaseName.toString());
+                client.addNativeData(MongoDBConstants.MONGO_DATABASE, database);
+            }
+            return null;
         } catch (MongoDBClientException e) {
             return BallerinaErrorGenerator.createBallerinaApplicationError(e);
         }
     }
 
-    public static Object getDatabasesNames(HandleValue datasource) {
-        MongoClient mongoClient = (MongoClient) datasource.getValue();
+    public static Object getDatabasesNames(Environment env, BObject client) {
+        MongoClient mongoClient = (MongoClient) client.getNativeData(MongoDBConstants.MONGO_CLIENT);
         try {
             MongoCursor<String> databaseItr = mongoClient.listDatabaseNames().iterator();
             ArrayList<BString> databaseNames = new ArrayList<>();
@@ -99,20 +109,9 @@ public class MongoDBDataSourceUtil {
         }
     }
 
-    public static Object getDatabase(HandleValue datasource, BString databaseName) {
-
-        MongoClient mongoClient = (MongoClient) datasource.getValue();
-        try {
-            return mongoClient.getDatabase(databaseName.getValue());
-        } catch (IllegalArgumentException e) {
-            return BallerinaErrorGenerator.createBallerinaDatabaseError(e);
-        }
-
-    }
-
-    public static void close(HandleValue datasource) {
+    public static void close(Environment env, BObject client) {
         log.debug("Closing MongoDB connection");
-        MongoClient mongoClient = (MongoClient) datasource.getValue();
+        MongoClient mongoClient = (MongoClient) client.getNativeData(MongoDBConstants.MONGO_CLIENT);
         mongoClient.close();
     }
 
