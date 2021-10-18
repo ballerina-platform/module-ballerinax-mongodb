@@ -32,7 +32,7 @@ jobs:
                 ./gradlew build
      
             - name: Ballerina Build W/O tests
-              uses: ballerina-platform/ballerina-action/@nightly
+              uses: ballerina-platform/ballerina-action@slbeta3
               with:
                 args:
                   build --skip-tests -c mongodb
@@ -40,7 +40,7 @@ jobs:
                 JAVA_HOME: /usr/lib/jvm/default-jvm
                 JAVA_OPTS: -DBALLERINA_DEV_COMPILE_BALLERINA_ORG=true
             - name: Ballerina Build W/ tests
-              uses: ballerina-platform/ballerina-action/@nightly
+              uses: ballerina-platform/ballerina-action@slbeta3
               with:
                 args:
                   test --groups mongodb mongodb
@@ -51,7 +51,7 @@ jobs:
                 MONGODB_USER: admin
                 MONGODB_PASSWORD: admin
             - name: Ballerina Build W/ tests (SSL)
-              uses: ballerina-platform/ballerina-action/@nightly
+              uses: ballerina-platform/ballerina-action@slbeta3
               with:
                 args:
                   test --groups mongodb-ssl
