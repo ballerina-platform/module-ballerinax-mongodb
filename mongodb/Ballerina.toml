@@ -8,7 +8,7 @@ keywords = ["IT Operations/Databases", "Cost/Freemium"]
 repository = "https://github.com/ballerina-platform/module-ballerinax-mongodb"
 
 [[platform.java11.dependency]]
-path = "../mongodb-native/build/libs/mongodb-native-2.0.8-SNAPSHOT-all.jar"
+path = "../mongodb-native/build/libs/mongodb-native-3.0.0-all.jar"
 groupId = "org.ballerinalang"
 artifactId = "mongodb-native"
-version = "2.0.8-SNAPSHOT"
+version = "3.0.0"
