@@ -76,10 +76,10 @@ jobs:
             - name: Notify failure
               if: ${{ failure() }}
               run: |
-                curl -X POST
-                'https://api.github.com/repos/ballerina-platform/ballerina-release/dispatches'\
-                -H 'Accept: application/vnd.github.v3+json'\
-                -H 'Authorization: Bearer ${{ secrets.BALLERINA_BOT_TOKEN }}'\
+                curl -X POST \
+                'https://api.github.com/repos/ballerina-platform/ballerina-release/dispatches' \
+                -H 'Accept: application/vnd.github.v3+json' \
+                -H 'Authorization: Bearer ${{ secrets.BALLERINA_BOT_TOKEN }}' \
                 --data "{
                   \"event_type\": \"notify-connector-failure\",
                   \"client_payload\": {
