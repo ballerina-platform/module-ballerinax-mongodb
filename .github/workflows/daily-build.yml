@@ -81,7 +81,7 @@ jobs:
                 -H 'Accept: application/vnd.github.v3+json' \
                 -H 'Authorization: Bearer ${{ secrets.BALLERINA_BOT_TOKEN }}' \
                 --data "{
-                  \"event_type\": \"notify-connector-failure\",
+                  \"event_type\": \"notify-build-failure\",
                   \"client_payload\": {
                     \"repoName\": \"module-ballerinax-mongodb\"
                   }
