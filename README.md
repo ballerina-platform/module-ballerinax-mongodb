@@ -43,7 +43,7 @@ Execute the commands below to build from the source.
 
 2. * To build the package:
         ```shell script
-            bal build -c --skip-tests ./mongodb
+            bal pack ./mongodb
         ```
    * To test the connector:
    
