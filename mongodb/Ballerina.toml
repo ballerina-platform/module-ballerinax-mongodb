@@ -5,6 +5,7 @@ version = "3.0.0"
 license= ["Apache-2.0"]
 authors = ["Ballerina"]
 keywords = ["IT Operations/Databases", "Cost/Freemium"]
+icon = "icon.png"
 repository = "https://github.com/ballerina-platform/module-ballerinax-mongodb"
 
 [[platform.java11.dependency]]
