@@ -18,7 +18,7 @@ import ballerina/jballerina.java;
 
 # Ballerina MongoDB connector provides the capability to perform the MongoDB CRUD operations.
 # The connector let you to interact with MongoDB from Ballerina.
-@display {label: "MongoDB", iconPath: "resources/mongodb.svg"}
+@display {label: "MongoDB", iconPath: "icon.png"}
 public isolated client class Client {
 
     # Initialises the `Client` object with the provided `ConnectionConfig` properties.
