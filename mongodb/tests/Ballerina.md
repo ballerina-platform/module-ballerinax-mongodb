@@ -2,7 +2,7 @@
 
 | Ballerina Language Version  | MongoDB Version |
 | ----------------------------| ----------------|
-|  Swan Lake Beta2            |   4.2.0         |
+|  Swan Lake Beta6            |   4.2.0         |
 
 ## Running tests using Docker image of MongoDB
 
