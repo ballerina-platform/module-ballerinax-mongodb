@@ -223,7 +223,7 @@ function testUpdateDocument() returns Error? {
     log:printInfo("------------------ Updating Data -------------------");
 
     map<json> replaceFilter = {name: "The Lion King"};
-    map<json> replaceDoc = {name: "The Lion King", year: "2019", rating: 6};
+    map<json> replaceDoc = { "$set": {name: "The Lion King", year: "2019", rating: 6}};
 
     var modifiedCount = mongoClient->update(replaceDoc, COLLECTION_NAME, (), replaceFilter, false);
     if (modifiedCount is int) {
@@ -235,7 +235,7 @@ function testUpdateDocument() returns Error? {
     }
 
     replaceFilter = {rating: 7};
-    replaceDoc = {rating: 9};
+    replaceDoc = { "$inc": {rating: 2}};
 
     modifiedCount = mongoClient->update(replaceDoc, COLLECTION_NAME, (), replaceFilter, true);
     if (modifiedCount is int) {
@@ -255,7 +255,7 @@ function testUpdateDocumentUpsertTrue() returns Error? {
     log:printInfo("------------------ Updating Data (Upsert) -------------------");
 
     map<json> replaceFilter = {name: "The Lion King 2"};
-    map<json> replaceDoc = {name: "The Lion King 2", year: "2019", rating: 7};
+    map<json> replaceDoc = { "$set": {name: "The Lion King 2", year: "2019", rating: 7}};
 
     var modifiedCount = mongoClient->update(replaceDoc, COLLECTION_NAME, (), replaceFilter, true, true);
     if (modifiedCount is int) {
