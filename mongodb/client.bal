@@ -140,15 +140,16 @@ public isolated client class Client {
     
     # Updates a document based on a condition.
     #
-    # + set - Document for the update condition
+    # + updateStatement - Document for the update condition. Eg: { "$set": { <field1>: <value1>, ... } } , 
+    #                     { "$push": { <field>: { "$each": [ <value1>, <value2> ... ] } } }.
     # + collectionName - Name of the collection
     # + databaseName - Name of the database
-    # + filter - Filter for the query
+    # + filter - Filter for the query. Eg: { <field1>: <value1>, ... }.
     # + isMultiple - Whether to update multiple documents
     # + upsert - Whether to insert if update cannot be achieved
     # + return - JSON array of the documents in the collection or else a `mongodb:Error` if unable to reach the DB
     @display {label: "Update Document"}
-    remote isolated function update(@display {label: "Document to Update"} map<json> set, 
+    remote isolated function update(@display {label: "Document to Update"} map<json> updateStatement, 
                                     @display {label: "Collection Name"} string collectionName, 
                                     @display {label: "Database Name"} string? databaseName = (),
                                     @display {label: "Filter for Query"} map<json>? filter = (), 
@@ -156,7 +157,7 @@ public isolated client class Client {
                                     @display {label: "Is Upsert"} boolean upsert = false) 
                                     returns @display {label: "Number of Updated Documents"} int|Error {
         handle collection = check getCollection(self, collectionName, databaseName);
-        string updateDoc = set.toJsonString();
+        string updateDoc = updateStatement.toJsonString();
         if (filter is ()) {
             return update(collection, java:fromString(updateDoc), (), isMultiple, upsert);
         }
@@ -221,7 +222,7 @@ isolated function insert(handle collection, handle document) returns DatabaseErr
 } external;
 
 isolated function update(handle collection, handle update, handle? filter, boolean isMultiple, boolean upsert)
-                returns int|DatabaseError = @java:Method {
+                returns int|Error = @java:Method {
     'class: "org.ballerinalang.mongodb.MongoDBCollectionUtil"
 } external;
 

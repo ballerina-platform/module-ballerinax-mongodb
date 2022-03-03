@@ -165,8 +165,7 @@ public class MongoDBCollectionUtil {
         }
         Document filterDoc = Document.parse(filter.toString());
 
-        Document updateDoc = new Document();
-        updateDoc.put("$set", Document.parse(update));
+        Document updateDoc = Document.parse(update);
 
         UpdateOptions updateOptions = new UpdateOptions().upsert(upsert);
 
