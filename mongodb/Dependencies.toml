@@ -129,7 +129,7 @@ dependencies = [
 [[package]]
 org = "ballerinax"
 name = "mongodb"
-version = "3.1.0"
+version = "3.1.1"
 dependencies = [
 	{org = "ballerina", name = "crypto"},
 	{org = "ballerina", name = "file"},

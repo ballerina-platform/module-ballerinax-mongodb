@@ -2,7 +2,7 @@
 distribution = "slbeta6"
 org = "ballerinax"
 name = "mongodb"
-version = "3.1.0"
+version = "3.1.1"
 license= ["Apache-2.0"]
 authors = ["Ballerina"]
 keywords = ["IT Operations/Databases", "Cost/Freemium"]
@@ -10,7 +10,7 @@ icon = "icon.png"
 repository = "https://github.com/ballerina-platform/module-ballerinax-mongodb"
 
 [[platform.java11.dependency]]
-path = "../mongodb-native/build/libs/mongodb-native-3.1.0-all.jar"
+path = "../mongodb-native/build/libs/mongodb-native-3.1.1-all.jar"
 groupId = "org.ballerinalang"
 artifactId = "mongodb-native"
-version = "3.1.0"
+version = "3.1.1"
