@@ -29,7 +29,6 @@ public class ResultIterator {
         if (self.isClosed) {
             return closedStreamInvocationError();
         }
-        Error? closeErrorIgnored = ();
         if (self.err is Error) {
             return self.err;
         } else {
@@ -42,10 +41,10 @@ public class ResultIterator {
                 return streamRecord;
             } else if (result is Error) {
                 self.err = result;
-                closeErrorIgnored = self.close();
+                check self.close();
                 return self.err;
             } else {
-                closeErrorIgnored = self.close();
+                check self.close();
                 return result;
             }
         }
