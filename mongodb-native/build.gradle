@@ -3,6 +3,12 @@ plugins {
     id "com.github.johnrengelman.shadow"
 }
 
+configurations {
+    dist {
+        transitive true
+    }
+}
+
 repositories {
     mavenCentral()
 
@@ -19,9 +25,18 @@ dependencies {
     implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.21'
     compile group: 'org.ballerinalang', name: 'ballerina-lang', version: project.ballerinaLangVersion
     compile (group: 'org.ballerinalang', name: 'ballerina-runtime', version: project.ballerinaLangVersion) {
-        transitive = false
+        transitive = true
     }
     compile group: 'org.mongodb', name: 'mongo-java-driver', version: '3.8.2'
+    dist group: 'org.mongodb', name: 'mongo-java-driver', version: '3.8.2'
+}
+
+jar {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    dependsOn configurations.dist
+    from { configurations.dist.collect { it.isDirectory() ? it : zipTree(it) } } {
+        exclude 'META-INF/*.RSA', 'META-INF/*.SF', 'META-INF/*.DSA'
+    }
 }
 
 build.dependsOn(shadowJar)

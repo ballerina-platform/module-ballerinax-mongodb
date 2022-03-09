@@ -10,7 +10,7 @@ icon = "icon.png"
 repository = "https://github.com/ballerina-platform/module-ballerinax-mongodb"
 
 [[platform.java11.dependency]]
-path = "../mongodb-native/build/libs/mongodb-native-3.2.1-all.jar"
+path = "../mongodb-native/build/libs/mongodb-native-3.2.1.jar"
 groupId = "org.ballerinalang"
 artifactId = "mongodb-native"
 version = "3.2.1"
