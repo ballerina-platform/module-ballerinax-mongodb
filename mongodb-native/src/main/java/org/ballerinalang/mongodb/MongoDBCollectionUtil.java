@@ -99,11 +99,16 @@ public class MongoDBCollectionUtil {
     }
 
     public static Object find(Environment env, BObject client, BString collectionName, Object databaseName,
-                               Object filter, Object sort, long limit , BTypedesc recordType) {
+                               Object filter, Object projection, Object sort, long limit , BTypedesc recordType) {
         if (filter == null) {
             filter = EMPTY_JSON;
         }
         Document filterDoc = Document.parse(filter.toString());
+
+        if (projection == null) {
+            projection = EMPTY_JSON;
+        }
+        Document projectionDoc = Document.parse(projection.toString());
 
         if (sort == null) {
             sort = EMPTY_JSON;
@@ -114,9 +119,10 @@ public class MongoDBCollectionUtil {
             MongoCollection<Document> mongoCollection = mongoDatabase.getCollection(collectionName.getValue());
             MongoCursor<Document> results;
             if (limit != -1) {
-                results = mongoCollection.find(filterDoc).sort(sortDoc).limit((int) limit).iterator();
+                results = mongoCollection.find(filterDoc).projection(projectionDoc).sort(sortDoc).limit((int) limit).
+                          iterator();
             } else {
-                results = mongoCollection.find(filterDoc).sort(sortDoc).iterator();
+                results = mongoCollection.find(filterDoc).projection(projectionDoc).sort(sortDoc).iterator();
             }
             RecordType streamConstraint = (RecordType) recordType.getDescribingType();
             BObject bObject = ValueCreator.createObjectValue(ModuleUtils.getModule(), 

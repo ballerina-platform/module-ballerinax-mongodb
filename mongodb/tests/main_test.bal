@@ -219,6 +219,42 @@ public function testFindData() returns error? {
     dependsOn: [ testFindData ],
     groups: ["mongodb"]
 }
+public function testFindDataWithProjection() returns error? {
+    log:printInfo("----------------- Querying Data with Projection ----------------");
+
+    map<json> findDoc = {year: "2019"};
+    map<json> projectionDoc = {name: 1, year: true};
+    stream<MovieWithoutRating, error?> returned = check mongoClient->find(COLLECTION_NAME, projection = projectionDoc,
+                                                             filter = findDoc);
+    check returned.forEach(function(MovieWithoutRating data){
+        log:printInfo(data.year.toString());
+        test:assertEquals(data.year,"2019","Querying year 2019 filter with projection failed");
+    });
+    log:printInfo("Querying year 2019 filter with projection tested successfully");
+
+    map<json> sortDoc = {name: 1};
+    returned = check mongoClient->find(COLLECTION_NAME, projection = projectionDoc, filter = findDoc, sort = sortDoc);
+    check returned.forEach(function(MovieWithoutRating data){
+        log:printInfo(data.name);
+    });
+    log:printInfo("Querying year 2019 sort data with projection tested successfully");
+
+    returned = check mongoClient->find(COLLECTION_NAME, projection = projectionDoc, filter=findDoc, sort=sortDoc,
+                                       'limit=1);
+    int count = 0;
+    check returned.forEach(function(MovieWithoutRating data){
+        count = count+1;
+        log:printInfo(data.name);
+    });
+    test:assertEquals(count, 1, "Querying filtered sort and limit with projection failed");
+    log:printInfo("Querying filtered sort and limit with projection tested successfully");
+
+}
+
+@test:Config {
+    dependsOn: [ testFindDataWithProjection ],
+    groups: ["mongodb"]
+}
 function testUpdateDocument() returns Error? {
     log:printInfo("------------------ Updating Data -------------------");
 
@@ -312,6 +348,12 @@ type Movie record {
     string year;
     int rating;
 };
+
+type MovieWithoutRating record {|
+    json _id;
+    string name;
+    string year;
+|};
 
 type Index record {
     int v;
