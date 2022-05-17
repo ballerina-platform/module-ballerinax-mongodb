@@ -121,6 +121,7 @@ public isolated client class Client {
     # + collectionName - Name of the collection  
     # + databaseName - Name of the database  
     # + filter - Filter for the query  
+    # + projection - The projection document
     # + sort - Sort options for the query  
     # + 'limit - The limit of documents that should be returned. If the limit is -1, all the documents in the result
     #            will be returned.
@@ -131,6 +132,7 @@ public isolated client class Client {
     remote isolated function find(@display {label: "Collection Name"} string collectionName,
                                   @display {label: "Database Name"} string? databaseName = (),
                                   @display {label: "Filter for Query"} map<json>? filter = (),
+                                  @display {label: "Projection"} map<json>? projection = (),
                                   @display {label: "Sort Options"} map<json>? sort = (),
                                   @display {label: "Limit"} int 'limit = -1,
                                   @display {label: "Record Type"} typedesc<record {}> rowType = <>) 
