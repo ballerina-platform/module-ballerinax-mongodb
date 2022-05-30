@@ -67,17 +67,10 @@ public function initializeInValidConfig() {
    dependsOn: [ initializeInValidConfig ],
    groups: ["mongodb-ssl"]
 }
-public function testSSLConnection() returns Error? {
-
+public function testSSLConnection() returns error? {
    log:printInfo("------------------ Inserting Data on SSL Connection ------------------");
-   map<json> insertDocument = {name: "The Lion King", year: "2019", rating: 8};
+   map<json> document = {name: "The Lion King", year: "2019", rating: 8};
 
    Client mongoClient = check new (sslMongoConfig,"admin");
-   var returned = mongoClient->insert(insertDocument, "test");
-   if (returned is DatabaseError) {
-       log:printInfo(returned.toString());
-       test:assertFail("Inserting data failed!");
-   } else {
-       log:printInfo("Successfully inserted document into collection");
-   }
+   check mongoClient->insert(document, "test");
 }
