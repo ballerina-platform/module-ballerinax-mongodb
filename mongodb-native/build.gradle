@@ -27,6 +27,8 @@ dependencies {
     compile (group: 'org.ballerinalang', name: 'ballerina-runtime', version: project.ballerinaLangVersion) {
         transitive = true
     }
+    compile group: 'org.ballerinalang', name: 'value', version: project.ballerinaLangVersion
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.13.3'
     compile group: 'org.mongodb', name: 'mongo-java-driver', version: '3.8.2'
     dist group: 'org.mongodb', name: 'mongo-java-driver', version: '3.8.2'
 }

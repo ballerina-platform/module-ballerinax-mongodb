@@ -29,4 +29,4 @@ public type DatabaseError distinct error<DatabaseErrorDetail>;
 public type ApplicationError distinct error;
 
 # Represents a database or application level error returned from the MongoDB client remote functions.
-public type Error DatabaseError|ApplicationError;
+public type Error DatabaseError|ApplicationError|error;
