@@ -1,6 +1,15 @@
 name: CI
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - '**'
+  pull_request:
+    branches:
+      - '**'
+  repository_dispatch:
+    types:
+      check_connector_for_breaking_changes
 
 jobs:
     build:
@@ -83,3 +92,18 @@ jobs:
                 echo "Covered Code Lines : ${{fromJson(steps.test_results.outputs.testResultsJson).coveredLines}}"
                 echo "Total Code Lines : $(expr ${{fromJson(steps.test_results.outputs.testResultsJson).missedLines}} + ${{fromJson(steps.test_results.outputs.testResultsJson).coveredLines}})"
                 echo "Code Coverage Percentage : ${{fromJson(steps.test_results.outputs.testResultsJson).coveragePercentage}}"
+
+            - name: Alert notifier on failure
+              if: failure() && (github.event.action == 'check_connector_for_breaking_changes')
+              run: |
+                curl -X POST \
+                'https://api.github.com/repos/ballerina-platform/ballerina-release/dispatches' \
+                --header 'Accept: application/vnd.github.v3+json' \
+                --header 'Authorization: Bearer ${{ secrets.BALLERINA_BOT_TOKEN }}' \
+                --data-raw '{
+                  "event_type": "notify-ballerinax-connector-build-failure",
+                  "client_payload": {
+                    "repoName": "module-ballerinax-mongodb",
+                    "workflow": "CI"
+                  }
+                }'
