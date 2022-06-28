@@ -19,13 +19,20 @@ package org.ballerinalang.mongodb;
 
 import static io.ballerina.runtime.api.utils.StringUtils.fromString;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.client.MongoCursor;
 
+import io.ballerina.runtime.api.PredefinedTypes;
+import io.ballerina.runtime.api.creators.TypeCreator;
+import io.ballerina.runtime.api.creators.ValueCreator;
+import io.ballerina.runtime.api.types.RecordType;
+import io.ballerina.runtime.api.types.UnionType;
+import io.ballerina.runtime.api.values.BTypedesc;
+import org.ballerinalang.langlib.value.FromJsonStringWithType;
 import org.bson.Document;
 
 import io.ballerina.runtime.api.creators.ErrorCreator;
 import io.ballerina.runtime.api.values.BObject;
-import io.ballerina.runtime.internal.JsonParser;
 
 /**
  * This class provides functionality for the `RecordIterator` to iterate through the MongoCursor.
@@ -38,9 +45,18 @@ public class RecordIteratorUtils {
 
     public static Object nextResult(BObject recordIterator) {
         MongoCursor<Document> results = (MongoCursor<Document>) recordIterator.getNativeData(
-                                         MongoDBConstants.RESULT_SET_NATIVE_DATA_FIELD);
+                MongoDBConstants.RESULT_SET_NATIVE_DATA_FIELD);
+        RecordType recordType = (RecordType) recordIterator.getNativeData(MongoDBConstants.RECORD_TYPE_DATA_FIELD);
         if (results.hasNext()) {
-            return JsonParser.parse(results.next().toJson());
+            try {
+                String result = new ObjectMapper().writeValueAsString(results.next());
+                UnionType responseType = TypeCreator.createUnionType(recordType, PredefinedTypes.TYPE_ERROR,
+                        PredefinedTypes.TYPE_NULL);
+                BTypedesc responseTypedescValue = ValueCreator.createTypedescValue(responseType);
+                return FromJsonStringWithType.fromJsonStringWithType(fromString(result), responseTypedescValue);
+            } catch (Exception e) {
+                return ErrorCreator.createError(fromString("Error while iterating elements"), e);
+            }
         } else {
             return null;
         }
@@ -48,7 +64,7 @@ public class RecordIteratorUtils {
 
     public static Object closeResult(BObject recordIterator) {
         MongoCursor<Document> results = (MongoCursor<Document>) recordIterator.getNativeData(
-                                         MongoDBConstants.RESULT_SET_NATIVE_DATA_FIELD);
+                MongoDBConstants.RESULT_SET_NATIVE_DATA_FIELD);
         if (results != null) {
             try {
                 results.close();
