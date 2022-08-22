@@ -27,14 +27,9 @@ public isolated client class Client {
     #             relavent fields should be given in config record. Following are some examples :
     #             (1) Username, Password
     #             (2) URL - Connection URL
-    #             (3) Username, secureSocket, authMechanism etc.
-    #             
-    # + databaseName - Database name to connect. This is optional in init. You can pass the database name in each
-    #                  remote function as well.The precedence will be given to the database name which is passed
-    #                  in the remote function. 
+    #             (3) Username, secureSocket, authMechanism etc.        
     # + return - A `mongodb:Error` if there is any error in the provided configurations or database name
-    public isolated function init(ConnectionConfig config, @display {label: "Database Name"} string? databaseName = ())
-                                  returns Error? {
+    public isolated function init(ConnectionConfig config) returns Error? {
         final ConnectionProperties? configOptions = config?.options;
         if (configOptions is ConnectionProperties) {
             final boolean? sslEnabled = configOptions?.sslEnabled;
@@ -45,7 +40,7 @@ public isolated client class Client {
                 }
             }
         }
-        check initClient(self, config, databaseName);        
+        check initClient(self, config, config.databaseName);        
     }
 
     //Database management operations

@@ -20,10 +20,11 @@ public function main() returns error? {
         port: port,
         username: username,
         password: password,
-        options: {sslEnabled: false, serverSelectionTimeout: 5000}
+        options: {sslEnabled: false, serverSelectionTimeout: 5000},
+        databaseName: database
     };
 
-    mongodb:Client mongoClient = check new (mongoConfig, database);
+    mongodb:Client mongoClient = check new (mongoConfig);
     log:printInfo("------------------ Insert Data to query -------------------");
     map<json> insertDocument1 = {name: "Joker", year: 2019, rating: 7};
     map<json> insertDocument2 = {name: "Black Panther", year: 2018, rating: 6};

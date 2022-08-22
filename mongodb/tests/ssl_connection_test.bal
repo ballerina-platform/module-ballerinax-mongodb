@@ -47,7 +47,8 @@ ConnectionConfig sslMongoConfig = {
             },
             protocol:"TLS"
         }
-    }
+    },
+    databaseName: "admin"
 };
 
 @test:Config {
@@ -71,6 +72,6 @@ public function testSSLConnection() returns error? {
    log:printInfo("------------------ Inserting Data on SSL Connection ------------------");
    map<json> document = {name: "The Lion King", year: "2019", rating: 8};
 
-   Client mongoClient = check new (sslMongoConfig,"admin");
+   Client mongoClient = check new (sslMongoConfig);
    check mongoClient->insert(document, "test");
 }

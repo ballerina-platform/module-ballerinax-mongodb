@@ -22,29 +22,32 @@ string testHostName = os:getEnv("MONGODB_HOST") != "" ? os:getEnv("MONGODB_HOST"
 string testUser = os:getEnv("MONGODB_USER") != "" ? os:getEnv("MONGODB_USER") : "admin";
 string testPass = os:getEnv("MONGODB_PASSWORD") != "" ? os:getEnv("MONGODB_PASSWORD") : "admin";
 
+const DATABASE_NAME = "moviecollection";
+const COLLECTION_NAME = "moviedetails";
+
 ConnectionConfig mongoConfig = {
     host: testHostName,
     username: testUser,
     password: testPass,
-    options: {sslEnabled: false, serverSelectionTimeout: 15000}
+    options: {sslEnabled: false, serverSelectionTimeout: 15000},
+    databaseName: DATABASE_NAME
 };
 
 ConnectionConfig mongoConfigError = {
     options: {
         url: "asdakjdk"
-    }
+    },
+    databaseName: "MyDb"
 };
 
-const DATABASE_NAME = "moviecollection";
-const COLLECTION_NAME = "moviedetails";
-Client mongoClient = check new (mongoConfig, DATABASE_NAME);
+Client mongoClient = check new (mongoConfig);
 
 @test:Config {
     groups: ["mongodb"]
 }
 public function initializeInvalidClient() {
     log:printInfo("Start initialization test failure");
-    Client|Error mongoClient = new (mongoConfigError,"MyDb");
+    Client|Error mongoClient = new (mongoConfigError);
     if (mongoClient is ApplicationError) {
         log:printInfo("Creating client failed '" + mongoClient.message() + "'.");
     } else {
