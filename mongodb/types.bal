@@ -23,6 +23,9 @@ import ballerina/crypto;
 # + username - Username for the database connection
 # + password - Password for the database connection
 # + options - Properties for the connection configuration
+# + databaseName - Database name to connect. This is optional. You can pass the database name in each
+#                  remote function as well.The precedence will be given to the database name which is passed
+#                  in the remote function. 
 @display {label: "Connection Config"}
 public type ConnectionConfig record {|
     @display {label: "Host"}
@@ -35,6 +38,8 @@ public type ConnectionConfig record {|
     string password?;
     @display {label: "Connection Options"}
     ConnectionProperties options?;
+    @display {label: "Database Name"} 
+    string databaseName?;
 |};
 
 # Represents the MongoDB connection pool properties
@@ -87,7 +92,7 @@ public type ConnectionProperties record {|
     @display {label: "SSL Invalid Host Name Allowed"}
     boolean sslInvalidHostNameAllowed?;
     @display {label: "Secure Socket"}
-    SecureSocket? secureSocket?;
+    SecureSocket secureSocket?;
     @display {label: "Retry Writes"}
     boolean retryWrites?;
     @display {label: "Socket Timeout"}

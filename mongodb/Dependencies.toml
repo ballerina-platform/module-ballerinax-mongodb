@@ -21,7 +21,7 @@ modules = [
 [[package]]
 org = "ballerina"
 name = "file"
-version = "1.2.2"
+version = "1.4.0"
 scope = "testOnly"
 dependencies = [
 	{org = "ballerina", name = "io"},
@@ -38,7 +38,7 @@ modules = [
 [[package]]
 org = "ballerina"
 name = "io"
-version = "1.2.2"
+version = "1.3.0"
 scope = "testOnly"
 dependencies = [
 	{org = "ballerina", name = "jballerina.java"},
@@ -55,6 +55,15 @@ modules = [
 
 [[package]]
 org = "ballerina"
+name = "lang.string"
+version = "0.0.0"
+scope = "testOnly"
+dependencies = [
+	{org = "ballerina", name = "jballerina.java"}
+]
+
+[[package]]
+org = "ballerina"
 name = "lang.value"
 version = "0.0.0"
 scope = "testOnly"
@@ -65,7 +74,7 @@ dependencies = [
 [[package]]
 org = "ballerina"
 name = "log"
-version = "2.2.1"
+version = "2.4.0"
 scope = "testOnly"
 dependencies = [
 	{org = "ballerina", name = "io"},
@@ -89,9 +98,10 @@ dependencies = [
 [[package]]
 org = "ballerina"
 name = "os"
-version = "1.2.1"
+version = "1.4.0"
 scope = "testOnly"
 dependencies = [
+	{org = "ballerina", name = "io"},
 	{org = "ballerina", name = "jballerina.java"}
 ]
 modules = [
@@ -101,10 +111,11 @@ modules = [
 [[package]]
 org = "ballerina"
 name = "regex"
-version = "1.2.1"
+version = "1.3.0"
 scope = "testOnly"
 dependencies = [
-	{org = "ballerina", name = "jballerina.java"}
+	{org = "ballerina", name = "jballerina.java"},
+	{org = "ballerina", name = "lang.string"}
 ]
 
 [[package]]
@@ -130,7 +141,7 @@ dependencies = [
 [[package]]
 org = "ballerinax"
 name = "mongodb"
-version = "3.3.1"
+version = "4.0.0"
 dependencies = [
 	{org = "ballerina", name = "crypto"},
 	{org = "ballerina", name = "file"},

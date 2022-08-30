@@ -21,10 +21,11 @@ public function main() returns error? {
         port: port,
         username: username,
         password: password,
-        options: {sslEnabled: false, serverSelectionTimeout: 5000}
+        options: {sslEnabled: false, serverSelectionTimeout: 5000},
+        databaseName: database
     };
 
-    mongodb:Client mongoClient = check new (mongoConfig, database);
+    mongodb:Client mongoClient = check new (mongoConfig);
 
     log:printInfo("------------------ List Indicies -------------------");
     stream<Index, error?> indicies = check mongoClient->listIndices(collection);

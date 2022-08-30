@@ -15,10 +15,11 @@ public function main() returns error? {
         port: port,
         username: username,
         password: password,
-        options: {sslEnabled: false, serverSelectionTimeout: 5000}
+        options: {sslEnabled: false, serverSelectionTimeout: 5000},
+        databaseName: database
     };
 
-    mongodb:Client mongoClient = check new (mongoConfig, database);
+    mongodb:Client mongoClient = check new (mongoConfig);
 
     map<json> doc1 = { "name": "Gmail", "version": "0.99.1", "type" : "Service" };
     map<json> doc2 = { "name": "Salesforce", "version": "0.99.5", "type" : "Enterprise" };

@@ -15,7 +15,8 @@ public function main() returns error? {
         port: port,
         username: username,
         password: password,
-        options: {sslEnabled: false, serverSelectionTimeout: 5000}
+        options: {sslEnabled: false, serverSelectionTimeout: 5000},
+        databaseName: database
     };
 
     mongodb:Client mongoClient = check new (mongoConfig, database);
