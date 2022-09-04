@@ -26,15 +26,22 @@ const DATABASE_NAME = "moviecollection";
 const COLLECTION_NAME = "moviedetails";
 
 ConnectionConfig mongoConfig = {
-    host: testHostName,
-    username: testUser,
-    password: testPass,
-    options: {sslEnabled: false, serverSelectionTimeout: 15000},
+    connection: {
+        host: testHostName,
+        auth: {
+            username: testUser,
+            password: testPass
+        },
+        options: {
+            sslEnabled: false, 
+            serverSelectionTimeout: 15000
+        } 
+    },
     databaseName: DATABASE_NAME
 };
 
 ConnectionConfig mongoConfigError = {
-    options: {
+    connection: {
         url: "asdakjdk"
     },
     databaseName: "MyDb"

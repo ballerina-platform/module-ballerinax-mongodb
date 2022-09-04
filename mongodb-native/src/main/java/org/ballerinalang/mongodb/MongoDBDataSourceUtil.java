@@ -63,27 +63,23 @@ import static io.ballerina.runtime.api.utils.StringUtils.fromString;
 public class MongoDBDataSourceUtil {
     private static final Logger log = LoggerFactory.getLogger(MongoDBDataSourceUtil.class);
 
+    private static final BString CONNECTION = fromString("connection");
     private static final BString HOST = fromString("host");
     private static final BString PORT = fromString("port");
     private static final BString USERNAME = fromString("username");
     private static final BString PASSWORD = fromString("password");
     private static final BString OPTIONS = fromString("options");
+    private static final BString URL = fromString("url");
+    private static final BString AUTH = fromString("auth");
+    private static final BString GSSAPI_SERVICE_NAME = fromString("serviceName");
 
     private MongoDBDataSourceUtil() {
     }
 
     public static Object initClient(Environment env, BObject client, BMap<BString, BValue> config,
                                     Object databaseName) {
-        String host = config.containsKey(HOST) ? config.getStringValue(HOST).getValue() : "";
-        long port = config.containsKey(PORT) ? config.getIntValue(PORT) : 0;
-
-        String username = config.containsKey(USERNAME) ? config.getStringValue(USERNAME).getValue() : "";
-        String password = config.containsKey(PASSWORD) ? config.getStringValue(PASSWORD).getValue() : "";
-        
-        BMap options = config.containsKey(OPTIONS) ? config.getMapValue(OPTIONS) : null;
-
         try {
-            MongoClient mongoClient = init(host, port, username, password, options);
+            MongoClient mongoClient = init(config);
             client.addNativeData(MongoDBConstants.MONGO_CLIENT, mongoClient);
             if (databaseName != null && !(MongoDBConstants.EMPTY_STRING.equals(databaseName.toString()))) {
                 MongoDatabase database = mongoClient.getDatabase(databaseName.toString());
@@ -115,30 +111,34 @@ public class MongoDBDataSourceUtil {
         mongoClient.close();
     }
 
-    public static MongoClient init(String host, long port, String username, String password, BMap options) {
-        MongoCredential mongoCredential = createCredentials(username, password, options);
-        if (options != null) {
-            String directURL = options.containsKey(ConnectionParam.URL.getKey()) ?  
-                               options.getStringValue(ConnectionParam.URL.getKey()).getValue() : "";
-            //URL in options overrides host and port config
-            if (!directURL.isEmpty()) {
-                try {
-                    return new MongoClient(new MongoClientURI(directURL));
-                } catch (IllegalArgumentException e) {
-                    throw new MongoDBClientException("'" + directURL + "' is not a valid MongoDB connection URI");
-                }
+    public static MongoClient init(BMap<BString, BValue> config) {
+        BMap connection = config.getMapValue(CONNECTION);
+        String host = "localhost";
+        long port = 27017;
+        String gssapiServiceName = "";
+        BMap options = null;
+        BMap auth = null;
+
+        if (connection.containsKey(URL)) {
+            String connectionURL = connection.getStringValue(URL).getValue();
+            try {
+                return new MongoClient(new MongoClientURI(connectionURL));
+            } catch (IllegalArgumentException e) {
+                throw new MongoDBClientException("'" + connectionURL + "' is not a valid MongoDB connection URI");
+            }
+        } else {
+            host = connection.getStringValue(HOST).getValue();
+            port = connection.getIntValue(PORT);
+            auth = connection.getMapValue(AUTH);
+            if (auth.containsKey(GSSAPI_SERVICE_NAME)) {
+                gssapiServiceName = auth.getStringValue(GSSAPI_SERVICE_NAME).getValue();
+            }
+            if (connection.containsKey(OPTIONS)) {
+                options = connection.getMapValue(OPTIONS);
             }
         }
-
-        ServerAddress serverAddress;
-        if (!host.isEmpty() && port > 0) {
-            serverAddress = new ServerAddress(host, (int) port);
-        } else if (!host.isEmpty()) {
-            serverAddress = new ServerAddress(host);
-        } else {
-            serverAddress = new ServerAddress ();
-        }    
-            
+        ServerAddress serverAddress = new ServerAddress(host, (int) port);
+        MongoCredential mongoCredential = createCredentials(auth, gssapiServiceName, options);
         if (mongoCredential != null) {
             return new MongoClient(serverAddress, mongoCredential, createOptions(options));
         }
@@ -151,10 +151,12 @@ public class MongoDBDataSourceUtil {
      * @param options BStruct containing options for MongoCredential creation
      * @return MongoCredential
      */
-    private static MongoCredential createCredentials(String username, String password, BMap options) {
+    private static MongoCredential createCredentials(BMap auth, String gssapiServiceName, BMap options) {
         MongoCredential mongoCredential = null;
         String authSource = "admin";
         String authMechanismString = "";
+        String username = "";
+        String password = "";
 
         if (options != null) {
             authSource = options.containsKey(ConnectionParam.AUTHSOURCE.getKey()) ? 
@@ -162,6 +164,13 @@ public class MongoDBDataSourceUtil {
             authMechanismString = options.containsKey(ConnectionParam.AUTHMECHANISM.getKey()) ? 
                                           options.getStringValue(ConnectionParam.AUTHMECHANISM.getKey())
                                           .getValue() : ""; 
+        }
+
+        if (auth.containsKey(USERNAME)) {
+            username = auth.getStringValue(USERNAME).getValue();
+        }
+        if (auth.containsKey(PASSWORD)) {
+            password = auth.getStringValue(PASSWORD).getValue();
         }
 
         if (!authMechanismString.isEmpty()) {
@@ -188,10 +197,8 @@ public class MongoDBDataSourceUtil {
                     break;
                 case GSSAPI:
                     mongoCredential = MongoCredential.createGSSAPICredential(username);
-                    if (options.containsKey(ConnectionParam.GSSAPI_SERVICE_NAME.getKey())) {
-                        mongoCredential = mongoCredential.withMechanismProperty("SERVICE_NAME", 
-                                          options.getStringValue(ConnectionParam.GSSAPI_SERVICE_NAME.getKey())
-                                          .getValue());
+                    if (!gssapiServiceName.isEmpty()) {
+                        mongoCredential = mongoCredential.withMechanismProperty("SERVICE_NAME", gssapiServiceName);
                     }
                     break;
                 default:

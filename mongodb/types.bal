@@ -18,40 +18,79 @@ import ballerina/crypto;
 
 # Represents the Client configurations for MongoDB.
 #
-# + host - The database's host address
-# + port - The port on which the database is running
-# + username - Username for the database connection
-# + password - Password for the database connection
-# + options - Properties for the connection configuration
+# + connection - Connection parameters or Connection URL to connect to MongoDB
 # + databaseName - Database name to connect. This is optional. You can pass the database name in each
 #                  remote function as well.The precedence will be given to the database name which is passed
 #                  in the remote function. 
 @display {label: "Connection Config"}
 public type ConnectionConfig record {|
-    @display {label: "Host"}
-    string host?;
-    @display {label: "Port"}
-    int port?;
-    @display {label: "Username"}
-    string username?;
-    @display {label: "Password"}
-    string password?;
-    @display {label: "Connection Options"}
-    ConnectionProperties options?;
+    @display {label: "Connection"} 
+    ConnectionParameters|ConnectionURL connection;
     @display {label: "Database Name"} 
     string databaseName?;
 |};
 
+# Connection URL.
+#
+# + url - URL
+public type ConnectionURL record {|
+    string url;
+|};
+
+# Connection Parameters
+#
+# + host - The database's host address (Default: localhost)
+# + port - The port on which the database is running (Default: 27017)
+# + auth - Basic auth Credential or X509 Credential or GSSAPI Credential 
+# + options - Properties for the connection configuration
+public type ConnectionParameters record {|
+    @display {label: "Host"}
+    string host = "localhost";
+    @display {label: "Port"}
+    int port = 27017;
+    BasicAuthCredential|X509Credential|GSSAPICredential auth;
+    @display {label: "Connection Options"}
+    ConnectionProperties options?;
+|};
+
+# Basic Authentication
+#
+# + username - Username for the database connection
+# + password - Password for the database connection
+public type BasicAuthCredential record {|
+    @display {label: "Username"}
+    string username;
+    @display {label: "Password"}
+    string password;
+|};
+
+# X509 Credential
+#
+# + username - Username (Optional)
+public type X509Credential record {|
+    @display {label: "Username"}
+    string username?;
+|};
+
+# GSSAPI Credential
+#
+# + username - Username
+# + serviceName - GSSAPI Service Name
+public type GSSAPICredential record {|
+    @display {label: "Username"}
+    string username;
+    @display {label: "Service Name"}
+    string serviceName?;
+|};
+
 # Represents the MongoDB connection pool properties
 # 
-# + url - MongoDB URL for connecting to replicas
 # + readConcern - The read concern to use
 # + writeConcern - The write concern to use. The default value is `WriteConcern.ACKNOWLEDGED`
 # + readPreference - The read preference for the replica set
 # + authSource - The source in which the user is defined
 # + authMechanism - Authentication mechanism to use. 
 #                   Possible values are PLAIN, SCRAM_SHA_1, SCRAM_SHA_256, MONGODB-X509, or GSSAPI
-# + gssapiServiceName - Authentications GSSAPI Service name
 # + replicaSet - The replica set name if it is to connect to replicas
 # + sslEnabled - Whether SSL connection is enabled
 # + sslInvalidHostNameAllowed - Whether invalid host names should be allowed
@@ -71,8 +110,6 @@ public type ConnectionConfig record {|
 #                        determine the current state of each server in the cluster.
 @display {label: "Connection Properties"}
 public type ConnectionProperties record {|
-    @display {label: "URL"}
-    string url?;
     @display {label: "Read Concern"}
     string readConcern?;
     @display {label: "Write Concern"}
@@ -83,8 +120,6 @@ public type ConnectionProperties record {|
     string authSource?;
     @display {label: "Auth Mechanism"}
     string authMechanism?;
-    @display {label: "GSS API Service Name"}
-    string gssapiServiceName?;
     @display {label: "Replica Set"}
     string replicaSet?;
     @display {label: "SSL Enabled"}

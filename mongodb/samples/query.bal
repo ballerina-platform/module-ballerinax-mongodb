@@ -16,11 +16,18 @@ type Movie record {
 public function main() returns error? {
     
     mongodb:ConnectionConfig mongoConfig = {
-        host: host,
-        port: port,
-        username: username,
-        password: password,
-        options: {sslEnabled: false, serverSelectionTimeout: 5000},
+        connection: {
+            host: host,
+            port: port,
+            auth: {
+                username: username,
+                password: password
+            },
+            options: {
+                sslEnabled: false, 
+                serverSelectionTimeout: 5000
+            } 
+        },
         databaseName: database
     };
 
