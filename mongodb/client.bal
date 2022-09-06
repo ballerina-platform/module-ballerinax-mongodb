@@ -23,20 +23,19 @@ public isolated client class Client {
 
     # Initialises the `Client` object with the provided `ConnectionConfig` properties.
     # 
-    # + config - `ConnectionConfig` properties. Even though all fields are optional, in order to authenticate the database, 
-    #             relavent fields should be given in config record. Following are some examples :
-    #             (1) Username, Password
-    #             (2) URL - Connection URL
-    #             (3) Username, secureSocket, authMechanism etc.        
+    # + config - `ConnectionConfig` properties.   
     # + return - A `mongodb:Error` if there is any error in the provided configurations or database name
     public isolated function init(ConnectionConfig config) returns Error? {
-        final ConnectionProperties? configOptions = config?.options;
-        if (configOptions is ConnectionProperties) {
-            final boolean? sslEnabled = configOptions?.sslEnabled;
-            if (sslEnabled is boolean) {
-                if (sslEnabled && configOptions?.secureSocket is ()) {
-                    return error ApplicationError("The connection property `secureSocket` is mandatory " +
-                    "when ssl is enabled for connection.");
+        if config.connection is ConnectionParameters {
+            ConnectionParameters connectionParams = <ConnectionParameters>config.connection;
+            final ConnectionProperties? configOptions = connectionParams.options;
+            if configOptions is ConnectionProperties {
+                final boolean? sslEnabled = configOptions?.sslEnabled;
+                if sslEnabled is boolean {
+                    if (sslEnabled && configOptions?.secureSocket is ()) {
+                        return error ApplicationError("The connection property `secureSocket` is mandatory " +
+                        "when ssl is enabled for connection.");
+                    }
                 }
             }
         }
