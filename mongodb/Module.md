@@ -28,14 +28,21 @@ To use the MongoDB client you need to specify the database it needs to connect t
 
 ```ballerina
 mongodb:ConnectionConfig mongoConfig = {
-    host: <YOUR_HOST_NAME>,
-    port: <PORT>,
-    username: <DB_USERNAME>,
-    password: <DB_PASSWORD>,
-    options: {sslEnabled: false, serverSelectionTimeout: 5000}
+    connection: {
+        host: <YOUR_HOST_NAME>,
+        port: <PORT>,
+        auth: {
+            username: <DB_USERNAME>,
+            password: <DB_PASSWORD>
+        },
+        options: {
+            sslEnabled: false, 
+            serverSelectionTimeout: 5000
+        }
+    },
+    databaseName: DATABASE_NAME>
 };
-string database = <DATABASE_NAME>
-mongodb:Client mongoClient = check new (mongoConfig, database);
+mongodb:Client mongoClient = check new (mongoConfig);
 ```
 
 ### Step 3: Invoke connector operation
@@ -53,5 +60,3 @@ Following is an example on how to insert a document into a collection using the 
     }
     ```
 2. Use `bal run` command to compile and run the Ballerina program.
-
-**[You can find a list of samples here](https://github.com/ballerina-platform/module-ballerinax-mongodb/blob/master/mongodb/samples/)**
