@@ -28,7 +28,7 @@ jobs:
                 ./gradlew build
 
             - name: Ballerina Build
-              uses: ballerina-platform/ballerina-action/@2201.1.0
+              uses: ballerina-platform/ballerina-action/@2201.2.1
               with:
                 args:
                   pack mongodb
@@ -37,7 +37,7 @@ jobs:
                 JAVA_OPTS: -DBALLERINA_DEV_COMPILE_BALLERINA_ORG=true
                 
             - name: Ballerina Push
-              uses: ballerina-platform/ballerina-action/@2201.1.0
+              uses: ballerina-platform/ballerina-action/@2201.2.1
               with:
                   args:
                       push
