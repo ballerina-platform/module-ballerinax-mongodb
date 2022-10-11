@@ -2,7 +2,7 @@
 
 | Ballerina Language Version  | MongoDB Version |
 | ----------------------------| ----------------|
-|  2201.2.0            |   4.2.0         |
+|  2201.2.1            |   4.2.0         |
 
 ## Running tests using Docker image of MongoDB
 
