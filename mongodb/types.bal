@@ -25,15 +25,15 @@ import ballerina/crypto;
 @display {label: "Connection Config"}
 public type ConnectionConfig record {|
     @display {label: "Connection"} 
-    ConnectionParameters|ConnectionURL connection;
+    ConnectionParameters|ConnectionString connection;
     @display {label: "Database Name"} 
     string databaseName?;
 |};
 
-# Connection URL.
+# Connection String.
 #
 # + url - URL
-public type ConnectionURL record {|
+public type ConnectionString record {|
     string url;
 |};
 
