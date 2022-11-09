@@ -10,7 +10,7 @@ The MongoDB connector allows you to connect to a MongoDB database from Ballerina
 
 |                           | Version                     |
 |---------------------------|-----------------------------|
-| Ballerina Language        | Swan Lake 2201.2.1          |
+| Ballerina Language        | Swan Lake 2201.3.0          |
 | Mongo DB                  | 4.2.0                       |
 
 ## Report issues

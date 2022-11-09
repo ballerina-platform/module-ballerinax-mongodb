@@ -1,5 +1,5 @@
 [package]
-distribution = "2201.2.1"
+distribution = "2201.3.0"
 org = "ballerinax"
 name = "mongodb"
 version = "4.0.0"
