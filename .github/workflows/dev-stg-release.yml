@@ -36,7 +36,7 @@ jobs:
                 ./gradlew build
 
             - name: Ballerina Build
-              uses: ballerina-platform/ballerina-action/@2201.2.1
+              uses: ballerina-platform/ballerina-action/@2201.4.1
               with:
                 args:
                   pack mongodb
@@ -46,7 +46,7 @@ jobs:
                 
             - name: Push to Staging
               if: github.event.inputs.bal_central_environment == 'STAGE'
-              uses: ballerina-platform/ballerina-action/@2201.2.1
+              uses: ballerina-platform/ballerina-action/@2201.4.1
               with:
                   args:
                       push
@@ -57,7 +57,7 @@ jobs:
                   
             - name: Push to Dev
               if: github.event.inputs.bal_central_environment == 'DEV'
-              uses: ballerina-platform/ballerina-action/@2201.2.1
+              uses: ballerina-platform/ballerina-action/@2201.4.1
               with:
                   args:
                       push

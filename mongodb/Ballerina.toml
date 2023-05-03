@@ -1,8 +1,8 @@
 [package]
-distribution = "2201.3.0"
+distribution = "2201.4.1"
 org = "ballerinax"
 name = "mongodb"
-version = "4.0.0"
+version = "4.1.0"
 license= ["Apache-2.0"]
 authors = ["Ballerina"]
 keywords = ["IT Operations/Databases", "Cost/Freemium"]
@@ -10,10 +10,10 @@ icon = "icon.png"
 repository = "https://github.com/ballerina-platform/module-ballerinax-mongodb"
 
 [[platform.java11.dependency]]
-path = "../mongodb-native/build/libs/mongodb-native-4.0.0.jar"
+path = "../mongodb-native/build/libs/mongodb-native-4.1.0.jar"
 groupId = "org.ballerinalang"
 artifactId = "mongodb-native"
-version = "4.0.0"
+version = "4.1.0"
 
 [[platform.java11.dependency]]
 groupId = "com.fasterxml.jackson.core"
