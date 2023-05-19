@@ -143,7 +143,7 @@ public isolated client class Client {
     # + filter - Filter for the query. Eg: { <field1>: <value1>, ... }.
     # + isMultiple - Whether to update multiple documents
     # + upsert - Whether to insert if update cannot be achieved
-    # + return - JSON array of the documents in the collection or else a `mongodb:Error` if unable to reach the DB
+    # + return - The number of updated documents or else a `mongodb:Error` if unable to reach the DB
     @display {label: "Update Document"}
     remote isolated function update(@display {label: "Document to Update"} map<json> updateStatement, 
                                     @display {label: "Collection Name"} string collectionName, 
