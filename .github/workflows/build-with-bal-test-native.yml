@@ -58,7 +58,7 @@ jobs:
                 version: 2201.5.0
 
             - name: Run Ballerina tests(MongoDB-SSL) using the native executable
-              run: bal test --native --groups mongodb-ssl ./mongodb
+              run: bal test --native --groups mongodb-ssl
               env:
                 JAVA_HOME: /usr/lib/jvm/default-jvm
                 WORKING_DIR: ./mongodb
@@ -66,9 +66,10 @@ jobs:
                 MONGODB_USER: C=US,ST=CA,L=San Francisco,O=Jaspersoft,OU=JSDev,CN=admin
 
             - name: Run Ballerina tests(MongoDB) using the native executable
-              run: bal test --native --groups mongodb ./mongodb
+              run: bal test --native --groups mongodb
               env:
                 JAVA_HOME: /usr/lib/jvm/default-jvm
+                WORKING_DIR: ./mongodb
                 MONGODB_HOST: mongodb
                 MONGODB_USER: admin
                 MONGODB_PASSWORD: admin
