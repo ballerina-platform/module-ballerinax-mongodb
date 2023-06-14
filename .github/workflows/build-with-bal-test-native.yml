@@ -57,20 +57,22 @@ jobs:
               with:
                 version: 2201.5.0
 
-            - name: Navigate to mongodb directory
-              run: cd mongodb
-
             - name: Run Ballerina tests(MongoDB-SSL) using the native executable
+              working-directory: ./mongodb
               run: bal test --native --groups mongodb-ssl
               env:
                 JAVA_HOME: /usr/lib/jvm/default-jvm
+                # Following credentials are only used during testing in docker container
+                WORKING_DIR: ./mongodb
                 MONGODB_HOST: mongodb-ssl
                 MONGODB_USER: C=US,ST=CA,L=San Francisco,O=Jaspersoft,OU=JSDev,CN=admin
 
             - name: Run Ballerina tests(MongoDB) using the native executable
+              working-directory: ./mongodb
               run: bal test --native --groups mongodb
               env:
                 JAVA_HOME: /usr/lib/jvm/default-jvm
+                # Following credentials are only used during testing in docker container
                 MONGODB_HOST: mongodb
                 MONGODB_USER: admin
                 MONGODB_PASSWORD: admin
