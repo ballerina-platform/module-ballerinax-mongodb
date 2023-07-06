@@ -16,12 +16,11 @@
 
 package org.ballerinalang.mongodb.exceptions;
 
-import io.ballerina.runtime.internal.util.exceptions.BallerinaException;
-
 /**
  * Exception class for MongoDBClient validations.
  */
-public class MongoDBClientException extends BallerinaException {
+public class MongoDBClientException extends RuntimeException {
+
     public MongoDBClientException(String message) {
         super(message);
     }
