@@ -2,15 +2,18 @@
 distribution = "2201.7.0"
 org = "ballerinax"
 name = "mongodb"
-version = "4.2.0"
+version = "4.3.0"
 license= ["Apache-2.0"]
 authors = ["Ballerina"]
 keywords = ["IT Operations/Databases", "Cost/Freemium"]
 icon = "icon.png"
 repository = "https://github.com/ballerina-platform/module-ballerinax-mongodb"
 
+[platform.java11]
+graalvmCompatible = true
+
 [[platform.java11.dependency]]
-path = "../mongodb-native/build/libs/mongodb-native-4.2.0.jar"
+path = "../mongodb-native/build/libs/mongodb-native-4.3.0.jar"
 groupId = "org.ballerinalang"
 artifactId = "mongodb-native"
 version = "4.2.0"
