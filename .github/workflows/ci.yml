@@ -55,7 +55,7 @@ jobs:
               uses: ballerina-platform/ballerina-action/@nightly
               with:
                 args:
-                  test --groups mongodb-ssl --code-coverage
+                  test --groups mongodb-ssl --test-report --code-coverage --coverage-format=xml 
               env:
                 JAVA_HOME: /usr/lib/jvm/default-jvm
                 # Following credentials are only used during testing in docker container
@@ -63,11 +63,14 @@ jobs:
                 MONGODB_HOST: mongodb-ssl
                 MONGODB_USER: C=US,ST=CA,L=San Francisco,O=Jaspersoft,OU=JSDev,CN=admin
                 
+            - name: Upload SSL test coverage reports to Codecov
+              uses: codecov/codecov-action@v3
+
             - name: MongoDB Tests
               uses: ballerina-platform/ballerina-action/@nightly
               with:
                 args:
-                  test --groups mongodb --code-coverage mongodb
+                  test --groups mongodb --test-report --code-coverage --coverage-format=xml  mongodb
               env:
                 JAVA_HOME: /usr/lib/jvm/default-jvm
                 # Following credentials are only used during testing in docker container
@@ -76,22 +79,8 @@ jobs:
                 MONGODB_PASSWORD: admin
             
 
-            # Read the ballerina test results
-            - name: Read Ballerina Test Results
-              id: test_results
-              run: |
-                content=`cat ./mongodb/target/report/test_results.json`                
-                content="${content//'%'/'%25'}"
-                content="${content//$'\n'/'%0A'}"
-                content="${content//$'\r'/'%0D'}"
-                echo "::set-output name=testResultsJson::$content"
-
-            # Print the code coverage information
-            - name: Code Coverage
-              run: |
-                echo "Covered Code Lines : ${{fromJson(steps.test_results.outputs.testResultsJson).coveredLines}}"
-                echo "Total Code Lines : $(expr ${{fromJson(steps.test_results.outputs.testResultsJson).missedLines}} + ${{fromJson(steps.test_results.outputs.testResultsJson).coveredLines}})"
-                echo "Code Coverage Percentage : ${{fromJson(steps.test_results.outputs.testResultsJson).coveragePercentage}}"
+            - name: Upload MongoDB test coverage reports to Codecov
+              uses: codecov/codecov-action@v3
 
             - name: Alert notifier on failure
               if: failure() && (github.event.action == 'check_connector_for_breaking_changes')
