@@ -17,22 +17,20 @@
  */
 package org.ballerinalang.mongodb;
 
-import static io.ballerina.runtime.api.utils.StringUtils.fromString;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.client.MongoCursor;
-
 import io.ballerina.runtime.api.PredefinedTypes;
+import io.ballerina.runtime.api.creators.ErrorCreator;
 import io.ballerina.runtime.api.creators.TypeCreator;
 import io.ballerina.runtime.api.creators.ValueCreator;
 import io.ballerina.runtime.api.types.RecordType;
 import io.ballerina.runtime.api.types.UnionType;
+import io.ballerina.runtime.api.values.BObject;
 import io.ballerina.runtime.api.values.BTypedesc;
 import org.ballerinalang.langlib.value.FromJsonStringWithType;
 import org.bson.Document;
 
-import io.ballerina.runtime.api.creators.ErrorCreator;
-import io.ballerina.runtime.api.values.BObject;
+import static io.ballerina.runtime.api.utils.StringUtils.fromString;
 
 /**
  * This class provides functionality for the `RecordIterator` to iterate through the MongoCursor.
@@ -40,6 +38,7 @@ import io.ballerina.runtime.api.values.BObject;
  * @since 3.0.0
  */
 public class RecordIteratorUtils {
+
     public RecordIteratorUtils() {
     }
 

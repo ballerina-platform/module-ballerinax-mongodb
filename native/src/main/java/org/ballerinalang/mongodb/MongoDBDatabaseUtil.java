@@ -22,7 +22,6 @@ import com.mongodb.MongoClient;
 import com.mongodb.MongoException;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
-
 import io.ballerina.runtime.api.Environment;
 import io.ballerina.runtime.api.creators.ErrorCreator;
 import io.ballerina.runtime.api.creators.ValueCreator;
@@ -76,26 +75,26 @@ public class MongoDBDatabaseUtil {
         if (databaseName == null) {
             Object database = client.getNativeData(MongoDBConstants.MONGO_DATABASE);
             if (database == null) {
-                throw ErrorCreator.createError(fromString("Error while getting database object from client native " + 
-                                                "data. There is no database object available."));
+                throw ErrorCreator.createError(fromString("Error while getting database object from client native " +
+                        "data. There is no database object available."));
             }
             return (MongoDatabase) database;
         } else {
             if (MongoDBConstants.EMPTY_STRING.equals(databaseName.toString().trim())) {
                 Object database = client.getNativeData(MongoDBConstants.MONGO_DATABASE);
                 if (database == null) {
-                    throw ErrorCreator.createError(fromString("Error while getting Database object from client " + 
-                                                    "native data. There is no Database object available."));
+                    throw ErrorCreator.createError(fromString("Error while getting Database object from client " +
+                            "native data. There is no Database object available."));
                 }
                 return (MongoDatabase) database;
             } else {
                 Object mongoClient = client.getNativeData(MongoDBConstants.MONGO_CLIENT);
                 if (mongoClient == null) {
-                    throw ErrorCreator.createError(fromString("Error while getting MongoClient object from client " + 
-                                                    "native data. There is no MongoClient object available."));
+                    throw ErrorCreator.createError(fromString("Error while getting MongoClient object from client " +
+                            "native data. There is no MongoClient object available."));
                 }
                 return ((MongoClient) mongoClient).getDatabase(databaseName.toString().trim());
-            }            
+            }
         }
     }
 }

@@ -29,17 +29,16 @@ import com.mongodb.ServerAddress;
 import com.mongodb.WriteConcern;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
-
 import io.ballerina.runtime.api.Environment;
 import io.ballerina.runtime.api.creators.ValueCreator;
 import io.ballerina.runtime.api.values.BMap;
 import io.ballerina.runtime.api.values.BObject;
 import io.ballerina.runtime.api.values.BString;
 import io.ballerina.runtime.api.values.BValue;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.ballerinalang.mongodb.exceptions.BallerinaErrorGenerator;
 import org.ballerinalang.mongodb.exceptions.MongoDBClientException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -49,6 +48,7 @@ import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.Locale;
+
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
@@ -61,6 +61,7 @@ import static io.ballerina.runtime.api.utils.StringUtils.fromString;
  * Java implementation of MongoDB datasource.
  */
 public class MongoDBDataSourceUtil {
+
     private static final Logger log = LoggerFactory.getLogger(MongoDBDataSourceUtil.class);
 
     private static final BString CONNECTION = fromString("connection");
@@ -114,21 +115,14 @@ public class MongoDBDataSourceUtil {
     public static MongoClient init(BMap<BString, BValue> config) {
         BMap connection = config.getMapValue(CONNECTION);
         String host = "localhost";
-        long port = 27017;
         String gssapiServiceName = "";
         BMap options = null;
         BMap auth = null;
+        int port = 27017;
 
-        if (connection.containsKey(URL)) {
-            String connectionURL = connection.getStringValue(URL).getValue();
-            try {
-                return new MongoClient(new MongoClientURI(connectionURL));
-            } catch (IllegalArgumentException e) {
-                throw new MongoDBClientException("'" + connectionURL + "' is not a valid MongoDB connection URI");
-            }
-        } else {
+        if (!connection.containsKey(URL)) {
             host = connection.getStringValue(HOST).getValue();
-            port = connection.getIntValue(PORT);
+            port = connection.getIntValue(PORT).intValue();
             auth = connection.getMapValue(AUTH);
             if (auth.containsKey(GSSAPI_SERVICE_NAME)) {
                 gssapiServiceName = auth.getStringValue(GSSAPI_SERVICE_NAME).getValue();
@@ -136,6 +130,15 @@ public class MongoDBDataSourceUtil {
             if (connection.containsKey(OPTIONS)) {
                 options = connection.getMapValue(OPTIONS);
             }
+
+        } else {
+            String connectionURL = connection.getStringValue(URL).getValue();
+            try {
+                return new MongoClient(new MongoClientURI(connectionURL));
+            } catch (IllegalArgumentException e) {
+                throw new MongoDBClientException("'" + connectionURL + "' is not a valid MongoDB connection URI");
+            }
+
         }
         ServerAddress serverAddress = new ServerAddress(host, (int) port);
         MongoCredential mongoCredential = createCredentials(auth, gssapiServiceName, options);
@@ -159,11 +162,11 @@ public class MongoDBDataSourceUtil {
         String password = "";
 
         if (options != null) {
-            authSource = options.containsKey(ConnectionParam.AUTHSOURCE.getKey()) ? 
-                                options.getStringValue(ConnectionParam.AUTHSOURCE.getKey()).getValue() : "admin";
-            authMechanismString = options.containsKey(ConnectionParam.AUTHMECHANISM.getKey()) ? 
-                                          options.getStringValue(ConnectionParam.AUTHMECHANISM.getKey())
-                                          .getValue() : ""; 
+            authSource = options.containsKey(ConnectionParam.AUTHSOURCE.getKey()) ?
+                    options.getStringValue(ConnectionParam.AUTHSOURCE.getKey()).getValue() : "admin";
+            authMechanismString = options.containsKey(ConnectionParam.AUTHMECHANISM.getKey()) ?
+                    options.getStringValue(ConnectionParam.AUTHMECHANISM.getKey())
+                            .getValue() : "";
         }
 
         if (auth.containsKey(USERNAME)) {
@@ -228,13 +231,13 @@ public class MongoDBDataSourceUtil {
     private static MongoClientOptions createOptions(BMap options) {
         MongoClientOptions.Builder builder = MongoClientOptions.builder();
         if (options != null) {
-            boolean sslEnabled = options.containsKey(ConnectionParam.SSL_ENABLED.getKey()) ? 
-                                options.getBooleanValue(ConnectionParam.SSL_ENABLED.getKey()) : false;
+            boolean sslEnabled = options.containsKey(ConnectionParam.SSL_ENABLED.getKey()) ?
+                    options.getBooleanValue(ConnectionParam.SSL_ENABLED.getKey()) : false;
             if (sslEnabled) {
                 builder = builder.sslEnabled(true);
                 boolean sslInvalidHostNameAllowed = options.containsKey(ConnectionParam.SSL_INVALID_HOSTNAME_ALLOWED
-                                .getKey()) ? options.getBooleanValue(ConnectionParam.SSL_INVALID_HOSTNAME_ALLOWED
-                                .getKey()) : false;
+                        .getKey()) ? options.getBooleanValue(ConnectionParam.SSL_INVALID_HOSTNAME_ALLOWED
+                        .getKey()) : false;
                 if (sslInvalidHostNameAllowed) {
                     builder.sslInvalidHostNameAllowed(true);
                 }
@@ -247,7 +250,7 @@ public class MongoDBDataSourceUtil {
                 String readConcern = options.getStringValue(ConnectionParam.READ_CONCERN.getKey()).getValue();
                 if (!readConcern.isEmpty()) {
                     builder = builder.readConcern(new ReadConcern(ReadConcernLevel.valueOf(readConcern)));
-                }            
+                }
             }
             if (options.containsKey(ConnectionParam.WRITE_CONCERN.getKey())) {
                 String writeConcern = options.getStringValue(ConnectionParam.WRITE_CONCERN.getKey()).getValue();
@@ -255,7 +258,7 @@ public class MongoDBDataSourceUtil {
                     builder = builder.writeConcern(WriteConcern.valueOf(writeConcern));
                 }
             }
-            
+
             if (options.containsKey(ConnectionParam.READ_PREFERENCE.getKey())) {
                 String readPreference = options.getStringValue(ConnectionParam.READ_PREFERENCE.getKey()).getValue();
                 if (!readPreference.isEmpty()) {
@@ -270,53 +273,53 @@ public class MongoDBDataSourceUtil {
             }
             if (options.containsKey(ConnectionParam.SOCKET_TIMEOUT.getKey())) {
                 builder = builder.socketTimeout(options.getIntValue(ConnectionParam.SOCKET_TIMEOUT.getKey())
-                          .intValue());
+                        .intValue());
             }
             if (options.containsKey(ConnectionParam.CONNECTION_TIMEOUT.getKey())) {
                 builder = builder.connectTimeout(options.getIntValue(ConnectionParam.CONNECTION_TIMEOUT.getKey())
                         .intValue());
             }
-            
+
             if (options.containsKey(ConnectionParam.MAX_POOL_SIZE.getKey())) {
                 builder = builder.connectionsPerHost(options.getIntValue(ConnectionParam.MAX_POOL_SIZE.getKey())
-                          .intValue());
+                        .intValue());
             }
-            
+
             if (options.containsKey(ConnectionParam.SERVER_SELECTION_TIMEOUT.getKey())) {
                 builder = builder.serverSelectionTimeout(options.getIntValue(ConnectionParam.SERVER_SELECTION_TIMEOUT
                         .getKey()).intValue());
             }
-            
+
             if (options.containsKey(ConnectionParam.MAX_IDLE_TIME.getKey())) {
                 builder = builder.maxConnectionIdleTime(options.getIntValue(ConnectionParam.MAX_IDLE_TIME.getKey())
                         .intValue());
             }
-            
+
             if (options.containsKey(ConnectionParam.MAX_LIFE_TIME.getKey())) {
                 builder = builder.maxConnectionLifeTime(options.getIntValue(ConnectionParam.MAX_LIFE_TIME.getKey())
                         .intValue());
             }
-            
+
             if (options.containsKey(ConnectionParam.MIN_POOL_SIZE.getKey())) {
                 builder = builder.minConnectionsPerHost(options.getIntValue(ConnectionParam.MIN_POOL_SIZE.getKey())
                         .intValue());
             }
-            
+
             if (options.containsKey(ConnectionParam.WAIT_QUEUE_MULTIPLE.getKey())) {
                 builder = builder.threadsAllowedToBlockForConnectionMultiplier(options.getIntValue(
                         ConnectionParam.WAIT_QUEUE_MULTIPLE.getKey()).intValue());
             }
-            
+
             if (options.containsKey(ConnectionParam.WAIT_QUEUE_TIMEOUT.getKey())) {
                 builder = builder.maxWaitTime(options.getIntValue(ConnectionParam.WAIT_QUEUE_TIMEOUT.getKey())
-                          .intValue());
+                        .intValue());
             }
-            
+
             if (options.containsKey(ConnectionParam.LOCAL_THRESHOLD.getKey())) {
                 builder = builder.localThreshold(options.getIntValue(ConnectionParam.LOCAL_THRESHOLD.getKey())
-                          .intValue());
+                        .intValue());
             }
-            
+
             if (options.containsKey(ConnectionParam.HEART_BEAT_FREQUENCY.getKey())) {
                 builder = builder.heartbeatFrequency(options.getIntValue(ConnectionParam.HEART_BEAT_FREQUENCY.getKey())
                         .intValue());

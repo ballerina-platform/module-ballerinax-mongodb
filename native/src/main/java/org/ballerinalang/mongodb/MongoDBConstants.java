@@ -21,18 +21,8 @@ package org.ballerinalang.mongodb;
  */
 public class MongoDBConstants {
 
-    /**
-     * Constants related to `mongodb:DatabaseError`.
-     */
-    public static final class DatabaseError {
-        public static final String NAME = "DatabaseError";
-        public static final String DETAIL_RECORD_NAME = "DatabaseErrorDetail";
-        public static final String DETAIL_FIELD_MONGODB_EXCEPTION = "mongoDBExceptionType";
-    }
-
     //Error reasons
     public static final String APPLICATION_ERROR = "ApplicationError";
-
     public static final String EMPTY_JSON = "{}";
     public static final String EMPTY_STRING = "";
     public static final String RESULT_ITERATOR_OBJECT = "ResultIterator";
@@ -41,4 +31,14 @@ public class MongoDBConstants {
     public static final String RESULT_SET_NATIVE_DATA_FIELD = "MongoCursor";
     public static final String MONGO_CLIENT = "MongoClient";
     public static final String MONGO_DATABASE = "MongoDatabase";
+
+    /**
+     * Constants related to `mongodb:DatabaseError`.
+     */
+    public static final class DatabaseError {
+
+        public static final String NAME = "DatabaseError";
+        public static final String DETAIL_RECORD_NAME = "DatabaseErrorDetail";
+        public static final String DETAIL_FIELD_MONGODB_EXCEPTION = "mongoDBExceptionType";
+    }
 }

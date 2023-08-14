@@ -51,7 +51,7 @@ task build {
     doLast {
         executeBalCommand ("build", "${project.projectDir}")
         executeBalCommand ("pack", "${project.projectDir}")
-        //TODO: Disable due to the void of examples
+        //TODO: Disabled due to the void of examples
         // executeBalCommand ("push --repository=local", "${project.projectDir}")
 
         // def centralDir = file("${System.getProperty('user.home')}/.ballerina/repositories/central.ballerina.io/")

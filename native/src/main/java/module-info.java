@@ -16,11 +16,12 @@
  * under the License.
  */
 
- module org.ballerinalang.mongodb {
-    requires io.ballerina.runtime;
-    requires mongo.java.driver;
+module org.ballerinalang.mongodb {
     requires com.fasterxml.jackson.databind;
+    requires io.ballerina.runtime;
     requires io.ballerina.lang.value;
+    requires mongo.java.driver;
+    requires slf4j.api;
 
     exports org.ballerinalang.mongodb;
 }

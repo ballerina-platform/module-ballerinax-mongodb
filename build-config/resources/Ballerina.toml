@@ -13,7 +13,7 @@ repository = "https://github.com/ballerina-platform/module-ballerinax-mongodb"
 graalvmCompatible = true
 
 [[platform.java11.dependency]]
-path = "../mongodb-native/build/libs/mongodb-native-@project.version@.jar"
+path = "../native/build/libs/mongodb-native-@project.version@.jar"
 groupId = "org.ballerinalang"
 artifactId = "mongodb-native"
 version = "@project.version@"

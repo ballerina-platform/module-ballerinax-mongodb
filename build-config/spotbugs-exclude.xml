@@ -16,4 +16,9 @@
   ~ under the License.
   -->
 <FindBugsFilter>
+    <!-- Exclude warning about private method not being called -->
+    <Match>
+        <Class name="org.ballerinalang.mongodb.MongoDBDataSourceUtil$ConnectionParam"/>
+        <Method name="getKey"/>
+    </Match>
 </FindBugsFilter>
