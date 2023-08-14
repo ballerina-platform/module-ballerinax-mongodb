@@ -11,6 +11,15 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    services:
+      mongodb:
+        image: mongo:4.2.0
+        env:
+          # Following credentials are only used during testing in docker container
+          MONGO_INITDB_ROOT_USERNAME: admin
+          MONGO_INITDB_ROOT_PASSWORD: admin
+      mongodb-ssl:
+        image: rzhilkibaev/mongo-x509-auth-ssl:latest
 
     steps:
       - uses: actions/checkout@v2
@@ -49,7 +58,7 @@ jobs:
 
       # Test Ballerina MongoDB-SSL
       - name: SSL Tests
-        run: bal test --groups mongodb-ssl --test-report --code-coverage --coverage-format=xml 
+        run: bal test --groups mongodb-ssl --test-report --code-coverage --coverage-format=xml ./ballerina
         env:
           JAVA_HOME: /usr/lib/jvm/default-jvm
           MONGODB_HOST: mongodb-ssl

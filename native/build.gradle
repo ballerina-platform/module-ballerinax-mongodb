@@ -42,7 +42,7 @@ dependencies {
     implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.21'
     implementation group: 'org.ballerinalang', name: 'ballerina-lang', version: project.ballerinaLangVersion
     implementation group: 'org.ballerinalang', name: 'value', version: project.ballerinaLangVersion
-    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.13.3'
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.13.5'
     implementation group: 'org.mongodb', name: 'mongo-java-driver', version: '3.8.2'
     dist group: 'org.mongodb', name: 'mongo-java-driver', version: '3.8.2'
 }

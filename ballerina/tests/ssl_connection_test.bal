@@ -18,7 +18,7 @@ import ballerina/file;
 import ballerina/log;
 import ballerina/test;
 
-string jksFilePath = check file:getAbsolutePath("tests/resources/mongodb-client.jks");
+string jksFilePath = check file:getAbsolutePath("ballerina/tests/resources/mongodb-client.jks");
 
 X509Credential x509Credential = {
     username: testUser

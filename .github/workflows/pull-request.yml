@@ -5,14 +5,24 @@ on: [ pull_request ]
 jobs:
   build:
     runs-on: ubuntu-latest
+    services:
+      mongodb:
+        image: mongo:4.2.0
+        env:
+          # Following credentials are only used during testing in docker container
+          MONGO_INITDB_ROOT_USERNAME: admin
+          MONGO_INITDB_ROOT_PASSWORD: admin
+      mongodb-ssl:
+        image: rzhilkibaev/mongo-x509-auth-ssl:latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       # Set up Java Environment
       - name: Set up JDK 11
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v3
         with:
+          distribution: 'zulu'
           java-version: 11
 
       # Setup Ballerina Environment
@@ -34,17 +44,32 @@ jobs:
         run: |
           ./gradlew build -x test
 
-      # Build Ballerina Project
       - name: Ballerina Build
         run: bal pack ./ballerina
         env:
           JAVA_HOME: /usr/lib/jvm/default-jvm
-
-      # Test Ballerina Project
-      - name: Ballerina Test
-        run: bal test --test-report --code-coverage --coverage-format=xml ./ballerina
+          JAVA_OPTS: -DBALLERINA_DEV_COMPILE_BALLERINA_ORG=true
+      
+      # Test Ballerina MongoDB-SSL
+      - name: SSL Tests
+        run: bal test --groups mongodb-ssl --test-report --code-coverage --coverage-format=xml ./ballerina
         env:
           JAVA_HOME: /usr/lib/jvm/default-jvm
+          MONGODB_HOST: mongodb-ssl
+          MONGODB_USER: C=US,ST=CA,L=San Francisco,O=Jaspersoft,OU=JSDev,CN=admin
+
+      - name: Upload SSL test coverage reports to Codecov
+        uses: codecov/codecov-action@v3
+
+      # Test Ballerina MongoDB
+      - name: MongoDB Test
+        run: bal test --groups mongodb --test-report --code-coverage --coverage-format=xml ./ballerina
+        env:
+          JAVA_HOME: /usr/lib/jvm/default-jvm
+          # Following credentials are only used during testing in docker container
+          MONGODB_HOST: mongodb
+          MONGODB_USER: admin
+          MONGODB_PASSWORD: admin
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
