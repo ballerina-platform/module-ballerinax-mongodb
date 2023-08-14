@@ -1,13 +1,35 @@
+/*
+ * Copyright (c) 2023, WSO2 LLC. (http://www.wso2.org)
+ *
+ * WSO2 LLC. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
 plugins {
-    id "com.github.johnrengelman.shadow" version "5.2.0"
+    id "com.github.spotbugs" version "${githubSpotbugsVersion}"
+    id "com.github.johnrengelman.shadow" version "${githubJohnrengelmanShadowVersion}"
+    id "de.undercouch.download" version "${underCouchDownloadVersion}"
+    id "net.researchgate.release" version "${researchgateReleaseVersion}"
 }
 
-ext.ballerinaLangVersion = project.ballerinaLangVersion
+description = 'Ballerina - Mongodb'
 
 allprojects {
     group = project.group
     version = project.version
 
+    apply plugin: 'jacoco'
     apply plugin: 'maven-publish'
 
     repositories {
@@ -29,65 +51,32 @@ allprojects {
             }
         }
     }
-}
 
-subprojects {
-    apply plugin: 'java'
-
-    dependencies {}
-}
-
-def artifactCacheParent = file("${project.projectDir}/build/cache_parent/")
-def packageName = "mongodb"
-def packageOrg = "ballerinax"
-def pathToBala = file("${project.projectDir}/mongodb/target/bala")
-def platform = "java11"
-
-task createBalaDirectory {
-    mkdir "${project.projectDir}/mongodb/target/bala"
-}
-
-task copyDistribution {
-    inputs.dir file(project.projectDir)
-
-    pathToBala.eachFileMatch(~/.*.bala/) { balaFile ->
-        copy {
-            from zipTree(balaFile)
-            into file("${artifactCacheParent}/bala/${packageOrg}/${packageName}/${project.version}/${platform}")
-        }
+    ext {
+        snapshotVersion= '-SNAPSHOT'
+        timestampedVersionRegex = '.*-\\d{8}-\\d{6}-\\w.*\$'
+        packageName ='mongodb'
+        balPackageName = 'mongodb'
     }
-    copy {
-        from file("${project.projectDir}/mongodb/target/cache")
-        exclude '**/*-testable.jar'
-        exclude '**/tests_cache/'
-        into file("${artifactCacheParent}/cache/")
-    }
-    outputs.dir artifactCacheParent
 }
 
-task createArtifactZip(type: Zip) {
-   from "${buildDir}/cache_parent"
-   archiveName 'distribution.zip'
-   destinationDir(file("${buildDir}/distribution"))
-}
-
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            artifact source: createArtifactZip, extension: 'zip'
-        }
-    }
-
-    repositories {
-        maven {
-            name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/ballerina-platform/module-ballerinax-mongodb")
-            credentials {
-                username = System.getenv("publishUser")
-                password = System.getenv("publishPAT")
+def executeBalCommand(String command, String dir) {
+    try {
+        exec {
+            workingDir dir
+            if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+                commandLine 'cmd', '/c', "bal.bat ${command} && exit %%ERRORLEVEL%%"
+            } else {
+                commandLine 'sh', '-c', "bal ${command}"
             }
         }
+    } catch (Exception e) {
+        println("bal command failed. " + e.message)
+        throw e
     }
 }
 
-publish.dependsOn copyDistribution
+task build {
+    dependsOn("${project.packageName}-native:build")
+    dependsOn("${project.packageName}-ballerina:build")
+}

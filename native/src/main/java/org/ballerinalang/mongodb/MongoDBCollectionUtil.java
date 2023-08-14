@@ -29,11 +29,11 @@ import io.ballerina.runtime.api.PredefinedTypes;
 import io.ballerina.runtime.api.creators.TypeCreator;
 import io.ballerina.runtime.api.creators.ValueCreator;
 import io.ballerina.runtime.api.types.RecordType;
+import io.ballerina.runtime.api.values.BHandle;
 import io.ballerina.runtime.api.values.BObject;
 import io.ballerina.runtime.api.values.BStream;
 import io.ballerina.runtime.api.values.BString;
 import io.ballerina.runtime.api.values.BTypedesc;
-import io.ballerina.runtime.internal.values.HandleValue;
 import org.bson.Document;
 import org.ballerinalang.mongodb.exceptions.BallerinaErrorGenerator;
 
@@ -44,7 +44,7 @@ import static org.ballerinalang.mongodb.MongoDBConstants.EMPTY_JSON;
  */
 public class MongoDBCollectionUtil {
 
-    public static Object countDocuments(HandleValue collection, Object filter) {
+    public static Object countDocuments(BHandle collection, Object filter) {
         MongoCollection<Document> mongoCollection = (MongoCollection<Document>) collection.getValue();
         try {
 
@@ -84,7 +84,7 @@ public class MongoDBCollectionUtil {
         }
     }
 
-    public static Object insert(HandleValue collection, String document) {
+    public static Object insert(BHandle collection, String document) {
         MongoCollection<Document> mongoCollection = (MongoCollection<Document>) collection.getValue();
         try {
 
@@ -141,7 +141,7 @@ public class MongoDBCollectionUtil {
         }
     }
 
-    public static Object delete(HandleValue collection, Object filter, boolean isMultiple) {
+    public static Object delete(BHandle collection, Object filter, boolean isMultiple) {
         MongoCollection<Document> mongoCollection = (MongoCollection<Document>) collection.getValue();
 
         if (filter == null) {
@@ -162,7 +162,7 @@ public class MongoDBCollectionUtil {
         }
     }
 
-    public static Object update(HandleValue collection, String update, Object filter, boolean isMultiple,
+    public static Object update(BHandle collection, String update, Object filter, boolean isMultiple,
                                 boolean upsert) {
         MongoCollection<Document> mongoCollection = (MongoCollection<Document>) collection.getValue();
 
