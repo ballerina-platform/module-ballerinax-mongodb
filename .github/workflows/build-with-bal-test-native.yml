@@ -15,8 +15,12 @@ jobs:
           # Following credentials are only used during testing in docker container
           MONGO_INITDB_ROOT_USERNAME: admin
           MONGO_INITDB_ROOT_PASSWORD: admin
+        ports: 
+          - 27011:27017
       mongodb-ssl:
         image: rzhilkibaev/mongo-x509-auth-ssl:latest
+        ports: 
+          - 27012:27017
 
     steps:
       - uses: actions/checkout@v2
@@ -25,6 +29,11 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 11
+
+      - name: Set Up Ballerina
+        uses: ballerina-platform/setup-ballerina@v1.1.0
+        with:
+          version: latest
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
@@ -35,7 +44,7 @@ jobs:
           packagePAT: ${{ secrets.BALLERINA_BOT_TOKEN }}
           JAVA_OPTS: -DBALLERINA_DEV_COMPILE_BALLERINA_ORG=true
         run: |
-          ./gradlew build
+          ./gradlew build -x test
 
       - name: Set up GraalVM
         uses: graalvm/setup-graalvm@v1
@@ -51,19 +60,12 @@ jobs:
           echo "JAVA_HOME: ${{ env.JAVA_HOME }}"
           native-image --version
 
-      - name: Set Up Ballerina
-        uses: ballerina-platform/setup-ballerina@v1.1.0
-        with:
-          version: latest
-
       - name: Run Ballerina tests(MongoDB-SSL) using the native executable
         working-directory: ./ballerina
         run: bal test --graalvm --groups mongodb-ssl
         env:
           JAVA_HOME: /usr/lib/jvm/default-jvm
           # Following credentials are only used during testing in docker container
-          WORKING_DIR: ./mongodb
-          MONGODB_HOST: mongodb-ssl
           MONGODB_USER: C=US,ST=CA,L=San Francisco,O=Jaspersoft,OU=JSDev,CN=admin
 
       - name: Run Ballerina tests(MongoDB) using the native executable
@@ -72,6 +74,5 @@ jobs:
         env:
           JAVA_HOME: /usr/lib/jvm/default-jvm
           # Following credentials are only used during testing in docker container
-          MONGODB_HOST: mongodb
           MONGODB_USER: admin
           MONGODB_PASSWORD: admin

@@ -38,6 +38,7 @@ ConnectionConfig sslMongoConfig = {
     connection: {
         host: testHostName,
         auth: x509Credential,
+        port: 27012,
         options: {
             socketTimeout: 10000,
             authMechanism: "MONGODB-X509",

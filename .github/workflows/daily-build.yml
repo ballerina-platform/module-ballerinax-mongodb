@@ -14,8 +14,12 @@ jobs:
           # Following credentials are only used during testing in docker container
           MONGO_INITDB_ROOT_USERNAME: admin
           MONGO_INITDB_ROOT_PASSWORD: admin
+        ports: 
+          - 27011:27017
       mongodb-ssl:
         image: rzhilkibaev/mongo-x509-auth-ssl:latest
+        ports: 
+          - 27012:27017
 
     steps:
       - uses: actions/checkout@v2
@@ -55,9 +59,8 @@ jobs:
       - name: SSL Tests
         run: bal test --groups mongodb-ssl --test-report --code-coverage --coverage-format=xml ./ballerina
         env: 
-          # Following credentials are only used during testing in docker container
           JAVA_HOME: /usr/lib/jvm/default-jvm
-          MONGODB_HOST: mongodb-ssl
+          # Following credentials are only used during testing in docker container
           MONGODB_USER: C=US,ST=CA,L=San Francisco,O=Jaspersoft,OU=JSDev,CN=admin
 
       - name: Upload SSL test coverage reports to Codecov
@@ -69,7 +72,6 @@ jobs:
         env:
           JAVA_HOME: /usr/lib/jvm/default-jvm
           # Following credentials are only used during testing in docker container
-          MONGODB_HOST: mongodb
           MONGODB_USER: admin
           MONGODB_PASSWORD: admin
 
