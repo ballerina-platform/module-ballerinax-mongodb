@@ -23,19 +23,18 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.UpdateOptions;
-
 import io.ballerina.runtime.api.Environment;
 import io.ballerina.runtime.api.PredefinedTypes;
 import io.ballerina.runtime.api.creators.TypeCreator;
 import io.ballerina.runtime.api.creators.ValueCreator;
 import io.ballerina.runtime.api.types.RecordType;
+import io.ballerina.runtime.api.values.BHandle;
 import io.ballerina.runtime.api.values.BObject;
 import io.ballerina.runtime.api.values.BStream;
 import io.ballerina.runtime.api.values.BString;
 import io.ballerina.runtime.api.values.BTypedesc;
-import io.ballerina.runtime.internal.values.HandleValue;
-import org.bson.Document;
 import org.ballerinalang.mongodb.exceptions.BallerinaErrorGenerator;
+import org.bson.Document;
 
 import static org.ballerinalang.mongodb.MongoDBConstants.EMPTY_JSON;
 
@@ -44,7 +43,7 @@ import static org.ballerinalang.mongodb.MongoDBConstants.EMPTY_JSON;
  */
 public class MongoDBCollectionUtil {
 
-    public static Object countDocuments(HandleValue collection, Object filter) {
+    public static Object countDocuments(BHandle collection, Object filter) {
         MongoCollection<Document> mongoCollection = (MongoCollection<Document>) collection.getValue();
         try {
 
@@ -62,20 +61,20 @@ public class MongoDBCollectionUtil {
     }
 
     public static Object listIndices(Environment env, BObject client, BString collectionName, Object databaseName,
-                                      BTypedesc recordType) {
+                                     BTypedesc recordType) {
         try {
             MongoDatabase mongoDatabase = MongoDBDatabaseUtil.getCurrentDatabase(env, client, databaseName);
             MongoCollection<Document> mongoCollection = mongoDatabase.getCollection(collectionName.getValue());
             MongoCursor<Document> iterator = mongoCollection.listIndexes().iterator();
             RecordType streamConstraint = (RecordType) recordType.getDescribingType();
-            BObject bObject = ValueCreator.createObjectValue(ModuleUtils.getModule(), 
-                            MongoDBConstants.RESULT_ITERATOR_OBJECT,null, ValueCreator.createObjectValue(
+            BObject bObject = ValueCreator.createObjectValue(ModuleUtils.getModule(),
+                    MongoDBConstants.RESULT_ITERATOR_OBJECT, null, ValueCreator.createObjectValue(
                             ModuleUtils.getModule(), MongoDBConstants.MONGO_RESULT_ITERATOR_OBJECT));
             bObject.addNativeData(MongoDBConstants.RESULT_SET_NATIVE_DATA_FIELD, iterator);
             bObject.addNativeData(MongoDBConstants.RECORD_TYPE_DATA_FIELD, streamConstraint);
-            
+
             BStream bStreamValue = ValueCreator.createStreamValue(TypeCreator.createStreamType(streamConstraint,
-                                PredefinedTypes.TYPE_NULL), bObject);
+                    PredefinedTypes.TYPE_NULL), bObject);
             return bStreamValue;
         } catch (MongoException e) {
             return BallerinaErrorGenerator.createBallerinaDatabaseError(e);
@@ -84,7 +83,7 @@ public class MongoDBCollectionUtil {
         }
     }
 
-    public static Object insert(HandleValue collection, String document) {
+    public static Object insert(BHandle collection, String document) {
         MongoCollection<Document> mongoCollection = (MongoCollection<Document>) collection.getValue();
         try {
 
@@ -99,7 +98,7 @@ public class MongoDBCollectionUtil {
     }
 
     public static Object find(Environment env, BObject client, BString collectionName, Object databaseName,
-                               Object filter, Object projection, Object sort, long limit , BTypedesc recordType) {
+                              Object filter, Object projection, Object sort, long limit, BTypedesc recordType) {
         if (filter == null) {
             filter = EMPTY_JSON;
         }
@@ -120,19 +119,19 @@ public class MongoDBCollectionUtil {
             MongoCursor<Document> results;
             if (limit != -1) {
                 results = mongoCollection.find(filterDoc).projection(projectionDoc).sort(sortDoc).limit((int) limit).
-                          iterator();
+                        iterator();
             } else {
                 results = mongoCollection.find(filterDoc).projection(projectionDoc).sort(sortDoc).iterator();
             }
             RecordType streamConstraint = (RecordType) recordType.getDescribingType();
-            BObject bObject = ValueCreator.createObjectValue(ModuleUtils.getModule(), 
-                              MongoDBConstants.RESULT_ITERATOR_OBJECT,null, ValueCreator.createObjectValue(
+            BObject bObject = ValueCreator.createObjectValue(ModuleUtils.getModule(),
+                    MongoDBConstants.RESULT_ITERATOR_OBJECT, null, ValueCreator.createObjectValue(
                             ModuleUtils.getModule(), MongoDBConstants.MONGO_RESULT_ITERATOR_OBJECT));
             bObject.addNativeData(MongoDBConstants.RESULT_SET_NATIVE_DATA_FIELD, results);
             bObject.addNativeData(MongoDBConstants.RECORD_TYPE_DATA_FIELD, streamConstraint);
-            
+
             BStream bStreamValue = ValueCreator.createStreamValue(TypeCreator.createStreamType(streamConstraint,
-                                   PredefinedTypes.TYPE_NULL), bObject);
+                    PredefinedTypes.TYPE_NULL), bObject);
             return bStreamValue;
         } catch (MongoException e) {
             return BallerinaErrorGenerator.createBallerinaDatabaseError(e);
@@ -141,7 +140,7 @@ public class MongoDBCollectionUtil {
         }
     }
 
-    public static Object delete(HandleValue collection, Object filter, boolean isMultiple) {
+    public static Object delete(BHandle collection, Object filter, boolean isMultiple) {
         MongoCollection<Document> mongoCollection = (MongoCollection<Document>) collection.getValue();
 
         if (filter == null) {
@@ -162,7 +161,7 @@ public class MongoDBCollectionUtil {
         }
     }
 
-    public static Object update(HandleValue collection, String update, Object filter, boolean isMultiple,
+    public static Object update(BHandle collection, String update, Object filter, boolean isMultiple,
                                 boolean upsert) {
         MongoCollection<Document> mongoCollection = (MongoCollection<Document>) collection.getValue();
 

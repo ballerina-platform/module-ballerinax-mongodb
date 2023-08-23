@@ -28,6 +28,7 @@ const COLLECTION_NAME = "moviedetails";
 ConnectionConfig mongoConfig = {
     connection: {
         host: testHostName,
+        port: 27011,
         auth: {
             username: testUser,
             password: testPass

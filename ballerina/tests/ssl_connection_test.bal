@@ -18,7 +18,7 @@ import ballerina/file;
 import ballerina/log;
 import ballerina/test;
 
-string jksFilePath = check file:getAbsolutePath("tests/resources/mongodb-client.jks");
+string jksFilePath = check file:getAbsolutePath("ballerina/tests/resources/mongodb-client.jks");
 
 X509Credential x509Credential = {
     username: testUser
@@ -38,6 +38,7 @@ ConnectionConfig sslMongoConfig = {
     connection: {
         host: testHostName,
         auth: x509Credential,
+        port: 27012,
         options: {
             socketTimeout: 10000,
             authMechanism: "MONGODB-X509",

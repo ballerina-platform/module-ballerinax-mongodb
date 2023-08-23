@@ -20,7 +20,7 @@
         string testPass = "admin"
 ```
 
-4. Within the mongodb directory, execute the following command
+4. Within the ballerina directory, execute the following command
 ```shell script
         bal test --groups mongodb
 ```

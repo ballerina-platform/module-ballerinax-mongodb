@@ -1,12 +1,6 @@
-name: CI
-on:
-  push:
-    branches-ignore:
-      - "automated/dependency_version_update"
-      - "automated/dependency_version_update_tmp"
-  repository_dispatch:
-    types:
-      check_connector_for_breaking_changes
+name: Pull Request
+
+on: [ pull_request ]
 
 jobs:
   build:
@@ -26,12 +20,13 @@ jobs:
           - 27012:27017
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       # Set up Java Environment
       - name: Set up JDK 11
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v3
         with:
+          distribution: 'zulu'
           java-version: 11
 
       # Setup Ballerina Environment
@@ -47,19 +42,18 @@ jobs:
       # Build the project with Gradle
       - name: Build with Gradle
         env:
-          packageUser: ${{ secrets.BALLERINA_BOT_USERNAME }}
-          packagePAT: ${{ secrets.BALLERINA_BOT_TOKEN }}
+          packageUser: ${{ github.actor }}
+          packagePAT: ${{ secrets.GITHUB_TOKEN }}
           JAVA_OPTS: -DBALLERINA_DEV_COMPILE_BALLERINA_ORG=true
         run: |
           ./gradlew build -x test
 
-      # Build Ballerina Project
       - name: Ballerina Build
         run: bal pack ./ballerina
         env:
           JAVA_HOME: /usr/lib/jvm/default-jvm
           JAVA_OPTS: -DBALLERINA_DEV_COMPILE_BALLERINA_ORG=true
-
+      
       # Test Ballerina MongoDB-SSL
       - name: SSL Tests
         run: bal test --groups mongodb-ssl --test-report --code-coverage --coverage-format=xml ./ballerina
@@ -82,18 +76,3 @@ jobs:
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
-
-      - name: Alert notifier on failure
-        if: failure() && (github.event.action == 'check_connector_for_breaking_changes')
-        run: |
-          curl -X POST \
-          'https://api.github.com/repos/ballerina-platform/ballerina-release/dispatches' \
-          --header 'Accept: application/vnd.github.v3+json' \
-          --header 'Authorization: Bearer ${{ secrets.BALLERINA_BOT_TOKEN }}' \
-          --data-raw '{
-            "event_type": "notify-ballerinax-connector-build-failure",
-            "client_payload": {
-              "repoName": "module-ballerinax-mongodb",
-              "workflow": "CI"
-            }
-          }'

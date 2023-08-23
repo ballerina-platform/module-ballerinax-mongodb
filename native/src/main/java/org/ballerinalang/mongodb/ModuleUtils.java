@@ -34,11 +34,11 @@ public class ModuleUtils {
     private ModuleUtils() {
     }
 
-    public static void setModule(Environment env) {
-        mongodbModule = env.getCurrentModule();
-    }
-
     public static Module getModule() {
         return mongodbModule;
+    }
+
+    public static void setModule(Environment env) {
+        mongodbModule = env.getCurrentModule();
     }
 }
