@@ -61,16 +61,14 @@ jobs:
           native-image --version
 
       - name: Run Ballerina tests(MongoDB-SSL) using the native executable
-        working-directory: ./ballerina
-        run: bal test --graalvm --groups mongodb-ssl
+        run: bal test --graalvm --groups mongodb-ssl ./ballerina
         env:
           JAVA_HOME: /usr/lib/jvm/default-jvm
           # Following credentials are only used during testing in docker container
           MONGODB_USER: C=US,ST=CA,L=San Francisco,O=Jaspersoft,OU=JSDev,CN=admin
 
       - name: Run Ballerina tests(MongoDB) using the native executable
-        working-directory: ./ballerina
-        run: bal test --graalvm --groups mongodb
+        run: bal test --graalvm --groups mongodb ./ballerina
         env:
           JAVA_HOME: /usr/lib/jvm/default-jvm
           # Following credentials are only used during testing in docker container
