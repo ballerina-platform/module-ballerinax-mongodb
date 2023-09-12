@@ -23,7 +23,7 @@ import io.ballerina.runtime.api.PredefinedTypes;
 import io.ballerina.runtime.api.creators.ErrorCreator;
 import io.ballerina.runtime.api.creators.TypeCreator;
 import io.ballerina.runtime.api.creators.ValueCreator;
-import io.ballerina.runtime.api.types.RecordType;
+import io.ballerina.runtime.api.types.Type;
 import io.ballerina.runtime.api.types.UnionType;
 import io.ballerina.runtime.api.values.BObject;
 import io.ballerina.runtime.api.values.BTypedesc;
@@ -45,7 +45,7 @@ public class RecordIteratorUtils {
     public static Object nextResult(BObject recordIterator) {
         MongoCursor<Document> results = (MongoCursor<Document>) recordIterator.getNativeData(
                 MongoDBConstants.RESULT_SET_NATIVE_DATA_FIELD);
-        RecordType recordType = (RecordType) recordIterator.getNativeData(MongoDBConstants.RECORD_TYPE_DATA_FIELD);
+        Type recordType = (Type) recordIterator.getNativeData(MongoDBConstants.RECORD_TYPE_DATA_FIELD);
         if (results.hasNext()) {
             try {
                 String result = new ObjectMapper().writeValueAsString(results.next());
@@ -68,6 +68,39 @@ public class RecordIteratorUtils {
             try {
                 results.close();
                 recordIterator.addNativeData(MongoDBConstants.RESULT_SET_NATIVE_DATA_FIELD, null);
+            } catch (Exception e) {
+                return ErrorCreator.createError(fromString("Error while closing the result iterator. "), e);
+            }
+        }
+        return null;
+    }
+    public static Object nextPlainResult(BObject plainRecordIterator) {
+        MongoCursor<Document> results = (MongoCursor<Document>) plainRecordIterator.getNativeData(
+                MongoDBConstants.RESULT_SET_NATIVE_DATA_FIELD);
+        Type anyDataType = (Type) plainRecordIterator.
+                getNativeData(MongoDBConstants.RECORD_TYPE_DATA_FIELD);
+        if (results.hasNext()) {
+            try {
+                String result = new ObjectMapper().writeValueAsString(results.next());
+                UnionType responseType = TypeCreator.createUnionType(anyDataType, PredefinedTypes.TYPE_ERROR,
+                        PredefinedTypes.TYPE_NULL);
+                BTypedesc responseTypedescValue = ValueCreator.createTypedescValue(responseType);
+                return FromJsonStringWithType.fromJsonStringWithType(fromString(result), responseTypedescValue);
+            } catch (Exception e) {
+                return ErrorCreator.createError(fromString("Error while iterating elements"), e);
+            }
+        } else {
+            return null;
+        }
+    }
+
+    public static Object closePlainResult(BObject plainRecordIterator) {
+        MongoCursor<Document> results = (MongoCursor<Document>) plainRecordIterator.getNativeData(
+                MongoDBConstants.RESULT_SET_NATIVE_DATA_FIELD);
+        if (results != null) {
+            try {
+                results.close();
+                plainRecordIterator.addNativeData(MongoDBConstants.RESULT_SET_NATIVE_DATA_FIELD, null);
             } catch (Exception e) {
                 return ErrorCreator.createError(fromString("Error while closing the result iterator. "), e);
             }

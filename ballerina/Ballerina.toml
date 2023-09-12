@@ -2,7 +2,7 @@
 distribution = "2201.7.0"
 org = "ballerinax"
 name = "mongodb"
-version = "4.2.1"
+version = "4.3.0"
 license= ["Apache-2.0"]
 authors = ["Ballerina"]
 keywords = ["IT Operations/Databases", "Cost/Freemium"]
@@ -13,10 +13,10 @@ repository = "https://github.com/ballerina-platform/module-ballerinax-mongodb"
 graalvmCompatible = true
 
 [[platform.java11.dependency]]
-path = "../native/build/libs/mongodb-native-4.2.1.jar"
+path = "../native/build/libs/mongodb-native-4.3.0.jar"
 groupId = "org.ballerinalang"
 artifactId = "mongodb-native"
-version = "4.2.1"
+version = "4.3.0"
 
 [[platform.java11.dependency]]
 groupId = "com.fasterxml.jackson.core"

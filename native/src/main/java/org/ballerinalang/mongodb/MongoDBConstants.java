@@ -26,6 +26,7 @@ public class MongoDBConstants {
     public static final String EMPTY_JSON = "{}";
     public static final String EMPTY_STRING = "";
     public static final String RESULT_ITERATOR_OBJECT = "ResultIterator";
+    public static final String PLAIN_RESULT_ITERATOR_OBJECT = "PlainResultIterator";
     public static final String MONGO_RESULT_ITERATOR_OBJECT = "MongoResultIterator";
     public static final String RECORD_TYPE_DATA_FIELD = "recordType";
     public static final String RESULT_SET_NATIVE_DATA_FIELD = "MongoCursor";

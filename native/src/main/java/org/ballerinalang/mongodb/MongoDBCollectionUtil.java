@@ -19,6 +19,7 @@
 package org.ballerinalang.mongodb;
 
 import com.mongodb.MongoException;
+import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
@@ -28,6 +29,7 @@ import io.ballerina.runtime.api.PredefinedTypes;
 import io.ballerina.runtime.api.creators.TypeCreator;
 import io.ballerina.runtime.api.creators.ValueCreator;
 import io.ballerina.runtime.api.types.RecordType;
+import io.ballerina.runtime.api.types.Type;
 import io.ballerina.runtime.api.values.BHandle;
 import io.ballerina.runtime.api.values.BObject;
 import io.ballerina.runtime.api.values.BStream;
@@ -98,7 +100,8 @@ public class MongoDBCollectionUtil {
     }
 
     public static Object find(Environment env, BObject client, BString collectionName, Object databaseName,
-                              Object filter, Object projection, Object sort, long limit, BTypedesc recordType) {
+                              Object filter, Object projection, Object sort, long limit, long skip,
+                              BTypedesc recordType) {
         if (filter == null) {
             filter = EMPTY_JSON;
         }
@@ -116,18 +119,21 @@ public class MongoDBCollectionUtil {
         try {
             MongoDatabase mongoDatabase = MongoDBDatabaseUtil.getCurrentDatabase(env, client, databaseName);
             MongoCollection<Document> mongoCollection = mongoDatabase.getCollection(collectionName.getValue());
-            MongoCursor<Document> results;
+            FindIterable<Document> results = mongoCollection.find(filterDoc).projection(projectionDoc).sort(sortDoc);
             if (limit != -1) {
-                results = mongoCollection.find(filterDoc).projection(projectionDoc).sort(sortDoc).limit((int) limit).
-                        iterator();
-            } else {
-                results = mongoCollection.find(filterDoc).projection(projectionDoc).sort(sortDoc).iterator();
+                results = results.limit((int) limit);
             }
-            RecordType streamConstraint = (RecordType) recordType.getDescribingType();
+            if (skip != -1) {
+                results = results.skip((int) skip);
+            }
+            MongoCursor<Document> resultIterate = results.iterator();
+
+            Type streamConstraint = recordType.getDescribingType();
+
             BObject bObject = ValueCreator.createObjectValue(ModuleUtils.getModule(),
                     MongoDBConstants.RESULT_ITERATOR_OBJECT, null, ValueCreator.createObjectValue(
                             ModuleUtils.getModule(), MongoDBConstants.MONGO_RESULT_ITERATOR_OBJECT));
-            bObject.addNativeData(MongoDBConstants.RESULT_SET_NATIVE_DATA_FIELD, results);
+            bObject.addNativeData(MongoDBConstants.RESULT_SET_NATIVE_DATA_FIELD, resultIterate);
             bObject.addNativeData(MongoDBConstants.RECORD_TYPE_DATA_FIELD, streamConstraint);
 
             BStream bStreamValue = ValueCreator.createStreamValue(TypeCreator.createStreamType(streamConstraint,
@@ -180,6 +186,40 @@ public class MongoDBCollectionUtil {
             }
             return mongoCollection.updateOne(filterDoc, updateDoc, updateOptions).getModifiedCount();
 
+        } catch (MongoException e) {
+            return BallerinaErrorGenerator.createBallerinaDatabaseError(e);
+        } catch (Exception e) {
+            return BallerinaErrorGenerator.createBallerinaApplicationError(e);
+        }
+    }
+
+    public static Object distinct(Environment env, BObject client, BString collectionName, BString field,
+                                  Object databaseName, Object filter, BTypedesc anyDataType) {
+        if (filter == null) {
+            filter = EMPTY_JSON;
+        }
+
+        Document filterDoc = Document.parse(filter.toString());
+
+        try {
+            MongoDatabase mongoDatabase = MongoDBDatabaseUtil.getCurrentDatabase(env, client, databaseName);
+            MongoCollection<Document> mongoCollection = mongoDatabase.getCollection(collectionName.getValue());
+            MongoCursor<String> results;
+            results = mongoCollection.distinct(field.getValue(), filterDoc, String.class).iterator();
+
+            Type streamConstraint =  anyDataType.getDescribingType();
+
+            BObject bObject = ValueCreator.createObjectValue(
+                    ModuleUtils.getModule(),
+                    MongoDBConstants.PLAIN_RESULT_ITERATOR_OBJECT,
+            null, ValueCreator.createObjectValue(
+                    ModuleUtils.getModule(), MongoDBConstants.MONGO_RESULT_ITERATOR_OBJECT));
+            bObject.addNativeData(MongoDBConstants.RESULT_SET_NATIVE_DATA_FIELD, results);
+            bObject.addNativeData(MongoDBConstants.RECORD_TYPE_DATA_FIELD, streamConstraint);
+
+            BStream bStreamValue = ValueCreator.createStreamValue(TypeCreator.createStreamType(streamConstraint,
+                    PredefinedTypes.TYPE_NULL), bObject);
+            return bStreamValue;
         } catch (MongoException e) {
             return BallerinaErrorGenerator.createBallerinaDatabaseError(e);
         } catch (Exception e) {
