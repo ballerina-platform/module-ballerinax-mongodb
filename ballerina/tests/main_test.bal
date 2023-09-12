@@ -34,9 +34,9 @@ ConnectionConfig mongoConfig = {
             password: testPass
         },
         options: {
-            sslEnabled: false, 
+            sslEnabled: false,
             serverSelectionTimeout: 15000
-        } 
+        }
     },
     databaseName: DATABASE_NAME
 };
@@ -222,7 +222,24 @@ public function testFindDataWithProjection() returns error? {
 }
 
 @test:Config {
-    dependsOn: [ testFindDataWithProjection ],
+    dependsOn: [testFindDataWithProjection],
+    groups: ["mongodb"]
+}
+function testFindDistinctValues() returns error? {
+    log:printInfo("----------------- Querying Distinct Values ----------------");
+    string[] distictiveValues = [];
+    stream<string, error?> result = check mongoClient->'distinct(COLLECTION_NAME, "year");
+    check result.forEach(function(string data){
+        log:printInfo(data);
+        distictiveValues.push(data);
+    });
+    test:assertEquals(distictiveValues.length(), 2, "Querying distinct values failed. " +
+    "Expected 2 but found " + distictiveValues.length().toString());
+    log:printInfo("Querying distinct values tested successfully");
+}
+
+@test:Config {
+    dependsOn: [testFindDistinctValues],
     groups: ["mongodb"]
 }
 function testUpdateDocument() returns error? {
