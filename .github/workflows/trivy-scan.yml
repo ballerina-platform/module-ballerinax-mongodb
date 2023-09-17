@@ -27,7 +27,7 @@ jobs:
         env:
           packageUser: ${{ github.actor }}
           packagePAT: ${{ secrets.GITHUB_TOKEN }}
-        run: ./gradlew build -x check -x test
+        run: ./gradlew build -x check -x test -x :mongodb-examples:build
 
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
