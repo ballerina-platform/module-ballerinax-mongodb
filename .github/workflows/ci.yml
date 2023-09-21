@@ -1,9 +1,9 @@
 name: CI
 on:
   push:
-    branches-ignore:
-      - "automated/dependency_version_update"
-      - "automated/dependency_version_update_tmp"
+    branches:
+      - master
+      - 2201.[0-9]+.x
   repository_dispatch:
     types:
       check_connector_for_breaking_changes
