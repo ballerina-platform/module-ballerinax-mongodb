@@ -35,7 +35,7 @@ jobs:
           packagePAT: ${{ secrets.BALLERINA_BOT_TOKEN }}
           JAVA_OPTS: -DBALLERINA_DEV_COMPILE_BALLERINA_ORG=true
         run: |
-          ./gradlew build -x test
+          ./gradlew build -x test -x :mongodb-examples:build
 
       # Perform Trivy scan
       - name: Run Trivy vulnerability scanner
