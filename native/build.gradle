@@ -17,44 +17,36 @@
  */
 
 plugins {
-    id 'java-library'
-    id 'com.github.spotbugs'
+    id 'java'
     id 'checkstyle'
-    id 'jacoco'
+    id 'com.github.spotbugs'
 }
 
 description = 'Ballerina - Mongodb Native'
 
 configurations {
-    jacocoRuntime
     dist {
         transitive true
     }
 }
 
 dependencies {
-    jacocoRuntime "org.jacoco:org.jacoco.agent:${jacoco.toolVersion}:runtime"
-
     checkstyle project(":checkstyle")
-    checkstyle "com.puppycrawl.tools:checkstyle:${puppycrawlCheckstyleVersion}"
+    checkstyle "com.puppycrawl.tools:checkstyle:${checkstylePluginVersion}"
 
     implementation group: 'org.ballerinalang', name: 'ballerina-runtime', version: "${ballerinaLangVersion}"
-    implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.21'
-    implementation group: 'org.ballerinalang', name: 'ballerina-lang', version: project.ballerinaLangVersion
-    implementation group: 'org.ballerinalang', name: 'value', version: project.ballerinaLangVersion
-    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.15.2'
-    implementation group: 'org.mongodb', name: 'mongo-java-driver', version: '3.12.14'
-    dist group: 'org.mongodb', name: 'mongo-java-driver', version: '3.12.14'
+    implementation group: 'org.ballerinalang', name: 'ballerina-lang', version: "${ballerinaLangVersion}"
+    implementation group: 'org.ballerinalang', name: 'value', version: "${ballerinaLangVersion}"
+
+    implementation group: 'org.slf4j', name: 'slf4j-api', version: "${slf4jVersion}"
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: "${jacksonVersion}"
+    implementation group: 'org.mongodb', name: 'mongo-java-driver', version: "${mongoJavaDriverVersion}"
+
+    dist group: 'org.mongodb', name: 'mongo-java-driver', version: "${mongoJavaDriverVersion}"
 }
 
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
-}
-
-sourceCompatibility = JavaVersion.VERSION_17
-
-jacoco {
-    toolVersion = "0.8.10"
 }
 
 test {
@@ -89,30 +81,16 @@ spotbugsTest {
     enabled = false
 }
 
-task validateSpotbugs() {
-    doLast {
-        if (spotbugsMain.reports.size() > 0 &&
-                spotbugsMain.reports[0].destination.exists() &&
-                spotbugsMain.reports[0].destination.text.readLines().size() > 0) {
-            spotbugsMain.reports[0].destination?.eachLine {
-                println 'Failure: ' + it
-            }
-            throw new GradleException("Spotbugs rule violations were found.");
-        }
-    }
-}
-
-checkstyle {
-    toolVersion "${checkstyleToolVersion}"
-    configFile file("${rootDir}/build-config/checkstyle/build/checkstyle.xml")
-    configProperties = ["suppressionFile": file("${rootDir}/build-config/checkstyle/build/suppressions.xml")]
-}
-
 tasks.withType(Checkstyle) {
     exclude '**/module-info.java'
 }
 
-spotbugsMain.finalizedBy validateSpotbugs
+checkstyle {
+    toolVersion "${checkstylePluginVersion}"
+    configFile file("${rootDir}/build-config/checkstyle/build/checkstyle.xml")
+    configProperties = ["suppressionFile": file("${rootDir}/build-config/checkstyle/build/suppressions.xml")]
+}
+
 checkstyleMain.dependsOn ':checkstyle:downloadCheckstyleRuleFiles'
 
 jar {

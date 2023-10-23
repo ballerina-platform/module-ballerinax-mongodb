@@ -18,10 +18,10 @@
 import org.apache.tools.ant.taskdefs.condition.Os
 
 plugins {
-    id "com.github.spotbugs" version "${githubSpotbugsVersion}"
-    id "com.github.johnrengelman.shadow" version "${githubJohnrengelmanShadowVersion}"
-    id "de.undercouch.download" version "${underCouchDownloadVersion}"
-    id "net.researchgate.release" version "${researchgateReleaseVersion}"
+    id "com.github.spotbugs-base"
+    id "com.github.johnrengelman.shadow"
+    id "de.undercouch.download"
+    id "net.researchgate.release"
 }
 
 description = 'Ballerina - Mongodb'
@@ -54,30 +54,25 @@ allprojects {
     }
 
     ext {
-        snapshotVersion= '-SNAPSHOT'
+        snapshotVersion = '-SNAPSHOT'
         timestampedVersionRegex = '.*-\\d{8}-\\d{6}-\\w.*\$'
-        packageName ='mongodb'
-        balPackageName = 'mongodb'
-    }
-}
-
-def executeBalCommand(String command, String dir) {
-    try {
-        exec {
-            workingDir dir
-            if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-                commandLine 'cmd', '/c', "bal.bat ${command} && exit %%ERRORLEVEL%%"
-            } else {
-                commandLine 'sh', '-c', "bal ${command}"
-            }
-        }
-    } catch (Exception e) {
-        println("bal command failed. " + e.message)
-        throw e
     }
 }
 
 task build {
-    dependsOn("${project.packageName}-native:build")
-    dependsOn("${project.packageName}-ballerina:build")
+    dependsOn(":mongodb-native:build")
+    dependsOn(":mongodb-ballerina:build")
+}
+
+def moduleVersion = project.version.replace("-SNAPSHOT", "")
+
+release {
+    buildTasks = ['build']
+    failOnSnapshotDependencies = true
+    versionPropertyFile = 'gradle.properties'
+    tagTemplate = 'v${version}'
+    git {
+        requireBranch = "release-${moduleVersion}"
+        pushToRemote = 'origin'
+    }
 }
