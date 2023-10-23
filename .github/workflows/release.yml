@@ -3,7 +3,7 @@ name: Publish Release
 on:
   workflow_dispatch:
   repository_dispatch:
-    types: [ stdlib-release-pipeline ]
+    types: [ connector-release-pipeline ]
 
 jobs:
   call_workflow:
