@@ -1,100 +1,18 @@
 name: CI
+
 on:
   push:
     branches:
       - master
       - 2201.[0-9]+.x
   repository_dispatch:
-    types:
-      check_connector_for_breaking_changes
+    types: check_connector_for_breaking_changes
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    services:
-      mongodb:
-        image: mongo:4.2.0
-        env:
-          # Following credentials are only used during testing in docker container
-          MONGO_INITDB_ROOT_USERNAME: admin
-          MONGO_INITDB_ROOT_PASSWORD: admin
-        ports: 
-          - 27011:27017
-      mongodb-ssl:
-        image: rzhilkibaev/mongo-x509-auth-ssl:latest
-        ports: 
-          - 27012:27017
-
-    steps:
-      - uses: actions/checkout@v3
-
-      # Set up Java Environment
-      - name: Set up JDK 17
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'temurin'
-          java-version: 17.0.7
-
-      # Setup Ballerina Environment
-      - name: Set Up Ballerina
-        uses: ballerina-platform/setup-ballerina@v1.1.0
-        with:
-          version: latest
-
-      # Grant execute permission to the gradlew script
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
-
-      # Build the project with Gradle
-      - name: Build with Gradle
-        env:
-          packageUser: ${{ secrets.BALLERINA_BOT_USERNAME }}
-          packagePAT: ${{ secrets.BALLERINA_BOT_TOKEN }}
-          JAVA_OPTS: -DBALLERINA_DEV_COMPILE_BALLERINA_ORG=true
-        run: |
-          ./gradlew build -x test
-
-      # Build Ballerina Project
-      - name: Ballerina Build
-        run: bal pack ./ballerina
-        env:
-          JAVA_HOME: /usr/lib/jvm/default-jvm
-          JAVA_OPTS: -DBALLERINA_DEV_COMPILE_BALLERINA_ORG=true
-
-      # Test Ballerina MongoDB-SSL
-      - name: SSL Tests
-        run: bal test --groups mongodb-ssl --test-report --code-coverage --coverage-format=xml ./ballerina
-        env:
-          JAVA_HOME: /usr/lib/jvm/default-jvm
-          # Following credentials are only used during testing in docker container
-          MONGODB_USER: C=US,ST=CA,L=San Francisco,O=Jaspersoft,OU=JSDev,CN=admin
-
-      - name: Upload SSL test coverage reports to Codecov
-        uses: codecov/codecov-action@v3
-
-      # Test Ballerina MongoDB
-      - name: MongoDB Test
-        run: bal test --groups mongodb --test-report --code-coverage --coverage-format=xml ./ballerina
-        env:
-          JAVA_HOME: /usr/lib/jvm/default-jvm
-          # Following credentials are only used during testing in docker container
-          MONGODB_USER: admin
-          MONGODB_PASSWORD: admin
-
-      - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v3
-
-      - name: Alert notifier on failure
-        if: failure() && (github.event.action == 'check_connector_for_breaking_changes')
-        run: |
-          curl -X POST \
-          'https://api.github.com/repos/ballerina-platform/ballerina-release/dispatches' \
-          --header 'Accept: application/vnd.github.v3+json' \
-          --header 'Authorization: Bearer ${{ secrets.BALLERINA_BOT_TOKEN }}' \
-          --data-raw '{
-            "event_type": "notify-ballerinax-connector-build-failure",
-            "client_payload": {
-              "repoName": "module-ballerinax-mongodb",
-              "workflow": "CI"
-            }
-          }'
+  call_workflow:
+    name: Run Connector Build Workflow
+    if: ${{ github.repository_owner == 'ballerina-platform' }}
+    uses: ballerina-platform/ballerina-standard-library/.github/workflows/build-connector-template.yml@main
+    secrets: inherit
+    with:
+      repo-name: module-ballerinax-mongodb

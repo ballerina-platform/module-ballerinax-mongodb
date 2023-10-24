@@ -16,22 +16,41 @@
  * under the License.
  */
 
+pluginManagement {
+    plugins {
+        id "com.github.spotbugs-base" version "${spotbugsPluginVersion}"
+        id "com.github.johnrengelman.shadow" version "${shadowJarPluginVersion}"
+        id "de.undercouch.download" version "${downloadPluginVersion}"
+        id "net.researchgate.release" version "${releasePluginVersion}"
+        id "io.ballerina.plugin" version "${ballerinaGradlePluginVersion}"
+    }
+
+    repositories {
+        gradlePluginPortal()
+        maven {
+            url = 'https://maven.pkg.github.com/ballerina-platform/*'
+            credentials {
+                username System.getenv("packageUser")
+                password System.getenv("packagePAT")
+            }
+        }
+    }
+}
+
 plugins {
     id "com.gradle.enterprise" version "3.13.2"
 }
 
 def projectName = 'mongodb'
-rootProject.name = "ballerinax-${projectName}"
+rootProject.name = "ballerinax ${projectName}"
 
 include ":checkstyle"
 include ":${projectName}-native"
 include ":${projectName}-ballerina"
-include ":${projectName}-examples"
 
 project(':checkstyle').projectDir = file("build-config${File.separator}checkstyle")
 project(":${projectName}-native").projectDir = file('native')
 project(":${projectName}-ballerina").projectDir = file('ballerina')
-project(":${projectName}-examples").projectDir = file('examples')
 
 gradleEnterprise {
     buildScan {

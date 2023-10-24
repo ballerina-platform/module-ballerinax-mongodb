@@ -9,26 +9,29 @@ keywords = ["IT Operations/Databases", "Cost/Freemium"]
 icon = "icon.png"
 repository = "https://github.com/ballerina-platform/module-ballerinax-mongodb"
 
-[platform.java11]
+[platform.java17]
 graalvmCompatible = true
 
-[[platform.java11.dependency]]
+[[platform.java17.dependency]]
 path = "../native/build/libs/mongodb-native-@project.version@.jar"
 groupId = "org.ballerinalang"
 artifactId = "mongodb-native"
 version = "@project.version@"
 
-[[platform.java11.dependency]]
+[[platform.java17.dependency]]
 groupId = "com.fasterxml.jackson.core"
 artifactId = "jackson-core"
-version = "2.13.5"
+version = "@jackson.version@"
+path = "./lib/jackson-core-@jackson.version@.jar"
 
 [[platform.java11.dependency]]
 groupId = "com.fasterxml.jackson.core"
 artifactId = "jackson-annotations"
-version = "2.13.5"
+version = "@jackson.version@"
+path = "./lib/jackson-annotations-@jackson.version@.jar"
 
 [[platform.java11.dependency]]
 groupId = "com.fasterxml.jackson.core"
 artifactId = "jackson-databind"
-version = "2.13.5"
+version = "@jackson.version@"
+path = "./lib/jackson-databind-@jackson.version@.jar"

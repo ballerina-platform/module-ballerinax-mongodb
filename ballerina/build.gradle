@@ -16,10 +16,17 @@
  * under the License.
  */
 
+import org.apache.tools.ant.taskdefs.condition.Os
+
+plugins {
+    id 'io.ballerina.plugin'
+}
+
 description = 'Ballerina - Mongodb Ballerina Connector'
 
+def packageName = "mongodb"
+def packageOrg = "ballerinax"
 def tomlVersion = stripBallerinaExtensionVersion("${project.version}")
-
 def ballerinaTomlFilePlaceHolder = new File("${project.rootDir}/build-config/resources/Ballerina.toml")
 def ballerinaTomlFile = new File("$project.projectDir/Ballerina.toml")
 
@@ -33,47 +40,59 @@ def stripBallerinaExtensionVersion(String extVersion) {
             return extVersion
         }
     } else {
-        return extVersion.replace("${project.ext.snapshotVersion}", '')
+        return extVersion.replace("${project.ext.snapshotVersion}", "")
+    }
+}
+
+ballerina {
+    packageOrganization = packageOrg
+    module = packageName
+    testCoverageParam = "--code-coverage --coverage-format=xml"
+    buildOnDockerImage = "nightly"
+}
+
+configurations {
+    externalJars
+}
+
+dependencies {
+    externalJars(group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: "${jacksonVersion}") {
+        transitive = false
+    }
+    externalJars(group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: "${jacksonVersion}") {
+        transitive = false
+    }
+    externalJars(group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: "${jacksonVersion}") {
+        transitive = false
     }
 }
 
 task updateTomlFiles {
     doLast {
-        def newConfig = ballerinaTomlFilePlaceHolder.text.replace('@project.version@', project.version.toString())
-        newConfig = newConfig.replace('@toml.version@', tomlVersion)
-        ballerinaTomlFile.text = newConfig
+        def newBallerinaToml = ballerinaTomlFilePlaceHolder.text.replace("@project.version@", project.version)
+        newBallerinaToml = newBallerinaToml.replace("@toml.version@", tomlVersion)
+        newBallerinaToml = newBallerinaToml.replace("@jackson.version@", jacksonVersion)
+        ballerinaTomlFile.text = newBallerinaToml
     }
 }
 
-task build {
-    dependsOn ":${packageName}-native:build"
-    dependsOn updateTomlFiles
+task commitTomlFiles {
     doLast {
-        executeBalCommand ("build", "${project.projectDir}")
-        executeBalCommand ("pack", "${project.projectDir}")
-        //TODO: Disabled due to the void of examples
-        // executeBalCommand ("push --repository=local", "${project.projectDir}")
-
-        // def centralDir = file("${System.getProperty('user.home')}/.ballerina/repositories/central.ballerina.io/")
-        // def cacheDirs = centralDir.listFiles().findAll { it.isDirectory() && it.name.startsWith('cache-') }
-        // delete cacheDirs
-
-        // def destinationDir = new File("${System.getProperty('user.home')}/.ballerina/repositories/central.ballerina.io/bala/ballerinax/${project.balPackageName}")
-        // if (destinationDir.exists()) {
-        //     delete destinationDir;
-        // }
-
-        // copy {
-        //     from "${System.getProperty('user.home')}/.ballerina/repositories/local/bala/ballerinax/${project.balPackageName}"
-        //     into destinationDir
-        // }
+        project.exec {
+            ignoreExitValue true
+            if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+                commandLine 'cmd', '/c', "git commit -m \"[Automated] Update the toml files\" Ballerina.toml Dependencies.toml"
+            } else {
+                commandLine 'sh', '-c', "git commit -m '[Automated] Update the toml files' Ballerina.toml Dependencies.toml"
+            }
+        }
     }
 }
 
-task test {
-    dependsOn ":${packageName}-native:build"
-    dependsOn updateTomlFiles
-    doLast {
-        executeBalCommand ("test", "${project.projectDir}")
-    }
+clean {
+    delete 'build'
 }
+
+build.dependsOn copyToLib
+build.dependsOn ":${packageName}-native:build"
+test.dependsOn ":${packageName}-native:build"

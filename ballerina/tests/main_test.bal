@@ -163,7 +163,6 @@ public function testFindData() returns error? {
     stream<Movie, error?> result = check mongoClient->find(COLLECTION_NAME,filter = findDoc);
     check result.forEach(function(Movie data){
         log:printInfo(data.year.toString());
-        test:assertTrue(data is Movie);
         test:assertEquals(data.year,"2019","Querying year 2019 filter failed");
     });
     log:printInfo("Querying year 2019 filter tested successfully");

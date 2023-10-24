@@ -36,10 +36,7 @@ target
 *.ipr
 *.iws
 .gradle
-*/build
 build
 
-mongo-utils/dependency-reduced-pom.xml
-/mongodb/resources/*.json
-
-Ballerina.lock
+# Environment files
+*.env
