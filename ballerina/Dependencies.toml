@@ -81,19 +81,6 @@ dependencies = [
 
 [[package]]
 org = "ballerina"
-name = "os"
-version = "1.8.0"
-scope = "testOnly"
-dependencies = [
-	{org = "ballerina", name = "io"},
-	{org = "ballerina", name = "jballerina.java"}
-]
-modules = [
-	{org = "ballerina", packageName = "os", moduleName = "os"}
-]
-
-[[package]]
-org = "ballerina"
 name = "test"
 version = "0.0.0"
 scope = "testOnly"
@@ -116,12 +103,11 @@ dependencies = [
 [[package]]
 org = "ballerinax"
 name = "mongodb"
-version = "4.3.0"
+version = "5.0.0-SNAPSHOT"
 dependencies = [
 	{org = "ballerina", name = "crypto"},
 	{org = "ballerina", name = "jballerina.java"},
 	{org = "ballerina", name = "log"},
-	{org = "ballerina", name = "os"},
 	{org = "ballerina", name = "test"}
 ]
 modules = [
