@@ -89,10 +89,41 @@ task commitTomlFiles {
     }
 }
 
+task startMongodbServer() {
+    doLast {
+        println("Starting mongodb server...")
+        exec {
+            if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+                commandLine 'cmd', '/c', "docker-compose -f tests/resources/docker/docker-compose.yml up && exit %%ERRORLEVEL%%"
+            } else {
+                commandLine 'sh', '-c', "docker-compose -f tests/resources/docker/docker-compose.yml up -d"
+            }
+        }
+    }
+}
+
+task stopMongodbServer() {
+    doLast {
+        println("Stopping mongodb server...")
+        exec {
+            if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+                commandLine 'cmd', '/c', "docker-compose -f tests/resources/docker/docker-compose.yml down && exit %%ERRORLEVEL%%"
+            } else {
+                commandLine 'sh', '-c', "docker-compose -f tests/resources/docker/docker-compose.yml down"
+            }
+        }
+    }
+}
+
 clean {
     delete 'build'
 }
 
 build.dependsOn copyToLib
 build.dependsOn ":${packageName}-native:build"
+build.dependsOn startMongodbServer
+build.finalizedBy stopMongodbServer
+
 test.dependsOn ":${packageName}-native:build"
+test.dependsOn startMongodbServer
+test.finalizedBy stopMongodbServer

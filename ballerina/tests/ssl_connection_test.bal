@@ -14,14 +14,14 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import ballerina/file;
 import ballerina/log;
 import ballerina/test;
 
-string jksFilePath = check file:getAbsolutePath("ballerina/tests/resources/mongodb-client.jks");
+string keystorePath = "./tests/resources/docker/certs/mongodb-client.jks";
+string x509Username = "C=LK,ST=Western,L=Colombo,O=WSO2,OU=Ballerina,CN=admin";
 
 X509Credential x509Credential = {
-    username: testUser
+    username: x509Username
 };
 
 ConnectionConfig mongoConfigInvalid = {
@@ -38,22 +38,21 @@ ConnectionConfig sslMongoConfig = {
     connection: {
         host: testHostName,
         auth: x509Credential,
-        port: 27012,
+        port: 27018,
         options: {
             socketTimeout: 10000,
             authMechanism: "MONGODB-X509",
             sslEnabled: true,
-            sslInvalidHostNameAllowed: true,
             secureSocket: {
                 trustStore: {
-                    path: jksFilePath,
+                    path: keystorePath,
                     password: "123456"
                 },
                 keyStore: {
-                    path: jksFilePath,
+                    path: keystorePath,
                     password: "123456"
                 },
-                protocol:"TLS"
+                protocol: "TLS"
             }
         }
     },
@@ -61,26 +60,25 @@ ConnectionConfig sslMongoConfig = {
 };
 
 @test:Config {
-   groups: ["mongodb-ssl"]
+    groups: ["mongodb-ssl"]
 }
 public function initializeInValidConfig() {
-   log:printInfo("Start initialization test failure");
-   Client|Error mongoClient = new (mongoConfigInvalid);
-   if (mongoClient is ApplicationError) {
-       log:printInfo("Creating client failed '" + mongoClient.message() + "'.");
-   } else {
-       test:assertFail("Error expected when url is invalid.");
-   }
+    Client|Error mongoClient = new (mongoConfigInvalid);
+    if (mongoClient is ApplicationError) {
+        log:printInfo("Creating client failed '" + mongoClient.message() + "'.");
+    } else {
+        test:assertFail("Expected an error for invalid client configurations");
+    }
 }
 
 @test:Config {
-   dependsOn: [ initializeInValidConfig ],
-   groups: ["mongodb-ssl"]
+    groups: ["mongodb-ssl"]
 }
 public function testSSLConnection() returns error? {
-   log:printInfo("------------------ Inserting Data on SSL Connection ------------------");
-   map<json> document = {name: "The Lion King", year: "2019", rating: 8};
-
-   Client mongoClient = check new (sslMongoConfig);
-   check mongoClient->insert(document, "test");
+    map<json> document = {name: "The Lion King", year: "2019", rating: 8};
+    Client|Error mongoClient = new (sslMongoConfig);
+    if mongoClient is Error {
+        return mongoClient;
+    }
+    check mongoClient->insert(document, "test");
 }

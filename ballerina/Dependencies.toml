@@ -21,21 +21,6 @@ modules = [
 
 [[package]]
 org = "ballerina"
-name = "file"
-version = "1.9.0"
-scope = "testOnly"
-dependencies = [
-	{org = "ballerina", name = "io"},
-	{org = "ballerina", name = "jballerina.java"},
-	{org = "ballerina", name = "os"},
-	{org = "ballerina", name = "time"}
-]
-modules = [
-	{org = "ballerina", packageName = "file", moduleName = "file"}
-]
-
-[[package]]
-org = "ballerina"
 name = "io"
 version = "1.6.0"
 scope = "testOnly"
@@ -134,7 +119,6 @@ name = "mongodb"
 version = "4.3.0"
 dependencies = [
 	{org = "ballerina", name = "crypto"},
-	{org = "ballerina", name = "file"},
 	{org = "ballerina", name = "jballerina.java"},
 	{org = "ballerina", name = "log"},
 	{org = "ballerina", name = "os"},

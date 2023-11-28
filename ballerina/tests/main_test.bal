@@ -15,20 +15,19 @@
 // under the License.
 
 import ballerina/log;
-import ballerina/os;
 import ballerina/test;
 
-string testHostName = os:getEnv("MONGODB_HOST") != "" ? os:getEnv("MONGODB_HOST") : "localhost";
-string testUser = os:getEnv("MONGODB_USER") != "" ? os:getEnv("MONGODB_USER") : "admin";
-string testPass = os:getEnv("MONGODB_PASSWORD") != "" ? os:getEnv("MONGODB_PASSWORD") : "admin";
+string testHostName = "localhost";
+string testUser = "admin";
+string testPass = "admin";
 
-const DATABASE_NAME = "moviecollection";
-const COLLECTION_NAME = "moviedetails";
+const DATABASE_NAME = "moviesDB";
+const COLLECTION_NAME = "movies";
 
 ConnectionConfig mongoConfig = {
     connection: {
         host: testHostName,
-        port: 27011,
+        port: 27017,
         auth: {
             username: testUser,
             password: testPass
@@ -43,7 +42,7 @@ ConnectionConfig mongoConfig = {
 
 ConnectionConfig mongoConfigError = {
     connection: {
-        url: "asdakjdk"
+        url: "invalidDB"
     },
     databaseName: "MyDb"
 };
@@ -68,7 +67,6 @@ public function initializeInvalidClient() {
     groups: ["mongodb"]
 }
 public function testListDatabaseNames() returns error? {
-    log:printInfo("----------------- List Databases------------------");
     string[] dbNames = check mongoClient->getDatabasesNames();
     log:printInfo("Database Names: " + dbNames.toString());
 }
@@ -78,7 +76,6 @@ public function testListDatabaseNames() returns error? {
     groups: ["mongodb"]
 }
 public function testListCollections() returns error? {
-    log:printInfo("----------------- List Collections------------------");
     string[] collectionNames = check mongoClient->getCollectionNames("admin");
     log:printInfo("Collection Names: " + collectionNames.toString());
 }
@@ -88,7 +85,6 @@ public function testListCollections() returns error? {
     groups: ["mongodb"]
 }
 public function testInsertData() returns error? {
-    log:printInfo("------------------ Inserting Data ------------------");
     map<json> document1 = {name: "The Lion King", year: "2019", rating: 8};
     map<json> ducument2 = {name: "Black Panther", year: "2018", rating: 7};
 
@@ -104,7 +100,6 @@ public function testInsertData() returns error? {
     groups: ["mongodb"]
 }
 public function testInsertDataWithDbName() returns error? {
-    log:printInfo("------------------ Inserting Data With Second Database ------------------");
     map<json> document1 = {name: "The Lion King", year: "2019", rating: 8};
     map<json> document2 = {name: "Black Panther", year: "2018", rating: 7};
 
@@ -120,8 +115,6 @@ public function testInsertDataWithDbName() returns error? {
     groups: ["mongodb"]
 }
 public function testCountDocuments() returns error? {
-    log:printInfo("----------------- Count Documents------------------");
-
     int documentCount = check mongoClient->countDocuments(COLLECTION_NAME, (),());
     log:printInfo("Documents counted successfully. Count: " + documentCount.toString());
     test:assertEquals(2, documentCount);
@@ -138,7 +131,6 @@ public function testCountDocuments() returns error? {
     groups: ["mongodb"]
 }
 public function testListIndices() returns error? {
-    log:printInfo("----------------- List Indices------------------");
     stream<Index, error?> returned = check mongoClient->listIndices(COLLECTION_NAME);
     check returned.forEach(function(Index data){
         log:printInfo(data.ns);
@@ -151,8 +143,6 @@ public function testListIndices() returns error? {
     groups: ["mongodb"]
 }
 public function testFindData() returns error? {
-    log:printInfo("----------------- Querying Data ----------------");
-
     map<json> document1 = {name: "Joker", year: "2019", rating: 7};
     map<json> document2 = {name: "Black Panther", year: "2018", rating: 7};
 
@@ -190,8 +180,6 @@ public function testFindData() returns error? {
     groups: ["mongodb"]
 }
 public function testFindDataWithProjection() returns error? {
-    log:printInfo("----------------- Querying Data with Projection ----------------");
-
     map<json> findDoc = {year: "2019"};
     map<json> projectionDoc = {name: 1, year: true};
     stream<MovieWithoutRating, error?> result = check mongoClient->find(COLLECTION_NAME, projection = projectionDoc,
@@ -225,7 +213,6 @@ public function testFindDataWithProjection() returns error? {
     groups: ["mongodb"]
 }
 function testFindDistinctValues() returns error? {
-    log:printInfo("----------------- Querying Distinct Values ----------------");
     string[] distictiveValues = [];
     stream<string, error?> result = check mongoClient->'distinct(COLLECTION_NAME, "year");
     check result.forEach(function(string data){
@@ -242,8 +229,6 @@ function testFindDistinctValues() returns error? {
     groups: ["mongodb"]
 }
 function testUpdateDocument() returns error? {
-    log:printInfo("------------------ Updating Data -------------------");
-
     map<json> replaceFilter = {name: "The Lion King"};
     map<json> replaceDoc = { "$set": {name: "The Lion King", year: "2019", rating: 6}};
 
@@ -264,8 +249,6 @@ function testUpdateDocument() returns error? {
     groups: ["mongodb"]
 }
 function testUpdateDocumentUpsertTrue() returns error? {
-    log:printInfo("------------------ Updating Data (Upsert) -------------------");
-
     map<json> replaceFilter = {name: "The Lion King 2"};
     map<json> replaceDoc = { "$set": {name: "The Lion King 2", year: "2019", rating: 7}};
 
@@ -279,8 +262,6 @@ function testUpdateDocumentUpsertTrue() returns error? {
     groups: ["mongodb"]
 }
 function testDelete() returns error? {
-    log:printInfo("------------------ Deleting Data -------------------");
-
     map<json> deleteFilter = {"rating": 9};
 
     int deleteDocCount = check mongoClient->delete(COLLECTION_NAME, (), deleteFilter, true);
@@ -291,7 +272,6 @@ function testDelete() returns error? {
     log:printInfo("Deleted count: " + deleteDocCount.toString());
     test:assertEquals(deleteDocCount, 2, msg = "Document deletion failed");
 
-    log:printInfo("------------------ Deleting Data From Second Database-------------------");
     deleteDocCount = check mongoClient->delete(COLLECTION_NAME, "anothermoviecollection", (), true);
     log:printInfo("Deleted count: " + deleteDocCount.toString());
     test:assertEquals(deleteDocCount, 2, msg = "Document deletion failed");
