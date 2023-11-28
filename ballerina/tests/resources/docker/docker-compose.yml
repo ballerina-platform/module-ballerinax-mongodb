@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  mongo-no-ssl:
+    image: mongo:4.2
+    restart: always
+    ports:
+      - 27017:27017
+    volumes:
+      - ./init-scripts/no-ssl.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongo localhost:27017/test --quiet
+      interval: 30s
+      timeout: 20s
+      retries: 3
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin
+
+  mongo-with-ssl:
+    image: mongo:4.2
+    restart: always
+    ports:
+      - 27018:27018
+    volumes:
+      - ./init-scripts/ssl.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+      - ./certs/mongodb-server.pem:/etc/ssl/mongodb.pem:ro
+      - ./certs/mongodb-CA.pem:/etc/ssl/mongodb-ca.pem:ro
+    depends_on:
+      mongo-no-ssl:
+        condition: service_healthy
+    command: --port 27018 --tlsMode requireTLS --tlsCertificateKeyFile /etc/ssl/mongodb.pem --tlsCAFile /etc/ssl/mongodb-ca.pem
