@@ -48,7 +48,8 @@ ballerina {
     packageOrganization = packageOrg
     module = packageName
     testCoverageParam = "--code-coverage --coverage-format=xml"
-    buildOnDockerImage = "nightly"
+    isConnector = true
+    platform = "java17"
 }
 
 configurations {
