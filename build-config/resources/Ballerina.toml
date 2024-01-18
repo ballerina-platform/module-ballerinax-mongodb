@@ -13,25 +13,25 @@ repository = "https://github.com/ballerina-platform/module-ballerinax-mongodb"
 graalvmCompatible = true
 
 [[platform.java17.dependency]]
-path = "../native/build/libs/mongodb-native-@project.version@.jar"
 groupId = "org.ballerinalang"
 artifactId = "mongodb-native"
 version = "@project.version@"
+path = "../native/build/libs/mongodb-native-@project.version@.jar"
 
 [[platform.java17.dependency]]
-groupId = "com.fasterxml.jackson.core"
-artifactId = "jackson-core"
-version = "@jackson.version@"
-path = "./lib/jackson-core-@jackson.version@.jar"
+groupId = "org.mongodb"
+artifactId = "mongodb-driver-sync"
+version = "@mongodb.driver.version@"
+path = "./lib/mongodb-driver-sync-@mongodb.driver.version@.jar"
 
-[[platform.java11.dependency]]
-groupId = "com.fasterxml.jackson.core"
-artifactId = "jackson-annotations"
-version = "@jackson.version@"
-path = "./lib/jackson-annotations-@jackson.version@.jar"
+[[platform.java17.dependency]]
+groupId = "org.mongodb"
+artifactId = "mongodb-driver-core"
+version = "@mongodb.driver.version@"
+path = "./lib/mongodb-driver-core-@mongodb.driver.version@.jar"
 
-[[platform.java11.dependency]]
-groupId = "com.fasterxml.jackson.core"
-artifactId = "jackson-databind"
-version = "@jackson.version@"
-path = "./lib/jackson-databind-@jackson.version@.jar"
+[[platform.java17.dependency]]
+groupId = "org.mongodb"
+artifactId = "bson"
+version = "@mongodb.driver.version@"
+path = "./lib/bson-@mongodb.driver.version@.jar"

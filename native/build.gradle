@@ -39,10 +39,9 @@ dependencies {
     implementation group: 'org.ballerinalang', name: 'value', version: "${ballerinaLangVersion}"
 
     implementation group: 'org.slf4j', name: 'slf4j-api', version: "${slf4jVersion}"
-    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: "${jacksonVersion}"
-    implementation group: 'org.mongodb', name: 'mongo-java-driver', version: "${mongoJavaDriverVersion}"
-
-    dist group: 'org.mongodb', name: 'mongo-java-driver', version: "${mongoJavaDriverVersion}"
+    implementation group: 'org.mongodb', name: 'mongodb-driver-sync', version: "${mongoDriverVersion}"
+    implementation group: 'org.mongodb', name: 'mongodb-driver-core', version: "${mongoDriverVersion}"
+    implementation group: 'org.mongodb', name: 'bson', version: "${mongoDriverVersion}"
 }
 
 tasks.withType(JavaCompile) {
@@ -64,7 +63,6 @@ test {
 }
 
 spotbugsMain {
-    ignoreFailures = true
     effort = "max"
     reportLevel = "low"
     reportsDir = file("$project.buildDir/reports/spotbugs")
@@ -73,7 +71,8 @@ spotbugsMain {
         it.excludeFilter = excludeFile
     }
     reports {
-        text.enabled = true
+        xml.enabled = false
+        html.enabled = true
     }
 }
 

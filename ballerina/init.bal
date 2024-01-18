@@ -21,5 +21,5 @@ function init() {
 }
 
 function setModule() = @java:Method {
-    'class: "org.ballerinalang.mongodb.ModuleUtils"
+    'class: "io.ballerina.lib.mongodb.ModuleUtils"
 } external;
