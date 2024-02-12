@@ -19,6 +19,7 @@
 package org.ballerinalang.mongodb;
 
 import com.mongodb.MongoException;
+import com.mongodb.client.AggregateIterable;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
@@ -30,6 +31,7 @@ import io.ballerina.runtime.api.creators.TypeCreator;
 import io.ballerina.runtime.api.creators.ValueCreator;
 import io.ballerina.runtime.api.types.RecordType;
 import io.ballerina.runtime.api.types.Type;
+import io.ballerina.runtime.api.values.BArray;
 import io.ballerina.runtime.api.values.BHandle;
 import io.ballerina.runtime.api.values.BObject;
 import io.ballerina.runtime.api.values.BStream;
@@ -38,6 +40,9 @@ import io.ballerina.runtime.api.values.BTypedesc;
 import org.ballerinalang.mongodb.exceptions.BallerinaErrorGenerator;
 import org.bson.Document;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.ballerinalang.mongodb.MongoDBConstants.EMPTY_JSON;
 
 /**
@@ -45,16 +50,31 @@ import static org.ballerinalang.mongodb.MongoDBConstants.EMPTY_JSON;
  */
 public class MongoDBCollectionUtil {
 
-    public static Object countDocuments(BHandle collection, Object filter) {
+    public static Object countDocuments(BHandle collection, Object filter, BArray pipeline) {
         MongoCollection<Document> mongoCollection = (MongoCollection<Document>) collection.getValue();
         try {
-
-            if (filter == null) {
-                return mongoCollection.countDocuments();
+            if (pipeline != null) {
+                List<Document> pipelineDoc = new ArrayList<>();
+                long pipelineLength = pipeline.getLength();
+                for (int i = 0; i < pipelineLength; i++) {
+                    pipelineDoc.add(Document.parse(pipeline.get(i).toString()));
+                }
+                Document groupDoc = new Document();
+                Document countDoc = new Document();
+                countDoc.put("_id", null);
+                countDoc.put("count", new Document("$sum", 1));
+                groupDoc.put("$group", countDoc);
+                pipelineDoc.add(groupDoc);
+                MongoCursor<Document> cursor = mongoCollection.aggregate(pipelineDoc).cursor();
+                if (cursor.hasNext()) {
+                    return cursor.next().get("count");
+                }
             }
-
-            Document filterDoc = Document.parse(filter.toString());
-            return mongoCollection.countDocuments(filterDoc);
+            if (filter != null) {
+                Document filterDoc = Document.parse(filter.toString());
+                return mongoCollection.countDocuments(filterDoc);
+            }
+            return mongoCollection.countDocuments();
         } catch (MongoException e) {
             return BallerinaErrorGenerator.createBallerinaDatabaseError(e);
         } catch (Exception e) {
@@ -225,5 +245,43 @@ public class MongoDBCollectionUtil {
         } catch (Exception e) {
             return BallerinaErrorGenerator.createBallerinaApplicationError(e);
         }
+    }
+
+    static Object aggregate(Environment env, BObject client, BString collectionName,
+                                   Object databaseName, List<Document> stages, BTypedesc recordType) {
+        // Add $toString stage to convert _id to string UUID
+        stages.add(new Document("$set", new Document("_id", new Document("$toString", "$_id"))));
+
+        try {
+            MongoDatabase mongoDatabase = MongoDBDatabaseUtil.getCurrentDatabase(env, client, databaseName);
+            MongoCollection<Document> mongoCollection = mongoDatabase.getCollection(collectionName.getValue());
+            AggregateIterable<Document> results = mongoCollection.aggregate(stages, Document.class);
+            MongoCursor<Document> resultIterate = results.iterator();
+            Type streamConstraint = recordType.getDescribingType();
+            BObject bObject = ValueCreator.createObjectValue(ModuleUtils.getModule(),
+                    MongoDBConstants.RESULT_ITERATOR_OBJECT, null, ValueCreator.createObjectValue(
+                            ModuleUtils.getModule(), MongoDBConstants.MONGO_RESULT_ITERATOR_OBJECT));
+            bObject.addNativeData(MongoDBConstants.RESULT_SET_NATIVE_DATA_FIELD, resultIterate);
+            bObject.addNativeData(MongoDBConstants.RECORD_TYPE_DATA_FIELD, streamConstraint);
+            BStream bStreamValue = ValueCreator.createStreamValue(TypeCreator.createStreamType(streamConstraint,
+                    PredefinedTypes.TYPE_NULL), bObject);
+            return bStreamValue;
+        } catch (MongoException e) {
+            return BallerinaErrorGenerator.createBallerinaDatabaseError(e);
+        } catch (Exception e) {
+            return BallerinaErrorGenerator.createBallerinaApplicationError(e);
+        }
+    }
+
+    public static Object aggregate(Environment env, BObject client, BString collectionName,
+                                   Object databaseName, BArray pipeline, BTypedesc recordType) {
+        List<Document> pipelineDoc = new ArrayList<>();
+        if (pipeline != null) {
+            long pipelineLength = pipeline.getLength();
+            for (int i = 0; i < pipelineLength; i++) {
+                pipelineDoc.add(Document.parse(pipeline.get(i).toString()));
+            }
+        }
+        return aggregate(env, client, collectionName, databaseName, pipelineDoc, recordType);
     }
 }
