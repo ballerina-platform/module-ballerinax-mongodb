@@ -1,6 +1,7 @@
 name: Deployment
 
 on:
+  workflow_dispatch:
   release:
     types: [ published ]
 
@@ -22,7 +23,7 @@ jobs:
       - name: Set Up Ballerina
         uses: ballerina-platform/setup-ballerina@v1.1.0
         with:
-          version: 2201.7.0
+          version: 2201.8.4
 
       # Grant execute permission to the gradlew script
       - name: Grant execute permission for gradlew
