@@ -67,18 +67,21 @@ public isolated client class Client {
     # + collectionName - Name of the collection
     # + databaseName - Name of the database
     # + filter - Filter for the count ($where & $near can be used)
+    # + pipeline - The aggregation pipeline for the count.
     # + return - Count of the documents in the collection or else `mongodb:Error` if unable to reach the DB
     @display {label: "Count Documents"}
     remote isolated function countDocuments(@display {label: "Collection Name"} string collectionName,
                                    @display {label: "Database Name"} string? databaseName = (),
-                                   @display {label: "Filter"} map<json>? filter = ())
+                                   @display {label: "Filter"} map<json>? filter = (),
+                                   @display {label: "Pipeline"} json[] pipeline = [])
                                    returns @display {label: "Number of Documents"} int|Error {
         handle collection = check getCollection(self, collectionName, databaseName);
         if (filter is ()) {
-            return countDocuments(collection, ());
+            return countDocuments(collection, (), pipeline);
         }
         string filterString = filter.toJsonString();
-        return countDocuments(collection, java:fromString(filterString));
+        // string pipelineString = pipeline.toJsonString();
+        return countDocuments(collection, java:fromString(filterString), pipeline);
     }
 
     # Lists the indices associated with the collection.
@@ -193,6 +196,14 @@ public isolated client class Client {
         'class: "org.ballerinalang.mongodb.MongoDBCollectionUtil"
     } external;
 
+    remote isolated function aggregate(@display {label: "Collection Name"} string collectionName,
+                                      @display {label: "Database Name"} string? databaseName = (),
+                                      @display {label: "Pipeline"} json[] pipeline = [],
+                                      @display {label: "Record Type"} typedesc<record {}> rowType = <>)
+                                      returns stream<rowType, error?>|Error = @java:Method {
+        'class: "org.ballerinalang.mongodb.MongoDBCollectionUtil"
+    } external;
+
     # Closes the client.
     @display {label: "Close the Client"}
     remote isolated function close() {
@@ -220,7 +231,7 @@ isolated function getCollection(Client mongoClient, string collectionName, strin
 } external;
 
 // Collection Client Java
-isolated function countDocuments(handle collection, handle? filter) returns int|DatabaseError = @java:Method {
+isolated function countDocuments(handle collection, handle? filter, json[] pipeline) returns int|DatabaseError = @java:Method {
     'class: "org.ballerinalang.mongodb.MongoDBCollectionUtil"
 } external;
 
