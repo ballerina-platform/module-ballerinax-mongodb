@@ -53,9 +53,9 @@ public class MongoDBCollectionUtil {
     public static Object countDocuments(BHandle collection, Object filter, BArray pipeline) {
         MongoCollection<Document> mongoCollection = (MongoCollection<Document>) collection.getValue();
         try {
-            if (pipeline != null) {
+            long pipelineLength = pipeline.getLength();
+            if (pipelineLength != 0) {
                 List<Document> pipelineDoc = new ArrayList<>();
-                long pipelineLength = pipeline.getLength();
                 for (int i = 0; i < pipelineLength; i++) {
                     pipelineDoc.add(Document.parse(pipeline.get(i).toString()));
                 }
