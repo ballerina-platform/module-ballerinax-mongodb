@@ -36,17 +36,25 @@ import static io.ballerina.runtime.api.utils.StringUtils.fromString;
 
 /**
  * Utility functions for Ballerina MongoDB result iterator object.
+ *
+ * @since 5.0.0
  */
 public final class IteratorUtils {
     private IteratorUtils() {
     }
 
     public static Object nextResult(BObject iterator) {
-        MongoCursor<Document> cursor = (MongoCursor<Document>) iterator.getNativeData(Collection.MONGO_CURSOR);
+        MongoCursor cursor = (MongoCursor) iterator.getNativeData(Utils.MONGO_CURSOR);
         Type recordType = (Type) iterator.getNativeData(RECORD_TYPE);
         if (cursor.hasNext()) {
             try {
-                String result = cursor.next().toJson();
+                Object next = cursor.next();
+                String result = "";
+                if (next instanceof Document) {
+                    result = ((Document) next).toJson();
+                } else {
+                    result = next.toString();
+                }
                 UnionType nextValueType = TypeCreator.createUnionType(recordType, PredefinedTypes.TYPE_ERROR,
                         PredefinedTypes.TYPE_NULL);
                 BTypedesc nextValueTypeDesc = ValueCreator.createTypedescValue(nextValueType);
@@ -60,7 +68,7 @@ public final class IteratorUtils {
 
     public static BError close(BObject iterator) {
         try {
-            MongoCursor<Document> cursor = (MongoCursor<Document>) iterator.getNativeData(Collection.MONGO_CURSOR);
+            MongoCursor cursor = (MongoCursor) iterator.getNativeData(Utils.MONGO_CURSOR);
             cursor.close();
             return null;
         } catch (Exception e) {

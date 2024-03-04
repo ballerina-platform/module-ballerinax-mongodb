@@ -14,36 +14,30 @@
 // specific language governing permissions and limitations
 // under the License.
 
-type Movie record {
-    string name;
-    int year;
-    int rating;
-};
+import ballerina/test;
 
-type MovieWithIdName record {|
-    map<string> _id;
-    string name;
+@test:Mock {
+    moduleName: "ballerina/log",
+    functionName: "printWarn"
+}
+test:MockFunction logWarn = new();
+
+string message = "";
+
+public type Value anydata|Valuer;
+
+public type Valuer isolated function () returns anydata;
+
+public type KeyValues record {|
+    never msg?;
+    never 'error?;
+    never stackTrace?;
+    Value...;
 |};
 
-type Person record {|
-    string name;
-    int age;
-    Address address;
-|};
-
-type Address readonly & record {|
-    string street;
-    string city;
-    string country;
-|};
-
-type Book readonly & record {|
-    string title;
-    int year;
-    int rating;
-|};
-
-type Author readonly & record {|
-    string name;
-    Book[] books;
-|};
+function mockLogWarn(
+    string msg, error? 'error = (), error:StackFrame[]? stackTrace = (), *KeyValues keyValues) {
+    lock {
+        message = msg;
+    }
+}

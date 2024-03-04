@@ -20,7 +20,7 @@ import ballerina/jballerina.java;
 public isolated class ResultIterator {
     private boolean isClosed = false;
 
-    public isolated function next() returns record {|record {} value;|}|Error? {
+    public isolated function next() returns record {|anydata value;|}|Error? {
         boolean closed;
         lock {
             closed = self.isClosed;
@@ -28,15 +28,14 @@ public isolated class ResultIterator {
         if closed {
             return error ApplicationError("Cannot iterate over a closed stream");
         }
-        record{}|Error? next = check nextResult(self);
+        anydata|Error? next = check nextResult(self);
         if next is Error {
             lock {
                 check self.close();
             }
             return next;
-        }
-        if next is record{} {
-            return { value: next };
+        } else if next !is () {
+            return {value: next};
         }
         return self.close();
     }
@@ -49,7 +48,7 @@ public isolated class ResultIterator {
     }
 }
 
-isolated function nextResult(ResultIterator resultIterator) returns record {}|Error? = @java:Method {
+isolated function nextResult(ResultIterator resultIterator) returns anydata|Error? = @java:Method {
     'class: "io.ballerina.lib.mongodb.IteratorUtils"
 } external;
 

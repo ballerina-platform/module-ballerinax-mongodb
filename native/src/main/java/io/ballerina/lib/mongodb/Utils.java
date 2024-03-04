@@ -21,25 +21,57 @@ package io.ballerina.lib.mongodb;
 import com.mongodb.MongoClientException;
 import com.mongodb.MongoCommandException;
 import com.mongodb.MongoException;
+import com.mongodb.client.MongoCursor;
+import io.ballerina.runtime.api.PredefinedTypes;
+import io.ballerina.runtime.api.TypeTags;
 import io.ballerina.runtime.api.creators.ErrorCreator;
+import io.ballerina.runtime.api.creators.TypeCreator;
 import io.ballerina.runtime.api.creators.ValueCreator;
+import io.ballerina.runtime.api.types.ArrayType;
+import io.ballerina.runtime.api.types.Field;
+import io.ballerina.runtime.api.types.RecordType;
+import io.ballerina.runtime.api.types.StreamType;
+import io.ballerina.runtime.api.types.Type;
 import io.ballerina.runtime.api.utils.StringUtils;
+import io.ballerina.runtime.api.utils.TypeUtils;
+import io.ballerina.runtime.api.values.BArray;
 import io.ballerina.runtime.api.values.BError;
 import io.ballerina.runtime.api.values.BMap;
+import io.ballerina.runtime.api.values.BObject;
+import io.ballerina.runtime.api.values.BStream;
 import io.ballerina.runtime.api.values.BString;
+import io.ballerina.runtime.api.values.BTypedesc;
+import org.bson.Document;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import static io.ballerina.lib.mongodb.ModuleUtils.getModule;
 
 /**
  * Utility methods for the Ballerina MongoDB connector.
  */
 public final class Utils {
 
+    private Utils() {
+    }
+
+    static final String RESULT_ITERATOR_OBJECT_NAME = "ResultIterator";
+    static final String MONGO_CURSOR = "mongo.cursor";
+    static final String RECORD_TYPE = "record.type";
     static final String MONGO_CLIENT = "mongo.native.client";
     static final String MONGO_DATABASE = "mongo.native.database";
     static final String MONGO_COLLECTION = "mongo.native.collection";
     static final String DATABASE_ERROR_DETAIL = "DatabaseErrorDetail";
+    private static final String MONGO_ID_FIELD = "_id";
 
-    private Utils() {
-    }
+    static final Map<Integer, Class> DISTINCT_TYPE_MAP = Map.of(
+            TypeTags.STRING_TAG, String.class,
+            TypeTags.INT_TAG, Long.class,
+            TypeTags.FLOAT_TAG, Double.class,
+            TypeTags.RECORD_TYPE_TAG, Document.class
+    );
 
     static BError createError(Exception e) {
         return createError(ErrorType.APPLICATION_ERROR, e.getMessage(), null);
@@ -85,5 +117,93 @@ public final class Utils {
     static BError createError(ErrorType errorType, String errorMessage, BError cause, BMap<BString, Object> details) {
         BString message = StringUtils.fromString(errorMessage);
         return ErrorCreator.createError(ModuleUtils.getModule(), errorType.getErrorType(), message, cause, details);
+    }
+
+    static BStream createStream(BTypedesc targetType, MongoCursor cursor) {
+        BObject resultIterator = ValueCreator.createObjectValue(getModule(), RESULT_ITERATOR_OBJECT_NAME);
+        resultIterator.addNativeData(MONGO_CURSOR, cursor);
+        resultIterator.addNativeData(RECORD_TYPE, targetType.getDescribingType());
+        Type completionType = TypeCreator.createUnionType(PredefinedTypes.TYPE_ERROR, PredefinedTypes.TYPE_NULL);
+        StreamType streamType = TypeCreator.createStreamType(targetType.getDescribingType(), completionType);
+        return ValueCreator.createStreamValue(streamType, resultIterator);
+    }
+
+    static Class getResultClass(BTypedesc targetType) {
+        if (DISTINCT_TYPE_MAP.containsKey(targetType.getDescribingType().getTag())) {
+            return DISTINCT_TYPE_MAP.get(targetType.getDescribingType().getTag());
+        }
+        return null;
+    }
+
+    static List<Document> getPipeline(BArray pipeline, Type targetType) {
+        List<Document> documents = new ArrayList<>();
+        boolean projectionPresent = false;
+        if (pipeline != null) {
+            for (int i = 0; i < pipeline.size(); i++) {
+                if (pipeline.get(i) instanceof BMap) {
+                    BMap<BString, Object> stage = (BMap<BString, Object>) pipeline.get(i);
+                    if (stage.containsKey(StringUtils.fromString("$project"))) {
+                        projectionPresent = true;
+                    }
+                }
+                documents.add(Document.parse(pipeline.get(i).toString()));
+            }
+        }
+        if (!projectionPresent) {
+            Document projection = new Document("$project", Document.parse(getProjectionDocument(targetType)));
+            documents.add(projection);
+        }
+        return documents;
+    }
+
+    static String getProjectionDocument(Type type) {
+        StringBuilder projectionBuilder = new StringBuilder();
+        projectionBuilder.append("{");
+        getProjectionForFieldType(type, projectionBuilder, "");
+        projectionBuilder.append("}");
+        return projectionBuilder.toString();
+    }
+
+    private static void getProjectionForFieldType(Type type, StringBuilder projectionBuilder, String parent) {
+        Type impliedType = TypeUtils.getImpliedType(type);
+        int tag = impliedType.getTag();
+        if (tag == TypeTags.RECORD_TYPE_TAG) {
+            RecordType recordType = (RecordType) TypeUtils.getImpliedType(type);
+            getProjectionForFieldType(recordType, projectionBuilder, parent);
+        } else if (tag == TypeTags.ARRAY_TAG) {
+            ArrayType arrayType = (ArrayType) type;
+            getProjectionForFieldType(arrayType, projectionBuilder, parent);
+        } else {
+            projectionBuilder.append(parent).append("\": 1, ");
+        }
+    }
+
+    private static void getProjectionForFieldType(RecordType recordType, StringBuilder projectionBuilder,
+                                                  String parent) {
+        Map<String, Field> fields = recordType.getFields();
+        if ("".equals(parent)) {
+            // Remove the _id field from the result when not specified by the user
+            if (!fields.containsKey(MONGO_ID_FIELD)) {
+                projectionBuilder.append("_id: 0, ");
+            }
+        }
+        for (Map.Entry<String, Field> field : fields.entrySet()) {
+            String fieldName = field.getKey();
+            if (parent.isEmpty() && MONGO_ID_FIELD.equals(fieldName)) {
+                continue;
+            }
+            String parentValue = parent.isEmpty() ? "\"" + fieldName : parent + "." + fieldName;
+            getProjectionForFieldType(field.getValue().getFieldType(), projectionBuilder, parentValue);
+        }
+    }
+
+    private static void getProjectionForFieldType(ArrayType arrayType, StringBuilder projectionBuilder, String parent) {
+        Type elementType = TypeUtils.getImpliedType(arrayType.getElementType());
+        if (elementType.getTag() == TypeTags.RECORD_TYPE_TAG) {
+            RecordType recordType = (RecordType) elementType;
+            getProjectionForFieldType(recordType, projectionBuilder, parent);
+        } else {
+            projectionBuilder.append("\": 1, ");
+        }
     }
 }

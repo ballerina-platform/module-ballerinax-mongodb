@@ -23,15 +23,15 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.CountOptions;
+import com.mongodb.client.model.IndexOptions;
 import com.mongodb.client.model.InsertManyOptions;
 import com.mongodb.client.model.InsertOneOptions;
+import com.mongodb.client.model.UpdateOptions;
+import com.mongodb.client.result.DeleteResult;
+import com.mongodb.client.result.UpdateResult;
 import io.ballerina.runtime.api.PredefinedTypes;
-import io.ballerina.runtime.api.TypeTags;
 import io.ballerina.runtime.api.creators.TypeCreator;
 import io.ballerina.runtime.api.creators.ValueCreator;
-import io.ballerina.runtime.api.types.ArrayType;
-import io.ballerina.runtime.api.types.Field;
-import io.ballerina.runtime.api.types.IntersectionType;
 import io.ballerina.runtime.api.types.RecordType;
 import io.ballerina.runtime.api.types.StreamType;
 import io.ballerina.runtime.api.types.Type;
@@ -42,6 +42,7 @@ import io.ballerina.runtime.api.values.BMap;
 import io.ballerina.runtime.api.values.BObject;
 import io.ballerina.runtime.api.values.BString;
 import io.ballerina.runtime.api.values.BTypedesc;
+import org.bson.BsonValue;
 import org.bson.Document;
 
 import java.util.ArrayList;
@@ -49,12 +50,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import static io.ballerina.lib.mongodb.ModuleUtils.getModule;
 import static io.ballerina.lib.mongodb.Utils.createError;
+import static io.ballerina.lib.mongodb.Utils.createStream;
+import static io.ballerina.lib.mongodb.Utils.getPipeline;
+import static io.ballerina.lib.mongodb.Utils.getProjectionDocument;
+import static io.ballerina.lib.mongodb.Utils.getResultClass;
 
 /**
  * This class represents a MongoDB collection in Ballerina MongoDB client.
+ *
+ * @since 5.0.0
  */
 public final class Collection {
+
+    private Collection() {
+    }
 
     private static final BString BYPASS_DOCUMENT_VALIDATION = StringUtils.fromString("bypassDocumentValidation");
     private static final BString COMMENT = StringUtils.fromString("comment");
@@ -64,15 +75,35 @@ public final class Collection {
     private static final BString SORT = StringUtils.fromString("sort");
     private static final BString MAX_TIME_MS = StringUtils.fromString("maxTimeMS");
     private static final BString HINT = StringUtils.fromString("hint");
+    private static final BString BACKGROUND = StringUtils.fromString("background");
+    private static final BString UNIQUE = StringUtils.fromString("unique");
+    private static final BString NAME = StringUtils.fromString("name");
+    private static final BString SPARSE = StringUtils.fromString("sparse");
+    private static final BString EXPIRE_AFTER_SECONDS = StringUtils.fromString("expireAfterSeconds");
+    private static final BString VERSION = StringUtils.fromString("version");
+    private static final BString WEIGHTS = StringUtils.fromString("weights");
+    private static final BString DEFAULT_LANGUAGE = StringUtils.fromString("defaultLanguage");
+    private static final BString LANGUAGE_OVERRIDE = StringUtils.fromString("languageOverride");
+    private static final BString TEXT_VERSION = StringUtils.fromString("textVersion");
+    private static final BString SPHERE_VERSION = StringUtils.fromString("sphereVersion");
+    private static final BString BITS = StringUtils.fromString("bits");
+    private static final BString MIN = StringUtils.fromString("min");
+    private static final BString MAX = StringUtils.fromString("max");
+    private static final BString PARTIAL_FILTER_EXPRESSION = StringUtils.fromString("partialFilterExpression");
+    private static final BString HIDDEN = StringUtils.fromString("hidden");
+    private static final BString UPSERT = StringUtils.fromString("upsert");
+    private static final BString HINT_STRING = StringUtils.fromString("hintString");
+    private static final BString MATCHED_COUNT = StringUtils.fromString("matchedCount");
+    private static final BString MODIFIED_COUNT = StringUtils.fromString("modifiedCount");
+    private static final BString UPSERTED_ID = StringUtils.fromString("upsertedId");
+    private static final BString DELETED_COUNT = StringUtils.fromString("deletedCount");
+    private static final BString ACKNOWLEDGED = StringUtils.fromString("acknowledged");
 
     private static final String EMPTY_JSON = "{}";
-    private static final String MONGO_ID_FIELD = "_id";
-    private static final String RESULT_ITERATOR_OBJECT_NAME = "ResultIterator";
-    static final String MONGO_CURSOR = "mongo.cursor";
+    private static final String UPDATE_RESULT_TYPE = "UpdateResult";
+    private static final String DELETE_RESULT_TYPE = "DeleteResult";
+    private static final String INDEX_TYPE = "Index";
     static final String RECORD_TYPE = "record.type";
-
-    private Collection() {
-    }
 
     public static BError initCollection(BObject collection, BObject database, BString collectionName) {
         try {
@@ -114,9 +145,14 @@ public final class Collection {
     }
 
     public static Object find(BObject collection, BMap<BString, Object> filter, BMap<BString, Object> options,
-                              BTypedesc targetType) {
+                              Object projectionInput, BTypedesc targetType) {
         Integer limit, batchSize, skip;
-        String projection = getProjectionDocument(targetType.getDescribingType());
+        String projection;
+        if (projectionInput == null) {
+            projection = getProjectionDocument(targetType.getDescribingType());
+        } else {
+            projection = projectionInput.toString();
+        }
         String sort = options.get(SORT) != null ? options.get(SORT).toString() : EMPTY_JSON;
         limit = options.getIntValue(LIMIT) != null ? options.getIntValue(LIMIT).intValue() : null;
         batchSize = options.getIntValue(SKIP) != null ? options.getIntValue(SKIP).intValue() : null;
@@ -140,21 +176,156 @@ public final class Collection {
             result.skip(skip);
         }
         MongoCursor<Document> cursor = result.iterator();
-        BObject resultIterator = ValueCreator.createObjectValue(ModuleUtils.getModule(), RESULT_ITERATOR_OBJECT_NAME);
-        resultIterator.addNativeData(MONGO_CURSOR, cursor);
-        resultIterator.addNativeData(RECORD_TYPE, targetType.getDescribingType());
-        Type completionType = TypeCreator.createUnionType(PredefinedTypes.TYPE_ERROR, PredefinedTypes.TYPE_NULL);
-        StreamType streamType = TypeCreator.createStreamType(targetType.getDescribingType(), completionType);
-        return ValueCreator.createStreamValue(streamType, resultIterator);
+        return createStream(targetType, cursor);
     }
 
     public static Object countDocuments(BObject collection, BMap<BString, Object> filter,
-                                         BMap<BString, Object> options) {
+                                        BMap<BString, Object> options) {
         MongoCollection<Document> mongoCollection =
                 (MongoCollection<Document>) collection.getNativeData(Utils.MONGO_COLLECTION);
         CountOptions countOptions = getCountOptions(options);
         try {
             return mongoCollection.countDocuments(Document.parse(filter.toString()), countOptions);
+        } catch (Exception e) {
+            return createError(ErrorType.DATABASE_ERROR, e.getMessage());
+        }
+    }
+
+    public static BError createIndex(BObject collection, BMap<BString, Object> keys, BMap<BString, Object> options) {
+        MongoCollection<Document> mongoCollection =
+                (MongoCollection<Document>) collection.getNativeData(Utils.MONGO_COLLECTION);
+        try {
+            mongoCollection.createIndex(Document.parse(keys.toString()), getIndexOptions(options));
+        } catch (Exception e) {
+            return createError(ErrorType.DATABASE_ERROR, e.getMessage());
+        }
+        return null;
+    }
+
+    public static Object listIndexes(BObject collection) {
+        MongoCollection<Document> mongoCollection =
+                (MongoCollection<Document>) collection.getNativeData(Utils.MONGO_COLLECTION);
+        try {
+            MongoCursor<Document> cursor = mongoCollection.listIndexes().iterator();
+            BObject resultIterator = ValueCreator.createObjectValue(getModule(), Utils.RESULT_ITERATOR_OBJECT_NAME);
+            resultIterator.addNativeData(Utils.MONGO_CURSOR, cursor);
+            Type indexType = ValueCreator.createRecordValue(getModule(), INDEX_TYPE).getType();
+            resultIterator.addNativeData(RECORD_TYPE, indexType);
+            Type completionType = TypeCreator.createUnionType(PredefinedTypes.TYPE_ERROR, PredefinedTypes.TYPE_NULL);
+            StreamType streamType = TypeCreator.createStreamType(indexType, completionType);
+            return ValueCreator.createStreamValue(streamType, resultIterator);
+        } catch (Exception e) {
+            return createError(ErrorType.DATABASE_ERROR, e.getMessage());
+        }
+    }
+
+    public static BError dropIndex(BObject collection, BString indexName) {
+        MongoCollection<Document> mongoCollection =
+                (MongoCollection<Document>) collection.getNativeData(Utils.MONGO_COLLECTION);
+        try {
+            mongoCollection.dropIndex(indexName.getValue());
+        } catch (Exception e) {
+            return createError(ErrorType.DATABASE_ERROR, e.getMessage());
+        }
+        return null;
+    }
+
+    public static BError dropIndexes(BObject collection) {
+        MongoCollection<Document> mongoCollection =
+                (MongoCollection<Document>) collection.getNativeData(Utils.MONGO_COLLECTION);
+        try {
+            mongoCollection.dropIndexes();
+        } catch (Exception e) {
+            return createError(ErrorType.DATABASE_ERROR, e.getMessage());
+        }
+        return null;
+    }
+
+    public static BError drop(BObject collection) {
+        MongoCollection<Document> mongoCollection =
+                (MongoCollection<Document>) collection.getNativeData(Utils.MONGO_COLLECTION);
+        try {
+            mongoCollection.drop();
+        } catch (Exception e) {
+            return createError(ErrorType.DATABASE_ERROR, e.getMessage());
+        }
+        return null;
+    }
+
+    public static Object updateOne(BObject collection, BMap<BString, Object> filter, BMap<BString, Object> update,
+                                   BMap<BString, Object> options) {
+        MongoCollection<Document> mongoCollection =
+                (MongoCollection<Document>) collection.getNativeData(Utils.MONGO_COLLECTION);
+        try {
+            UpdateResult updateResult = mongoCollection.updateOne(Document.parse(filter.toString()),
+                    Document.parse(getUpdateOperators(update).toString()), getUpdateOptions(options));
+            return getUpdateResult(updateResult);
+        } catch (Exception e) {
+            return createError(ErrorType.DATABASE_ERROR, e.getMessage());
+        }
+    }
+
+    public static Object updateMany(BObject collection, BMap<BString, Object> filter, BMap<BString, Object> update,
+                                    BMap<BString, Object> options) {
+        MongoCollection<Document> mongoCollection =
+                (MongoCollection<Document>) collection.getNativeData(Utils.MONGO_COLLECTION);
+        try {
+            UpdateResult updateResult = mongoCollection.updateMany(Document.parse(filter.toString()),
+                    Document.parse(getUpdateOperators(update).toString()), getUpdateOptions(options));
+            return getUpdateResult(updateResult);
+        } catch (Exception e) {
+            return createError(ErrorType.DATABASE_ERROR, e.getMessage());
+        }
+    }
+
+    public static Object distinct(BObject collection, BString fieldName, BMap<BString, Object> filter,
+                                  BTypedesc targetType) {
+        MongoCollection<Document> mongoCollection =
+                (MongoCollection<Document>) collection.getNativeData(Utils.MONGO_COLLECTION);
+        Class resultClass = getResultClass(targetType);
+        try {
+            if (filter != null) {
+                MongoCursor cursor = mongoCollection.distinct(fieldName.getValue(),
+                        Document.parse(filter.toString()), resultClass).cursor();
+                return createStream(targetType, cursor);
+            }
+            MongoCursor cursor = mongoCollection.distinct(fieldName.getValue(), resultClass).cursor();
+            return createStream(targetType, cursor);
+        } catch (Exception e) {
+            BError cause = createError(ErrorType.DATABASE_ERROR, e.getMessage());
+            return createError(ErrorType.DATABASE_ERROR, "Failed to retrieve distinct values", cause);
+        }
+    }
+
+    public static Object deleteOne(BObject collection, BMap<BString, Object> filter) {
+        MongoCollection<Document> mongoCollection =
+                (MongoCollection<Document>) collection.getNativeData(Utils.MONGO_COLLECTION);
+        try {
+            DeleteResult deleteResult = mongoCollection.deleteOne(Document.parse(filter.toString()));
+            return getDeleteResult(deleteResult);
+        } catch (Exception e) {
+            return createError(ErrorType.DATABASE_ERROR, e.getMessage());
+        }
+    }
+
+    public static Object deleteMany(BObject collection, Object filter) {
+        MongoCollection<Document> mongoCollection =
+                (MongoCollection<Document>) collection.getNativeData(Utils.MONGO_COLLECTION);
+        try {
+            DeleteResult deleteResult = mongoCollection.deleteMany(Document.parse(filter.toString()));
+            return getDeleteResult(deleteResult);
+        } catch (Exception e) {
+            return createError(ErrorType.DATABASE_ERROR, e.getMessage());
+        }
+    }
+
+    public static Object aggregate(BObject collection, BArray pipeline, BTypedesc targetType) {
+        MongoCollection<Document> mongoCollection =
+                (MongoCollection<Document>) collection.getNativeData(Utils.MONGO_COLLECTION);
+        List<Document> pipelineList = getPipeline(pipeline, targetType.getDescribingType());
+        try {
+            MongoCursor<Document> cursor = mongoCollection.aggregate(pipelineList).iterator();
+            return createStream(targetType, cursor);
         } catch (Exception e) {
             return createError(ErrorType.DATABASE_ERROR, e.getMessage());
         }
@@ -196,57 +367,106 @@ public final class Collection {
         return countOptions;
     }
 
-    private static String getProjectionDocument(Type targetType) {
-        String projectionDocument = "{ ";
-        projectionDocument += addProjectionFields(targetType, "");
-        projectionDocument += " }";
-        return projectionDocument;
+    private static IndexOptions getIndexOptions(BMap<BString, Object> options) {
+        IndexOptions indexOptions = new IndexOptions();
+        if (options.containsKey(BACKGROUND)) {
+            indexOptions.background(options.getBooleanValue(BACKGROUND));
+        }
+        if (options.containsKey(UNIQUE)) {
+            indexOptions.unique(options.getBooleanValue(UNIQUE));
+        }
+        if (options.containsKey(NAME)) {
+            indexOptions.name(options.getStringValue(NAME).getValue());
+        }
+        if (options.containsKey(SPARSE)) {
+            indexOptions.sparse(options.getBooleanValue(SPARSE));
+        }
+        if (options.containsKey(EXPIRE_AFTER_SECONDS)) {
+            indexOptions.expireAfter(options.getIntValue(EXPIRE_AFTER_SECONDS), TimeUnit.SECONDS);
+        }
+        if (options.containsKey(VERSION)) {
+            indexOptions.version(options.getIntValue(VERSION).intValue());
+        }
+        if (options.containsKey(WEIGHTS)) {
+            indexOptions.weights(Document.parse(options.getMapValue(WEIGHTS).toString()));
+        }
+        if (options.containsKey(DEFAULT_LANGUAGE)) {
+            indexOptions.defaultLanguage(options.getStringValue(DEFAULT_LANGUAGE).getValue());
+        }
+        if (options.containsKey(LANGUAGE_OVERRIDE)) {
+            indexOptions.languageOverride(options.getStringValue(LANGUAGE_OVERRIDE).getValue());
+        }
+        if (options.containsKey(TEXT_VERSION)) {
+            indexOptions.textVersion(options.getIntValue(TEXT_VERSION).intValue());
+        }
+        if (options.containsKey(SPHERE_VERSION)) {
+            indexOptions.sphereVersion(options.getIntValue(SPHERE_VERSION).intValue());
+        }
+        if (options.containsKey(BITS)) {
+            indexOptions.bits(options.getIntValue(BITS).intValue());
+        }
+        if (options.containsKey(MIN)) {
+            indexOptions.min(options.getFloatValue(MIN));
+        }
+        if (options.containsKey(MAX)) {
+            indexOptions.max(options.getFloatValue(MAX));
+        }
+        if (options.containsKey(PARTIAL_FILTER_EXPRESSION)) {
+            indexOptions.partialFilterExpression(Document.parse(
+                    options.getMapValue(PARTIAL_FILTER_EXPRESSION).toString()));
+        }
+        if (options.containsKey(HIDDEN)) {
+            indexOptions.hidden(options.getBooleanValue(HIDDEN));
+        }
+        return indexOptions;
     }
 
-    private static String addProjectionFields(RecordType recordType, String parent) {
-        StringBuilder resultBuilder = new StringBuilder();
-        Map<String, Field> fields = recordType.getFields();
-        if ("".equals(parent)) {
-            // Remove the _id field from the result when not specified by the user
-            if (!fields.containsKey(MONGO_ID_FIELD)) {
-                resultBuilder.append("_id: 0, ");
-            }
+    private static UpdateOptions getUpdateOptions(BMap<BString, Object> options) {
+        UpdateOptions updateOptions = new UpdateOptions();
+        updateOptions.upsert(options.getBooleanValue(UPSERT));
+        updateOptions.bypassDocumentValidation(options.getBooleanValue(BYPASS_DOCUMENT_VALIDATION));
+        if (options.containsKey(HINT)) {
+            updateOptions.hint(Document.parse(options.getStringValue(HINT).getValue()));
         }
-        for (Field field : fields.values()) {
-            if (MONGO_ID_FIELD.equals(field.getFieldName())) {
-                continue;
-            }
-            String fieldName = field.getFieldName();
-            Type fieldType = field.getFieldType();
-            String projectionField = parent + fieldName;
-            if (fieldType.getTag() == TypeTags.RECORD_TYPE_TAG) {
-                resultBuilder.append(addProjectionFields((RecordType) fieldType, projectionField + "."));
-            } else if (fieldType.getTag() == TypeTags.ARRAY_TAG) {
-                resultBuilder.append(addProjectionFields((ArrayType) fieldType, projectionField + "."));
-            } else {
-                resultBuilder.append(projectionField).append(": 1");
-            }
-            resultBuilder.append(", ");
+        if (options.containsKey(HINT_STRING)) {
+            updateOptions.hintString(options.getStringValue(HINT_STRING).getValue());
         }
-        return resultBuilder.toString();
+        if (options.containsKey(COMMENT)) {
+            updateOptions.comment(options.getStringValue(COMMENT).getValue());
+        }
+        return updateOptions;
     }
 
-    private static String addProjectionFields(ArrayType arrayType, String parent) {
-        Type elementType = arrayType.getElementType();
-        return addProjectionFields(elementType, parent);
+    private static BMap<BString, Object> getUpdateOperators(BMap<BString, Object> update) {
+        BMap<BString, Object> updateOperators = ValueCreator.createMapValue();
+        for (Map.Entry<BString, Object> entry : update.entrySet()) {
+            BString key = StringUtils.fromString("$").concat(entry.getKey());
+            updateOperators.put(key, entry.getValue());
+        }
+        return updateOperators;
     }
 
-    private static String addProjectionFields(Type type, String parent) {
-        if (type.getTag() == TypeTags.RECORD_TYPE_TAG) {
-            return addProjectionFields((RecordType) type, parent);
-        } else if (type.getTag() == TypeTags.ARRAY_TAG) {
-            return addProjectionFields((ArrayType) type, parent);
-        } else if (type.getTag() == TypeTags.INTERSECTION_TAG) {
-            IntersectionType intersectionType = (IntersectionType) type;
-            return addProjectionFields(intersectionType.getEffectiveType(), parent);
-        } else {
-            return parent + ": 1";
+    private static BMap<BString, Object> getUpdateResult(UpdateResult updateResult) {
+        RecordType updateResultType =
+                (RecordType) ValueCreator.createRecordValue(getModule(), UPDATE_RESULT_TYPE).getType();
+        BMap<BString, Object> result = ValueCreator.createRecordValue(updateResultType);
+        result.put(MATCHED_COUNT, updateResult.getMatchedCount());
+        result.put(MODIFIED_COUNT, updateResult.getModifiedCount());
+        BsonValue upsertedId = updateResult.getUpsertedId();
+        if (upsertedId != null) {
+            String upsertedIdString = upsertedId.asObjectId().getValue().toString();
+            result.put(UPSERTED_ID, StringUtils.fromString(upsertedIdString));
         }
+        return result;
+    }
+
+    private static BMap<BString, Object> getDeleteResult(DeleteResult deleteResult) {
+        RecordType deleteResultType =
+                (RecordType) ValueCreator.createRecordValue(getModule(), DELETE_RESULT_TYPE).getType();
+        BMap<BString, Object> result = ValueCreator.createRecordValue(deleteResultType);
+        result.put(DELETED_COUNT, deleteResult.getDeletedCount());
+        result.put(ACKNOWLEDGED, deleteResult.wasAcknowledged());
+        return result;
     }
 }
 

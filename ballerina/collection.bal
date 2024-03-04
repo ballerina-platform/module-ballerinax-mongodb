@@ -16,6 +16,10 @@
 
 import ballerina/jballerina.java;
 
+# Represents a MongoDB collection that can be used to perform operations on the collection.
+@display {
+    label: "MongoDB Collection"
+}
 public isolated client class Collection {
 
     private final Database database;
@@ -27,7 +31,10 @@ public isolated client class Collection {
         check initCollection(self, database, collectionName);
     }
 
-    isolated function name() returns string {
+    # Returns the name of the collection.
+    #
+    # + return - The name of the collection
+    public isolated function name() returns string {
         return self.collectionName;
     }
 
@@ -36,28 +43,31 @@ public isolated client class Collection {
     # + document - The document to insert
     # + options - The options to apply to the operation
     # + return - An error if the operation failed, otherwise nil
-    isolated remote function insertOne(record {} document, InsertOneOptions options = {}) returns Error? {
+    isolated remote function insertOne(record {|anydata...;|} document, InsertOneOptions options = {}) returns Error? {
         string documentString = document.toJsonString();
         return check insertOne(self, documentString, options);
     }
 
     # Inserts multiple documents into the collection.
+    #
     # + documents - The documents to insert
     # + options - The options to apply to the operation
     # + return - An error if the operation failed, otherwise nil
-    isolated remote function insertMany(record {}[] documents, InsertManyOptions options = {}) returns Error? {
+    isolated remote function insertMany(record {|anydata...;|}[] documents, InsertManyOptions options = {}) returns Error? {
         string[] documentString = documents.'map((doc) => doc.toJsonString());
         return check insertMany(self, documentString, options);
     }
 
-    # Finds all the documents in the collection.
+    # Finds documents from the collection.
     #
     # + filter - The query filter to apply when retrieving documents
     # + findOptions - The additional options to apply to the find operation
+    # + projection - The projection to apply to the find operation. If not provided, the projection will be generated
+    # based on the targetType
     # + targetType - The type of the returned documents
     # + return - A stream of documents which match the provided filter, or an error if the operation failed
-    isolated remote function find(map<json> filter = {}, FindOptions findOptions = {}, typedesc targetType = <>)
-    returns stream<targetType, error?>|Error = @java:Method {
+    isolated remote function find(map<json> filter = {}, FindOptions findOptions = {}, map<json>? projection = (),
+    typedesc targetType = <>) returns stream<targetType, error?>|Error = @java:Method {
         'class: "io.ballerina.lib.mongodb.Collection"
     } external;
 
@@ -68,6 +78,107 @@ public isolated client class Collection {
     # + return - The number of documents in the collection, or an error if the operation failed
     isolated remote function countDocuments(map<json> filter = {}, CountOptions options = {}) returns int|Error =
     @java:Method {
+        'class: "io.ballerina.lib.mongodb.Collection"
+    } external;
+
+    # Creates an index on the collection.
+    #
+    # + keys - The keys to index
+    # + options - The options to apply to the index
+    # + return - An error if the operation failed, otherwise nil
+    isolated remote function createIndex(map<json> keys, CreateIndexOptions options = {}) returns Error? =
+    @java:Method {
+        'class: "io.ballerina.lib.mongodb.Collection"
+    } external;
+
+    # Lists the indexes of the collection.
+    #
+    # + return - A stream of indexes, or an error if the operation failed
+    isolated remote function listIndexes() returns stream<Index, error?>|Error =
+    @java:Method {
+        'class: "io.ballerina.lib.mongodb.Collection"
+    } external;
+
+    # Drops an index from the collection.
+    #
+    # + indexName - The name of the index to drop
+    # + return - An error if the operation failed, otherwise nil
+    isolated remote function dropIndex(string indexName) returns Error? = @java:Method {
+        'class: "io.ballerina.lib.mongodb.Collection"
+    } external;
+
+    # Drops all the indexes from the collection.
+    #
+    # + return - An error if the operation failed, otherwise nil
+    isolated remote function dropIndexes() returns Error? = @java:Method {
+        'class: "io.ballerina.lib.mongodb.Collection"
+    } external;
+
+    # Drops the collection.
+    #
+    # + return - An error if the operation failed, otherwise nil
+    isolated remote function drop() returns Error? = @java:Method {
+        'class: "io.ballerina.lib.mongodb.Collection"
+    } external;
+
+    # Updates a single document in the collection.
+    #
+    # + filter - The query filter to apply when updating documents
+    # + update - The update operations to apply to the documents
+    # + options - The options to apply to the update operation
+    # + return - An error if the operation failed, otherwise nil
+    isolated remote function updateOne(map<json> filter, Update update, UpdateOptions options = {})
+            returns UpdateResult|Error = @java:Method {
+        'class: "io.ballerina.lib.mongodb.Collection"
+    } external;
+
+    # Updates multiple documents in the collection.
+    #
+    # + filter - The query filter to apply when updating documents
+    # + update - The update operations to apply to the documents
+    # + options - The options to apply to the update operation
+    # + return - An error if the operation failed, otherwise nil
+    isolated remote function updateMany(map<json> filter, Update update, UpdateOptions options = {})
+    returns UpdateResult|Error = @java:Method {
+        'class: "io.ballerina.lib.mongodb.Collection"
+    } external;
+
+    # Retrieves the distinct values for a specified field across a collection.
+    #
+    # + fieldName - The field for which to return distinct values
+    # + filter - The query filter to apply when retrieving distinct values
+    # + targetType - The type of the returned distinct values
+    # + return - A stream of distinct values, or an error if the operation failed
+    isolated remote function 'distinct(string fieldName, map<json> filter = {}, typedesc targetType = <>)
+    returns stream<targetType, error?>|Error = @java:Method {
+        'class: "io.ballerina.lib.mongodb.Collection"
+    } external;
+
+    # Deletes a single document from the collection.
+    #
+    # + filter - The query filter to apply when deleting documents
+    # + return - An error if the operation failed, otherwise nil
+    isolated remote function deleteOne(map<json> filter) returns DeleteResult|Error =
+    @java:Method {
+        'class: "io.ballerina.lib.mongodb.Collection"
+    } external;
+
+    # Deletes multiple documents from the collection.
+    #
+    # + filter - The query filter to apply when deleting documents
+    # + return - An error if the operation failed, otherwise nil
+    isolated remote function deleteMany(string|map<json> filter) returns DeleteResult|Error =
+    @java:Method {
+        'class: "io.ballerina.lib.mongodb.Collection"
+    } external;
+
+    # Aggregates documents according to the specified aggregation pipeline.
+    #
+    # + pipeline - The aggregation pipeline
+    # + targetType - The type of the returned documents
+    # + return - A stream of documents which match the provided pipeline, or an error if the operation failed
+    isolated remote function aggregate(map<json>[] pipeline, typedesc targetType = <>)
+            returns stream<targetType, error?>|Error = @java:Method {
         'class: "io.ballerina.lib.mongodb.Collection"
     } external;
 }

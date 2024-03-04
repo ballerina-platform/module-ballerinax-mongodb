@@ -16,6 +16,7 @@
 
 import ballerina/jballerina.java;
 
+# Represents a MongoDB database.
 @display {
     label: "MongoDB Database"
 }
@@ -50,6 +51,13 @@ public isolated client class Database {
     isolated remote function getCollection(string collectionName) returns Collection|Error {
         return new (self, collectionName);
     }
+
+    # Drops the database.
+    #
+    # + return - Nil on success or else and error
+    isolated remote function drop() returns Error? = @java:Method {
+        'class: "io.ballerina.lib.mongodb.Database"
+    } external;
 }
 
 isolated function initDatabase(Database database, Client 'client, string databaseName) returns Error? = @java:Method {

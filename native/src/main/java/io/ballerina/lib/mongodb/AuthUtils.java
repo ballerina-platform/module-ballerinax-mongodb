@@ -31,10 +31,11 @@ import static io.ballerina.lib.mongodb.Utils.createError;
  * @since 5.0.0
  */
 final class AuthUtils {
-    private static final String SERVICE_NAME = "SERVICE_NAME";
 
     private AuthUtils() {
     }
+
+    private static final String SERVICE_NAME = "SERVICE_NAME";
 
     static MongoCredential getMongoCredential(BMap<BString, Object> auth) {
         String authMechanism = auth.getStringValue(Client.RecordField.AUTH_MECHANISM).getValue();

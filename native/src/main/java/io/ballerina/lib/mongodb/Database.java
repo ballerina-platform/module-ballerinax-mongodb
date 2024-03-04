@@ -36,6 +36,8 @@ import static io.ballerina.lib.mongodb.Utils.createError;
 
 /**
  * This class represents a MongoDB database in Ballerina MongoDB client.
+ *
+ * @since 5.0.0
  */
 public final class Database {
 
@@ -81,6 +83,16 @@ public final class Database {
         try {
             MongoDatabase mongoDatabase = (MongoDatabase) database.getNativeData(MONGO_DATABASE);
             mongoDatabase.getCollection(collectionName.getValue());
+        } catch (Exception e) {
+            return createError(ErrorType.DATABASE_ERROR, e.getMessage());
+        }
+        return null;
+    }
+
+    public static BError drop(BObject database) {
+        try {
+            MongoDatabase mongoDatabase = (MongoDatabase) database.getNativeData(MONGO_DATABASE);
+            mongoDatabase.drop();
         } catch (Exception e) {
             return createError(ErrorType.DATABASE_ERROR, e.getMessage());
         }

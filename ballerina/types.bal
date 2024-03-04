@@ -28,6 +28,7 @@ public type ConnectionConfig record {|
 |};
 
 # Represents the MongoDB server address.
+@display {label: "Server Address"}
 public type ServerAddress record {|
     # The host address of the MongoDB server
     @display {label: "Host"}
@@ -38,15 +39,18 @@ public type ServerAddress record {|
 |};
 
 # Represents the MongoDB connection parameters.
+@display {label: "Connection Parameters"}
 public type ConnectionParameters record {|
     # Server address (or the list of server addresses for replica sets) of the MongoDB server
     @display {label: "Server Address"}
     ServerAddress|ServerAddress[] serverAddress = {};
     # The authentication configurations for the MongoDB connection
-    BasicAuthCredential|ScramSha1AuthCredential|ScramSha256AuthCredential|X509Credential|GSSAPICredential auth?;
+    @display {label: "Authentication"}
+    BasicAuthCredential|ScramSha1AuthCredential|ScramSha256AuthCredential|X509Credential|GssApiCredential auth?;
 |};
 
 # Represents the Basic Authentication configurations for MongoDB.
+@display {label: "Basic Auth Credential"}
 public type BasicAuthCredential record {|
     # The authentication mechanism to use
     @display {label: "Auth Mechanism"}
@@ -63,6 +67,7 @@ public type BasicAuthCredential record {|
 |};
 
 # Represents the SCRAM-SHA-1 authentication configurations for MongoDB.
+@display {label: "SCRAM-SHA-1 Credential"}
 public type ScramSha1AuthCredential record {|
     # The authentication mechanism to use
     @display {label: "Auth Mechanism"}
@@ -79,6 +84,7 @@ public type ScramSha1AuthCredential record {|
 |};
 
 # Represents the SCRAM-SHA-256 authentication configurations for MongoDB.
+@display {label: "SCRAM-SHA-256 Credential"}
 public type ScramSha256AuthCredential record {|
     # The authentication mechanism to use
     @display {label: "Auth Mechanism"}
@@ -95,6 +101,7 @@ public type ScramSha256AuthCredential record {|
 |};
 
 # Represents the X509 authentication configurations for MongoDB.
+@display {label: "X509 Credential"}
 public type X509Credential record {|
     # The authentication mechanism to use
     @display {label: "Auth Mechanism"}
@@ -105,7 +112,8 @@ public type X509Credential record {|
 |};
 
 # Represents the GSSAPI authentication configurations for MongoDB.
-public type GSSAPICredential record {|
+@display {label: "GSSAPI Credential"}
+public type GssApiCredential record {|
     # The authentication mechanism to use
     @display {label: "Auth Mechanism"}
     readonly AUTH_GSSAPI authMechanism = AUTH_GSSAPI;
@@ -254,4 +262,151 @@ public type CountOptions record {|
     int maxTimeMS?;
     # The hint to use
     string hint?;
+|};
+
+# Represents the options for the `Collection.createIndex()` operation.
+public type CreateIndexOptions record {|
+    # Whether to create the index in the background
+    @display {label: "Background"}
+    boolean background?;
+    # Whether to create a unique index
+    @display {label: "Unique"}
+    boolean unique?;
+    # Name of the index
+    @display {label: "Index Name"}
+    string name?;
+    # Should the index only reference documents with the specified field
+    @display {label: "Sparse"}
+    boolean sparse?;
+    # The time to live for documents in the collection in seconds
+    @display {label: "Time to Live"}
+    int expireAfterSeconds?;
+    # The version of the index
+    @display {label: "Version"}
+    int version?;
+    # Sets the weighting object for use with a text index
+    @display {label: "Weights"}
+    map<json> weights?;
+    # The default language for the index
+    @display {label: "Default Language"}
+    string defaultLanguage?;
+    # Sets the name of the field that contains the language string
+    @display {label: "Language Override"}
+    string languageOverride?;
+    # Set the text index version number
+    @display {label: "Text Index Version"}
+    int textVersion?;
+    # Sets the 2D sphere index version number
+    @display {label: "2D Sphere Index Version"}
+    int sphereVersion?;
+    # Sets the number of precision of the stored geohash value of the location data in 2D indexes
+    @display {label: "Bits"}
+    int bits?;
+    # Sets the lower inclusive boundary for the longitude and latitude values for 2D indexes
+    @display {label: "Min"}
+    float min?;
+    # Sets the upper inclusive boundary for the longitude and latitude values for 2D indexes
+    @display {label: "Max"}
+    float max?;
+    # Sets the filter expression for the documents to be included in the index
+    @display {label: "Partial Filter Expression"}
+    map<json> partialFilterExpression = {};
+    # Should the index be hidden from the query planner
+    @display {label: "Hidden"}
+    boolean hidden?;
+|};
+
+# Represents the options for the `Collection.updateOne()` operation.
+public type UpdateOptions record {|
+    # Whether to upsert if the document does not exist
+    @display {label: "Upsert"}
+    boolean upsert = false;
+    # Whether to bypass the document validation
+    @display {label: "Bypass Document Validation"}
+    boolean bypassDocumentValidation = false;
+    # The comment to send with the operation
+    @display {label: "Comment"}
+    string comment?;
+    # The hint to use
+    @display {label: "Hint"}
+    map<json> hint?;
+    # The hint string to use
+    @display {label: "Hint String"}
+    string hintString?;
+|};
+
+# Represents the options for the `Collection.deleteOne()` operation.
+public type DeleteOptions record {|
+    # The comment to send with the operation
+    @display {label: "Comment"}
+    string comment?;
+    # The hint to use
+    @display {label: "Hint"}
+    map<json> hint?;
+    # The hint string to use
+    @display {label: "Hint String"}
+    string hintString?;
+|};
+
+# Represents a MongoDB collection index.
+public type Index record {
+    # The name space of the index
+    @display {label: "Name Space"}
+    string ns;
+    # The index version
+    @display {label: "Version"}
+    int v;
+    # The name of the index
+    @display {label: "Name"}
+    string name;
+    # The key of the index
+    @display {label: "Key"}
+    map<json> key;
+};
+
+# Represents an update operation for single entry.
+public type Update record {|
+    # Sets the value of a field to the current date, either as a Date or a Timestamp
+    map<json> currentDate?;
+    # Increments the value of the field by the specified amount
+    map<json> inc?;
+    # Only updates the field if the specified value is less than the existing field value
+    map<json> min?;
+    # Only updates the field if the specified value is greater than the existing field value
+    map<json> max?;
+    # Multiplies the value of the field by the specified amount
+    map<json> mul?;
+    # Renames a field
+    map<json> rename?;
+    # Sets the value of a field in a document
+    map<json> set?;
+    # Sets the value of a field if it is an insert operation
+    map<json> setOnInsert?;
+    # Unsets the value of a field in a document
+    map<json> unset?;
+    // Allow user to add additional operators
+    map<json>...;
+|};
+
+# Repsents the return type of the Update operation.
+public type UpdateResult record {|
+    # The number of documents matched by the update operation
+    @display {label: "Matched Count"}
+    int matchedCount;
+    # The number of documents modified by the update operation
+    @display {label: "Modified Count"}
+    int modifiedCount;
+    # The identifier of the inserted document if the upsert option is used
+    @display {label: "Upserted Id"}
+    string upsertedId?;
+|};
+
+# Represents the return type of the Delete operation.
+public type DeleteResult record {|
+    # The number of documents deleted by the delete operation
+    @display {label: "Deleted Count"}
+    int deletedCount;
+    # Whether the delete operation was acknowledged
+    @display {label: "Acknowledged"}
+    boolean acknowledged;
 |};

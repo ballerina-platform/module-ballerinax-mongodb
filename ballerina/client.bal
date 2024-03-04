@@ -15,24 +15,26 @@
 // under the License.
 
 import ballerina/jballerina.java;
+import ballerina/log;
 
-# Ballerina MongoDB connector provides the capability to perform the MongoDB CRUD operations.
-# The connector let you to interact with MongoDB from Ballerina.
-@display {label: "MongoDB", iconPath: "icon.png"}
+# Represents a MongoDB client that can be used to interact with a MongoDB server.
+@display {label: "MongoDB Client", iconPath: "icon.png"}
 public isolated client class Client {
 
     # Initialises the `Client` object with the provided `ConnectionConfig` properties.
     #
     # + config - The connection configurations for connecting to a MongoDB server
     # + return - A `mongodb:Error` if the provided configurations are invalid. `()` otherwise.
-    public isolated function init(ConnectionConfig config) returns Error? {
+    public isolated function init(*ConnectionConfig config) returns Error? {
         ConnectionProperties? options = config.options;
         if options is ConnectionProperties {
             boolean? sslEnabled = options?.sslEnabled;
-            if sslEnabled is boolean && sslEnabled {
-                if options.secureSocket is () {
-                    return error ApplicationError(
-                        "The connection property `secureSocket` is mandatory when ssl is enabled for connection.");
+            SecureSocket? secureSocket = options?.secureSocket;
+            if sslEnabled is boolean {
+                if !sslEnabled {
+                    if secureSocket is SecureSocket {
+                        log:printWarn("The connection property `secureSocket` is ignored when ssl is disabled.");
+                    }
                 }
             }
         }
@@ -57,77 +59,6 @@ public isolated client class Client {
         return new Database(self, databaseName);
     }
 
-    // # Lists the indices associated with the collection.
-    // #
-    // # + collectionName - Name of the collection
-    // # + databaseName - Name of the database
-    // # + rowType - The `typedesc` of the record that should be returned as a result.
-    // # + return - A A stream<rowType, error?> with indices on success or else a `mongodb:Error` if unable to reach the DB
-    // @display {label: "List Indices"}
-    // remote isolated function listIndices(@display {label: "Collection Name"} string collectionName,
-    //                                      @display {label: "Database Name"} string? databaseName = (),
-    //                                      @display {label: "Record Type"} typedesc<record {}> rowType = <>)
-    //                                      returns stream<rowType, error?>|Error = @java:Method {
-    //     'class: "org.ballerinalang.mongodb.MongoDBCollectionUtil"
-    // } external;
-
-    // # Updates a document based on a condition.
-    // #
-    // # + updateStatement - Document for the update condition. Eg: { "$set": { <field1>: <value1>, ... } } ,
-    // #                     { "$push": { <field>: { "$each": [ <value1>, <value2> ... ] } } }.
-    // # + collectionName - Name of the collection
-    // # + databaseName - Name of the database
-    // # + filter - Filter for the query. Eg: { <field1>: <value1>, ... }.
-    // # + isMultiple - Whether to update multiple documents
-    // # + upsert - Whether to insert if update cannot be achieved
-    // # + return - The number of updated documents or else a `mongodb:Error` if unable to reach the DB
-    // @display {label: "Update Document"}
-    // remote isolated function update(@display {label: "Document to Update"} map<json> updateStatement,
-    //                                 @display {label: "Collection Name"} string collectionName,
-    //                                 @display {label: "Database Name"} string? databaseName = (),
-    //                                 @display {label: "Filter for Query"} map<json>? filter = (),
-    //                                 @display {label: "Is Multiple Documents"} boolean isMultiple = false,
-    //                                 @display {label: "Is Upsert"} boolean upsert = false)
-    //                                 returns @display {label: "Number of Updated Documents"} int|Error {
-    //     handle collection = check getCollection(self, collectionName, databaseName);
-    //     string updateDoc = updateStatement.toJsonString();
-    //     if (filter is ()) {
-    //         return update(collection, java:fromString(updateDoc), (), isMultiple, upsert);
-    //     }
-    //     string filterStr = filter.toJsonString();
-    //     return update(collection, java:fromString(updateDoc), java:fromString(filterStr), isMultiple, upsert);
-    // }
-
-    // # Deletes a document based on a condition.
-    // #
-    // # + collectionName - Name of the collection
-    // # + databaseName - Name of the database
-    // # + filter - Filter for the query
-    // # + isMultiple - Delete multiple documents if the condition is matched
-    // # + return - The number of deleted documents or else a `mongodb:Error` if unable to reach the DB
-    // @display {label: "Delete Document"}
-    // remote isolated function delete(@display {label: "Collection Name"} string collectionName,
-    //                        @display {label: "Database Name"} string? databaseName = (),
-    //                        @display {label: "Filter"} map<json>? filter = (),
-    //                        @display {label: "Is Multiple Documents"} boolean isMultiple = false)
-    //                        returns @display {label: "Number of Deleted Documents"} int|Error {
-    //     handle collection = check getCollection(self, collectionName, databaseName);
-    //     if (filter is ()) {
-    //         return delete(collection, (), isMultiple);
-    //     }
-    //     string filterStr = filter.toJsonString();
-    //     return delete(collection, java:fromString(filterStr), isMultiple);
-    // }
-
-    // remote isolated function 'distinct(@display {label: "Collection Name"} string collectionName,
-    //                                   @display {label: "Field Name"} string 'field,
-    //                                   @display {label: "Database Name"} string? databaseName = (),
-    //                                   @display {label: "Filter"} map<json>? filter = (),
-    //                                   @display {label: "Return Type"} typedesc<anydata> rowType = <>)
-    //                               returns stream<rowType, error?>|Error = @java:Method {
-    //     'class: "org.ballerinalang.mongodb.MongoDBCollectionUtil"
-    // } external;
-
     # Closes the client.
     #
     # + return - A `mongodb:Error` if the client is already closed or failed to close the client. `()` otherwise.
@@ -136,15 +67,6 @@ public isolated client class Client {
         'class: "io.ballerina.lib.mongodb.Client"
     } external;
 }
-
-// isolated function update(handle collection, handle update, handle? filter, boolean isMultiple, boolean upsert)
-//                 returns int|Error = @java:Method {
-//     'class: "org.ballerinalang.mongodb.MongoDBCollectionUtil"
-// } external;
-
-// isolated function delete(handle collection, handle? filter, boolean isMultiple) returns int|DatabaseError = @java:Method {
-//     'class: "org.ballerinalang.mongodb.MongoDBCollectionUtil"
-// } external;
 
 isolated function initClient(Client 'client, ConnectionParameters|string connection, ConnectionProperties? options)
 returns Error? = @java:Method {

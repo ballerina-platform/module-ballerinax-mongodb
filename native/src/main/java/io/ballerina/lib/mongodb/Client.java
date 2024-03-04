@@ -51,6 +51,8 @@ import static io.ballerina.lib.mongodb.Utils.createError;
 
 /**
  * Native methods related to the Ballerina MongoDB client.
+ *
+ * @since 5.0.0
  */
 public final class Client {
 
@@ -96,6 +98,17 @@ public final class Client {
         }
     }
 
+    public static BError createDatabase(BObject client, BString databaseName) {
+        try {
+            MongoClient mongoClient = (MongoClient) client.getNativeData(MONGO_CLIENT);
+            mongoClient.getDatabase(databaseName.getValue());
+        } catch (Exception e) {
+            String errorMessage = "Error occurred while creating the database.";
+            return createError(e, errorMessage);
+        }
+        return null;
+    }
+
     public static BError close(BObject client) {
         try {
             MongoClient mongoClient = (MongoClient) client.getNativeData(MONGO_CLIENT);
@@ -112,8 +125,10 @@ public final class Client {
         if (options.getBooleanValue(RecordField.SSL_ENABLED)) {
             BMap<BString, Object> secureSocket =
                     (BMap<BString, Object>) options.getMapValue(RecordField.SECURE_SOCKET);
-            SSLContext sslContext = SslUtils.initializeSSLContext(secureSocket);
-            settingsBuilder.applyToSslSettings(builder -> builder.enabled(true).context(sslContext));
+            if (secureSocket != null) {
+                SSLContext sslContext = SslUtils.initializeSSLContext(secureSocket);
+                settingsBuilder.applyToSslSettings(builder -> builder.enabled(true).context(sslContext));
+            }
         }
         if (options.getStringValue(RecordField.READ_CONCERN) != null) {
             String readConcern = options.getStringValue(RecordField.READ_CONCERN).getValue();

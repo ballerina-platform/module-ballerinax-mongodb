@@ -13,37 +13,3 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
-
-type Movie record {
-    string name;
-    int year;
-    int rating;
-};
-
-type MovieWithIdName record {|
-    map<string> _id;
-    string name;
-|};
-
-type Person record {|
-    string name;
-    int age;
-    Address address;
-|};
-
-type Address readonly & record {|
-    string street;
-    string city;
-    string country;
-|};
-
-type Book readonly & record {|
-    string title;
-    int year;
-    int rating;
-|};
-
-type Author readonly & record {|
-    string name;
-    Book[] books;
-|};

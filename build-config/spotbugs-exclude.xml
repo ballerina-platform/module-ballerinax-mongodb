@@ -16,9 +16,10 @@
   ~ under the License.
   -->
 <FindBugsFilter>
-    <!-- Exclude warning about private method not being called -->
+    <!-- False Positive -->
     <Match>
-        <Class name="org.ballerinalang.mongodb.MongoDBDataSourceUtil$ConnectionParam"/>
-        <Method name="getKey"/>
+        <Class name="io.ballerina.lib.mongodb.Collection"/>
+        <Method name="getUpdateResult"/>
+        <Bug pattern="NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE"/>
     </Match>
 </FindBugsFilter>

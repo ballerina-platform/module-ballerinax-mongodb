@@ -21,6 +21,15 @@ modules = [
 
 [[package]]
 org = "ballerina"
+name = "io"
+version = "1.6.0"
+dependencies = [
+	{org = "ballerina", name = "jballerina.java"},
+	{org = "ballerina", name = "lang.value"}
+]
+
+[[package]]
+org = "ballerina"
 name = "jballerina.java"
 version = "0.0.0"
 modules = [
@@ -32,6 +41,36 @@ org = "ballerina"
 name = "lang.error"
 version = "0.0.0"
 scope = "testOnly"
+dependencies = [
+	{org = "ballerina", name = "jballerina.java"}
+]
+
+[[package]]
+org = "ballerina"
+name = "lang.value"
+version = "0.0.0"
+dependencies = [
+	{org = "ballerina", name = "jballerina.java"}
+]
+
+[[package]]
+org = "ballerina"
+name = "log"
+version = "2.9.0"
+dependencies = [
+	{org = "ballerina", name = "io"},
+	{org = "ballerina", name = "jballerina.java"},
+	{org = "ballerina", name = "lang.value"},
+	{org = "ballerina", name = "observe"}
+]
+modules = [
+	{org = "ballerina", packageName = "log", moduleName = "log"}
+]
+
+[[package]]
+org = "ballerina"
+name = "observe"
+version = "1.2.2"
 dependencies = [
 	{org = "ballerina", name = "jballerina.java"}
 ]
@@ -60,10 +99,11 @@ dependencies = [
 [[package]]
 org = "ballerinax"
 name = "mongodb"
-version = "5.0.0-SNAPSHOT"
+version = "5.0.0"
 dependencies = [
 	{org = "ballerina", name = "crypto"},
 	{org = "ballerina", name = "jballerina.java"},
+	{org = "ballerina", name = "log"},
 	{org = "ballerina", name = "test"}
 ]
 modules = [

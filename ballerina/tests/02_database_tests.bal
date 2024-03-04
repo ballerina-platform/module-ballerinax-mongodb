@@ -1,4 +1,4 @@
-// Copyright (c) 2023 WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
+// Copyright (c) 2024 WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
 //
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -20,19 +20,36 @@ import ballerina/test;
     groups: ["database"]
 }
 function testDatabaseConnection() returns error? {
-    Database database = check mongoClient->getDatabase("MoviesDB");
+    Database database = check mongoClient->getDatabase("testDatabaseConnection");
     string[] collectionNames = check database->listCollectionNames();
     test:assertEquals(collectionNames, []);
     check database->createCollection("Movies");
     collectionNames = check database->listCollectionNames();
     test:assertEquals(collectionNames, ["Movies"]);
+    check database->drop();
 }
 
 @test:Config {
     groups: ["database", "collection", "list"]
 }
 function testGetCollection() returns error? {
-    Database database = check mongoClient->getDatabase("MoviesDB");
+    Database database = check mongoClient->getDatabase("testGetCollection");
     Collection collection = check database->getCollection("Movies");
     test:assertEquals(collection.name(), "Movies");
+    check database->drop();
+}
+
+@test:Config {
+    groups: ["database"]
+}
+isolated function testDropDatabase() returns error? {
+    string[] databaseNames = check mongoClient->listDatabaseNames();
+    test:assertTrue(databaseNames.indexOf("sampleDB") !is int);
+    Database db = check mongoClient->getDatabase("sampleDB");
+    check db->createCollection("testCollection");
+    databaseNames = check mongoClient->listDatabaseNames();
+    test:assertTrue(databaseNames.indexOf("sampleDB") is int);
+    check db->drop();
+    databaseNames = check mongoClient->listDatabaseNames();
+    test:assertTrue(databaseNames.indexOf("sampleDB") !is int);
 }

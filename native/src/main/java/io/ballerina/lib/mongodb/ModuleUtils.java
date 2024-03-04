@@ -25,10 +25,11 @@ import io.ballerina.runtime.api.Module;
  * Module utils for the Ballerina MongoDB connector to obtain the module info in the init.
  */
 public class ModuleUtils {
-    private static Module module;
 
     private ModuleUtils() {
     }
+
+    private static Module module;
 
     public static void setModule(Environment environment) {
         module = environment.getCurrentModule();

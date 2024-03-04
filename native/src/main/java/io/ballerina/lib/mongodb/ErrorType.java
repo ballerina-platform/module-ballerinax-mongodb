@@ -20,6 +20,8 @@ package io.ballerina.lib.mongodb;
 
 /**
  * This class contains the error types for the Ballerina MongoDB connector.
+ *
+ * @since 5.0.0
  */
 enum ErrorType {
     APPLICATION_ERROR("ApplicationError"),
