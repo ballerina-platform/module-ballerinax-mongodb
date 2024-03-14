@@ -67,7 +67,20 @@ public isolated client class Collection {
     # + targetType - The type of the returned documents
     # + return - A stream of documents which match the provided filter, or an error if the operation failed
     isolated remote function find(map<json> filter = {}, FindOptions findOptions = {}, map<json>? projection = (),
-    typedesc targetType = <>) returns stream<targetType, error?>|Error = @java:Method {
+    typedesc<anydata> targetType = <>) returns stream<targetType, error?>|Error = @java:Method {
+        'class: "io.ballerina.lib.mongodb.Collection"
+    } external;
+
+    # Finds a single document from the collection.
+    #
+    # + filter - The query filter to apply when retrieving documents
+    # + findOptions - The additional options to apply to the find operation
+    # + projection - The projection to apply to the find operation. If not provided, the projection will be generated
+    # based on the targetType
+    # + targetType - The type of the returned document
+    # + return - The document which matches the provided filter, or an error if the operation failed
+    isolated remote function findOne(map<json> filter = {}, FindOptions findOptions = {}, map<json>? projection = (),
+    typedesc<anydata> targetType = <>) returns targetType|Error = @java:Method {
         'class: "io.ballerina.lib.mongodb.Collection"
     } external;
 
@@ -149,7 +162,7 @@ public isolated client class Collection {
     # + filter - The query filter to apply when retrieving distinct values
     # + targetType - The type of the returned distinct values
     # + return - A stream of distinct values, or an error if the operation failed
-    isolated remote function 'distinct(string fieldName, map<json> filter = {}, typedesc targetType = <>)
+    isolated remote function 'distinct(string fieldName, map<json> filter = {}, typedesc<anydata> targetType = <>)
     returns stream<targetType, error?>|Error = @java:Method {
         'class: "io.ballerina.lib.mongodb.Collection"
     } external;
@@ -177,7 +190,7 @@ public isolated client class Collection {
     # + pipeline - The aggregation pipeline
     # + targetType - The type of the returned documents
     # + return - A stream of documents which match the provided pipeline, or an error if the operation failed
-    isolated remote function aggregate(map<json>[] pipeline, typedesc targetType = <>)
+    isolated remote function aggregate(map<json>[] pipeline, typedesc<anydata> targetType = <>)
             returns stream<targetType, error?>|Error = @java:Method {
         'class: "io.ballerina.lib.mongodb.Collection"
     } external;

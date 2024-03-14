@@ -32,6 +32,7 @@ import io.ballerina.runtime.api.types.Field;
 import io.ballerina.runtime.api.types.RecordType;
 import io.ballerina.runtime.api.types.StreamType;
 import io.ballerina.runtime.api.types.Type;
+import io.ballerina.runtime.api.types.UnionType;
 import io.ballerina.runtime.api.utils.StringUtils;
 import io.ballerina.runtime.api.utils.TypeUtils;
 import io.ballerina.runtime.api.values.BArray;
@@ -156,6 +157,14 @@ public final class Utils {
         return documents;
     }
 
+    static String getProjection(Object projectionInput, BTypedesc targetType) {
+        if (projectionInput == null) {
+            return getProjectionDocument(targetType.getDescribingType());
+        } else {
+            return projectionInput.toString();
+        }
+    }
+
     static String getProjectionDocument(Type type) {
         StringBuilder projectionBuilder = new StringBuilder();
         projectionBuilder.append("{");
@@ -173,8 +182,18 @@ public final class Utils {
         } else if (tag == TypeTags.ARRAY_TAG) {
             ArrayType arrayType = (ArrayType) type;
             getProjectionForFieldType(arrayType, projectionBuilder, parent);
-        } else {
+        } else if (TypeUtils.isValueType(type)) {
             projectionBuilder.append(parent).append("\": 1, ");
+        } else if (tag == TypeTags.UNION_TAG) {
+            List<Type> memberTypes = ((UnionType) type).getMemberTypes();
+            for (Type memberType : memberTypes) {
+                if (memberType.getTag() == TypeTags.ERROR_TAG || memberType.getTag() == TypeTags.NULL_TAG) {
+                    continue;
+                }
+                getProjectionForFieldType(memberType, projectionBuilder, parent);
+            }
+        } else {
+            throw createError(ErrorType.APPLICATION_ERROR, "Unsupported type: " + type.getName());
         }
     }
 

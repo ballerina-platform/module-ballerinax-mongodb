@@ -47,6 +47,20 @@ isolated function testInsertAndFind() returns error? {
 }
 
 @test:Config {
+    groups: ["collection", "insert", "insertOne", "find", "projection", "test"]
+}
+isolated function testFindOne() returns error? {
+    Database database = check mongoClient->getDatabase("testFindOneDB");
+    Collection collection = check database->getCollection("Movies");
+    Movie movie = {name: "Interstellar", year: 2014, rating: 9};
+    check collection->insertOne(movie);
+    Movie? actualResult = check collection->findOne();
+    test:assertEquals(actualResult, movie);
+    check collection->drop();
+    check database->drop();
+}
+
+@test:Config {
     groups: ["collection", "insert", "insertOne", "find", "projection"]
 }
 isolated function testInsertOneJsonMap() returns error? {

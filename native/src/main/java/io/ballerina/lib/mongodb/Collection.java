@@ -42,6 +42,7 @@ import io.ballerina.runtime.api.values.BMap;
 import io.ballerina.runtime.api.values.BObject;
 import io.ballerina.runtime.api.values.BString;
 import io.ballerina.runtime.api.values.BTypedesc;
+import org.ballerinalang.langlib.value.FromJsonStringWithType;
 import org.bson.BsonValue;
 import org.bson.Document;
 
@@ -54,8 +55,9 @@ import static io.ballerina.lib.mongodb.ModuleUtils.getModule;
 import static io.ballerina.lib.mongodb.Utils.createError;
 import static io.ballerina.lib.mongodb.Utils.createStream;
 import static io.ballerina.lib.mongodb.Utils.getPipeline;
-import static io.ballerina.lib.mongodb.Utils.getProjectionDocument;
+import static io.ballerina.lib.mongodb.Utils.getProjection;
 import static io.ballerina.lib.mongodb.Utils.getResultClass;
+import static io.ballerina.runtime.api.utils.StringUtils.fromString;
 
 /**
  * This class represents a MongoDB collection in Ballerina MongoDB client.
@@ -146,37 +148,63 @@ public final class Collection {
 
     public static Object find(BObject collection, BMap<BString, Object> filter, BMap<BString, Object> options,
                               Object projectionInput, BTypedesc targetType) {
-        Integer limit, batchSize, skip;
-        String projection;
-        if (projectionInput == null) {
-            projection = getProjectionDocument(targetType.getDescribingType());
-        } else {
-            projection = projectionInput.toString();
-        }
-        String sort = options.get(SORT) != null ? options.get(SORT).toString() : EMPTY_JSON;
-        limit = options.getIntValue(LIMIT) != null ? options.getIntValue(LIMIT).intValue() : null;
-        batchSize = options.getIntValue(SKIP) != null ? options.getIntValue(SKIP).intValue() : null;
-        skip = options.getIntValue(SKIP) != null ? options.getIntValue(SKIP).intValue() : null;
+        try {
+            Integer limit, batchSize, skip;
+            String projection = getProjection(projectionInput, targetType);
+            String sort = options.get(SORT) != null ? options.get(SORT).toString() : EMPTY_JSON;
+            limit = options.getIntValue(LIMIT) != null ? options.getIntValue(LIMIT).intValue() : null;
+            batchSize = options.getIntValue(SKIP) != null ? options.getIntValue(SKIP).intValue() : null;
+            skip = options.getIntValue(SKIP) != null ? options.getIntValue(SKIP).intValue() : null;
 
-        Document filterDocument = Document.parse(filter.toString());
-        Document projectionDocument = Document.parse(projection);
-        Document sortDocument = Document.parse(sort);
+            Document filterDocument = Document.parse(filter.toString());
+            Document projectionDocument = Document.parse(projection);
+            Document sortDocument = Document.parse(sort);
 
-        MongoCollection<Document> mongoCollection =
-                (MongoCollection<Document>) collection.getNativeData(Utils.MONGO_COLLECTION);
-        FindIterable<Document> result =
-                mongoCollection.find(filterDocument).projection(projectionDocument).sort(sortDocument);
-        if (limit != null) {
-            result.limit(limit);
+            MongoCollection<Document> mongoCollection =
+                    (MongoCollection<Document>) collection.getNativeData(Utils.MONGO_COLLECTION);
+            FindIterable<Document> result =
+                    mongoCollection.find(filterDocument).projection(projectionDocument).sort(sortDocument);
+            if (limit != null) {
+                result.limit(limit);
+            }
+            if (batchSize != null) {
+                result.batchSize(batchSize);
+            }
+            if (skip != null) {
+                result.skip(skip);
+            }
+            MongoCursor<Document> cursor = result.iterator();
+            return createStream(targetType, cursor);
+        } catch (BError e) {
+            return e;
+        } catch (Exception e) {
+            return createError(ErrorType.DATABASE_ERROR, e.getMessage());
         }
-        if (batchSize != null) {
-            result.batchSize(batchSize);
+    }
+
+    public static Object findOne(BObject collection, BMap<BString, Object> filter, BMap<BString, Object> options,
+                                 Object projectionInput, BTypedesc targetType) {
+        try {
+            String projection = getProjection(projectionInput, targetType);
+            String sort = options.get(SORT) != null ? options.get(SORT).toString() : EMPTY_JSON;
+
+            Document filterDocument = Document.parse(filter.toString());
+            Document projectionDocument = Document.parse(projection);
+            Document sortDocument = Document.parse(sort);
+
+            MongoCollection<Document> mongoCollection =
+                    (MongoCollection<Document>) collection.getNativeData(Utils.MONGO_COLLECTION);
+            Document result = mongoCollection.find(filterDocument)
+                    .projection(projectionDocument).sort(sortDocument).first();
+            if (result == null) {
+                return null;
+            }
+            return FromJsonStringWithType.fromJsonStringWithType(fromString(result.toJson()), targetType);
+        } catch (BError e) {
+            return e;
+        } catch (Exception e) {
+            return createError(ErrorType.DATABASE_ERROR, e.getMessage());
         }
-        if (skip != null) {
-            result.skip(skip);
-        }
-        MongoCursor<Document> cursor = result.iterator();
-        return createStream(targetType, cursor);
     }
 
     public static Object countDocuments(BObject collection, BMap<BString, Object> filter,

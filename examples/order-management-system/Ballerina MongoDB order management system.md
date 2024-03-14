@@ -1,6 +1,6 @@
-# Movie Database
+# Order Management System
 
-This example demonstrates how to do basic CRUD operation on a MongoDB database using the Ballerina MongoDB connector. It exposes an HTTP service with resources to add, retrieve, update, and delete movies from a MongoDB database.
+This example demonstrates an implementation of sample order management system using Ballerina and the Ballerina MongoDB connector. It exposes an HTTP service with resources to add, retrieve, update, and delete orders from a MongoDB database. Additionally, this example includes an aggregation operation to retrieve the orders of a given customer.
 
 ## Prerequisites
 
