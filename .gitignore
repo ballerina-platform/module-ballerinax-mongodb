@@ -40,3 +40,5 @@ build
 
 # Environment files
 *.env
+Config.toml
+examples/**/Dependencies.toml
