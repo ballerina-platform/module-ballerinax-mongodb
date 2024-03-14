@@ -8,7 +8,7 @@ The `ballerinax/mongodb` connector provides practical examples illustrating usag
 
 ## Prerequisites
 
-1. Ensure you have MongoDB server installed and running locally or on a server accessible by your application. Refer to the [Setup Guide](https://central.ballerina.io/ballerinax/mongodb/latest#setup-guide) to set up the Redis server locally.
+1. Ensure you have MongoDB server installed and running locally or on a server accessible by your application. Refer to the [Setup Guide](https://central.ballerina.io/ballerinax/mongodb/latest#setup-guide) to set up the MongoDB server locally.
 
     Alternatively, you can use the docker-compose file provided in the `https://github.com/ballerina-platform/module-ballerinax-mongodb/tree/master/examples/resources/docker` directory to start a MongoDB server as a Docker container.
 
