@@ -1,0 +1,10 @@
+[package]
+org = "wso2"
+name = "movie_database"
+version = "1.0.0"
+
+[[dependency]]
+org = "ballerinax"
+name = "mongodb"
+version="5.0.0"
+repository="local"
