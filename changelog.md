@@ -8,4 +8,4 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
-- [[#5073] Migrate to Gradle Build](https://github.com/ballerina-platform/ballerina-standard-library/issues/5073)
+- [[#5073] Revamping the connector with new Client, Database, and Collection model](https://github.com/ballerina-platform/ballerina-standard-library/issues/5073)
