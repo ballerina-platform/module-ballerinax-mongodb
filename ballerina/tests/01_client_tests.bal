@@ -1,4 +1,4 @@
-// Copyright (c) 2023 WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
+// Copyright (c) 2024 WSO2 LLC. (http://www.wso2.com).
 //
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -140,7 +140,7 @@ function testSslConfigWithSslDisabled() returns error? {
     enable: false // Configure the replica set properly with a primary node and enable this test
 }
 public function testConnectToReplicaSet() returns error? {
-    Client mongoClient = check new (replicasetConfig);
+    Client mongoClient = check new (replicaSetConfig);
     string[] databaseNames = check mongoClient->listDatabaseNames();
     test:assertEquals(databaseNames.length(), 3, "Expected 3 databases but found " + databaseNames.length().toString());
     test:assertEquals(databaseNames, ["admin", "local"]);

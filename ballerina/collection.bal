@@ -1,4 +1,4 @@
-// Copyright (c) 2023 WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
+// Copyright (c) 2024 WSO2 LLC. (http://www.wso2.com).
 //
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -22,11 +22,9 @@ import ballerina/jballerina.java;
 }
 public isolated client class Collection {
 
-    private final Database database;
     private final string collectionName;
 
     isolated function init(Database database, string collectionName) returns Error? {
-        self.database = database;
         self.collectionName = collectionName;
         check initCollection(self, database, collectionName);
     }

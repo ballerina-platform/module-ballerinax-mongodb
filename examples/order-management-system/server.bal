@@ -1,4 +1,4 @@
-// Copyright (c) 2024 WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
+// Copyright (c) 2024 WSO2 LLC. (http://www.wso2.com).
 //
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -39,7 +39,7 @@ final mongodb:Client mongoDb = check new ({
     }
 });
 
-service on new http:Listener(9090) {
+service on new http:Listener(9092) {
 
     private final mongodb:Database db;
 

@@ -28,11 +28,11 @@ case "$1" in
 build)
   BAL_CMD="build"
   ;;
-run)
-  BAL_CMD="run"
+test)
+  BAL_CMD="test"
   ;;
 *)
-  echo "Invalid command provided: '$1'. Please provide 'build' or 'run' as the command."
+  echo "Invalid command provided: '$1'. Please provide 'build' or 'test' as the command."
   exit 1
   ;;
 esac
@@ -67,11 +67,13 @@ echo "$BAL_SOURCE_DIR"
 
 # Loop through examples in the examples directory
 cd "$BAL_EXAMPLES_DIR"
-for dir in $(find "$BAL_EXAMPLES_DIR" -type d -maxdepth 1  -mindepth 1); do
-  # Skip the build directory
-  if [[ "$dir" == *build ]]; then
+while IFS= read -r -d '' dir
+do
+  # Skip the build and resources directories
+  if [[ "$dir" == *build ]] || [[ "$dir" == *resources ]]; then
     continue
   fi
+  echo "$dir"
   (cd "$dir" && bal "$BAL_CMD" --offline && cd ..);
 done
 
