@@ -11,7 +11,9 @@
 
 [MongoDB](https://docs.mongodb.com/v4.2/) is a general purpose, document-based, distributed database built for modern application developers and for the cloud era. MongoDB offers both a Community and an Enterprise version of the database.
 
-The `ballerinax/mongodb` package offers APIs to connect to MongoDB servers and to perform various operations including CRUD operations, indexing, and aggregation. The Ballerina MongoDB connector uses the MongoDB Java Sync library underneath. It is compatible with MongoDB 3.6 and later versions.
+The `ballerinax/mongodb` package offers APIs to connect to MongoDB servers and to perform various operations including CRUD operations, indexing, and aggregation. 
+
+The Ballerina MongoDB connector uses the MongoDB Java Sync library underneath. It is compatible with MongoDB 3.6 and later versions.
 
 ## Setup guide
 
@@ -105,7 +107,6 @@ mongodb:Collection moviesCollection = check moviesDb->getCollection("movies");
 #### Insert a Document
 
 ```ballerina
-// Insert the document
 Movie movie = {title: "Inception", year: 2010};
 check moviesCollection->insert(movie);
 ```
