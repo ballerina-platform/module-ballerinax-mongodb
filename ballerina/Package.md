@@ -4,7 +4,7 @@
 
 The `ballerinax/mongodb` package offers APIs to connect to MongoDB servers and to perform various operations including CRUD operations, indexing, and aggregation.
 
-The Ballerina MongoDB connector uses the MongoDB Java Sync library underneath. It is compatible with MongoDB 3.6 and later versions.
+The Ballerina MongoDB connector is compatible with MongoDB 3.6 and later versions.
 
 ## Setup guide
 
