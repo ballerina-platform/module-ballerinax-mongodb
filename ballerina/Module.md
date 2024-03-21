@@ -1,62 +1,118 @@
 ## Overview
-MongoDB is a document database designed to cater to modern application requirements. It is a scalable and a flexible solution that inherently supports distributed system design. Ballerina MongoDB Connector allows you to perform the MongoDB CRUD operations.
 
-This module supports [MongoDB version 4.2](https://docs.mongodb.com/v4.2/).
+[MongoDB](https://docs.mongodb.com/v4.2/) is a general purpose, document-based, distributed database built for modern application developers and for the cloud era. MongoDB offers both a Community and an Enterprise version of the database.
 
-## Prerequisites
+The `ballerinax/mongodb` package offers APIs to connect to MongoDB servers and to perform various operations including CRUD operations, indexing, and aggregation.
 
-Before using this connector in your Ballerina application, complete the following:
+The Ballerina MongoDB connector is compatible with MongoDB 3.6 and later versions.
 
-1. Make sure a MongoDB is available to connect.
+## Setup guide
 
-2. Obtain connection details such as connection URL or hostname, port number, username, and password to connect the database.
+To use the MongoDB connector, you need to have a MongoDB server running and accessible. For that, you can either install MongoDB locally or use the [MongoDB Atlas](https://www.mongodb.com/cloud/atlas/register), the cloud offering of the MongoDB.
+
+### Setup a MongoDB server locally
+
+#### Step 1: Install and run the MongoDB server
+
+1. Download and install the MongoDB server from the [MongoDB download center](https://www.mongodb.com/try/download/community).
+
+2. Follow the installation instructions provided in the download center.
+
+3. Follow the [instructions](https://www.mongodb.com/docs/manual/administration/install-community/#std-label-install-mdb-community-edition) for each operating system to start the MongoDB server.
+
+> **Note:** This guide uses the MongoDB community edition for the setup. Alternatively, the enterprise edition can also be used.
+
+### Setup a MongoDB server using MongoDB Atlas
+
+1. Sign up for a free account in [MongoDB Atlas](https://www.mongodb.com/cloud/atlas/register).
+
+2. Follow the instructions provided in the [MongoDB Atlas documentation](https://docs.atlas.mongodb.com/getting-started/) to create a new cluster.
+
+3. Navigate to your MongoDB Atlas cluster.
+
+4. Select "Database" from the left navigation pane under the "Deployment" section and click "connect" button to open connection instructions.
+
+    ![MongoDB Atlas Connect](https://raw.githubusercontent.com/ballerina-platform/module-ballerinax-mongodb/master/docs/setup/resources/mongodb-atlas-connect.png)
+
+5. Add your IP address to the IP access list or select "Allow access from anywhere" to allow all IP addresses to access the cluster.
+
+    ![MongoDB Atlas IP Access List](https://raw.githubusercontent.com/ballerina-platform/module-ballerinax-mongodb/master/docs/setup/resources/mongodb-atlas-ip-access-list.png)
+
+6. Click "Choose a connection method" and select "Drivers" under the "Connect your application". There you can find the connection string to connect to the MongoDB Atlas cluster.
+
+    ![MongoDB Atlas Connection Method](https://raw.githubusercontent.com/ballerina-platform/module-ballerinax-mongodb/master/docs/setup/resources/mongodb-atlas-connection-method.png)
 
 ## Quickstart
 
-To use the `MongoDB` connector in your Ballerina application, update the .bal file as follows:
+### Step 1: Import the module
 
-### Step 1: Import connector
-Import the `ballerinax/mongodb` module into the Ballerina project.
+Import the `mongodb` module into the Ballerina project.
+
 ```ballerina
 import ballerinax/mongodb;
 ```
 
-### Step 2: Create a new connector instance
-Create a `mongodb:ConnectionConfig` with connection details obtained, and initialize the connector with it.
+### Step 2: Initialize the MongoDB client
 
-To use the MongoDB client you need to specify the database it needs to connect to. If you plan to use this client to connect to single database then you can pass the database name along with the other configurations required for client initialization(optional). Alternatively, you can pass the database name for each remote method call. This is not recommended unless you need to connect to more than one database using the client.
+#### Initialize the MongoDB client using the connection parameters
 
 ```ballerina
-mongodb:ConnectionConfig mongoConfig = {
+mongodb:Client mongoDb = new ({
     connection: {
-        host: <YOUR_HOST_NAME>,
-        port: <PORT>,
-        auth: {
-            username: <DB_USERNAME>,
-            password: <DB_PASSWORD>
+        serverAddress: {
+            host: "localhost",
+            port: 27017
         },
-        options: {
-            sslEnabled: false, 
-            serverSelectionTimeout: 5000
+        auth: <mongodb:ScramSha256AuthCredential>{
+            username: <username>,
+            password: <password>,
+            database: <admin-database>
         }
-    },
-    databaseName: DATABASE_NAME>
-};
-mongodb:Client mongoClient = check new (mongoConfig);
+    }
+});
+
+#### Initialize the MongoDB client using the connection string.
+
+```ballerina
+mongodb:Client mongoDb = new ({
+    connectionString: <connection string obtained from the MongoDB server>
+});
 ```
 
-### Step 3: Invoke connector operation
-1. Now you can use the operations available within the connector. Note that they are in the form of remote operations.  
-Following is an example on how to insert a document into a collection using the connector.
-    ```ballerina
-    public function main() returns error? {
-        
-        string collection = "<COLLECTION_NAME>"
-        map<json> doc = { "name": "Gmail", "version": "0.99.1", "type" : "Service" };
+### Step 3: Invoke the connector operation
 
-        check mongoClient->insert(doc, collection);
+Now, you can use the available connector operations to interact with MongoDB server.
 
-        mongoClient->close();
-    }
-    ```
-2. Use `bal run` command to compile and run the Ballerina program.
+#### Retrieve a Database
+
+```ballerina
+mongodb:Database moviesDb = check mongoDb->getDatabase("movies");
+```
+
+#### Retrieve a Collection
+
+```ballerina
+mongodb:Collection moviesCollection = check moviesDb->getCollection("movies");
+```
+
+#### Insert a Document
+
+```ballerina
+Movie movie = {title: "Inception", year: 2010};
+check moviesCollection->insert(movie);
+```
+
+### Step 4: Run the Ballerina application
+
+Save the changes and run the Ballerina application using the following command.
+
+```bash
+bal run
+```
+
+## Examples
+
+The MongoDB connector provides practical examples illustrating usage in various scenarios. Explore these [examples](https://github.com/ballerina-platform/module-ballerinax-mongodb/tree/master/examples/) covering common MongoDB operations.
+
+1. [Movie database](https://github.com/ballerina-platform/module-ballerinax-mongodb/tree/master/examples/movie-database) - Implement a movie database using MongoDB.
+2. [Order management system](https://github.com/ballerina-platform/module-ballerinax-mongodb/tree/master/examples/order-management-system) - Implement an order management system using MongoDB.

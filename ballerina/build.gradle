@@ -57,13 +57,13 @@ configurations {
 }
 
 dependencies {
-    externalJars(group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: "${jacksonVersion}") {
+    externalJars(group: 'org.mongodb', name: 'mongodb-driver-sync', version: "${mongoDriverVersion}") {
         transitive = false
     }
-    externalJars(group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: "${jacksonVersion}") {
+    externalJars(group: 'org.mongodb', name: 'mongodb-driver-core', version: "${mongoDriverVersion}") {
         transitive = false
     }
-    externalJars(group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: "${jacksonVersion}") {
+    externalJars(group: 'org.mongodb', name: 'bson', version: "${mongoDriverVersion}") {
         transitive = false
     }
 }
@@ -72,7 +72,7 @@ task updateTomlFiles {
     doLast {
         def newBallerinaToml = ballerinaTomlFilePlaceHolder.text.replace("@project.version@", project.version)
         newBallerinaToml = newBallerinaToml.replace("@toml.version@", tomlVersion)
-        newBallerinaToml = newBallerinaToml.replace("@jackson.version@", jacksonVersion)
+        newBallerinaToml = newBallerinaToml.replace("@mongodb.driver.version@", mongoDriverVersion)
         ballerinaTomlFile.text = newBallerinaToml
     }
 }
@@ -118,6 +118,7 @@ task stopMongodbServer() {
 
 clean {
     delete 'build'
+    delete 'lib'
 }
 
 build.dependsOn copyToLib

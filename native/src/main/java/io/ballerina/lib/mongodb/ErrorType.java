@@ -16,13 +16,24 @@
  * under the License.
  */
 
-module io.ballerina.lib.mongodb {
-    requires io.ballerina.runtime;
-    requires io.ballerina.lang.value;
-    requires org.mongodb.driver.sync.client;
-    requires org.mongodb.driver.core;
-    requires org.mongodb.bson;
-    requires slf4j.api;
+package io.ballerina.lib.mongodb;
 
-    exports io.ballerina.lib.mongodb;
+/**
+ * This class contains the error types for the Ballerina MongoDB connector.
+ *
+ * @since 5.0.0
+ */
+enum ErrorType {
+    APPLICATION_ERROR("ApplicationError"),
+    DATABASE_ERROR("DatabaseError");
+
+    private final String errorType;
+
+    ErrorType(String errorType) {
+        this.errorType = errorType;
+    }
+
+    public String getErrorType() {
+        return errorType;
+    }
 }

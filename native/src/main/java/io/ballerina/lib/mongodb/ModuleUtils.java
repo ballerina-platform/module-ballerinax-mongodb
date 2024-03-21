@@ -16,13 +16,26 @@
  * under the License.
  */
 
-module io.ballerina.lib.mongodb {
-    requires io.ballerina.runtime;
-    requires io.ballerina.lang.value;
-    requires org.mongodb.driver.sync.client;
-    requires org.mongodb.driver.core;
-    requires org.mongodb.bson;
-    requires slf4j.api;
+package io.ballerina.lib.mongodb;
 
-    exports io.ballerina.lib.mongodb;
+import io.ballerina.runtime.api.Environment;
+import io.ballerina.runtime.api.Module;
+
+/**
+ * Module utils for the Ballerina MongoDB connector to obtain the module info in the init.
+ */
+public class ModuleUtils {
+
+    private ModuleUtils() {
+    }
+
+    private static Module module;
+
+    public static void setModule(Environment environment) {
+        module = environment.getCurrentModule();
+    }
+
+    public static Module getModule() {
+        return module;
+    }
 }

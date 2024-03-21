@@ -5,7 +5,7 @@
 
 [ballerina]
 dependencies-toml-version = "2"
-distribution-version = "2201.8.2"
+distribution-version = "2201.8.6"
 
 [[package]]
 org = "ballerina"
@@ -23,7 +23,6 @@ modules = [
 org = "ballerina"
 name = "io"
 version = "1.6.0"
-scope = "testOnly"
 dependencies = [
 	{org = "ballerina", name = "jballerina.java"},
 	{org = "ballerina", name = "lang.value"}
@@ -50,7 +49,6 @@ dependencies = [
 org = "ballerina"
 name = "lang.value"
 version = "0.0.0"
-scope = "testOnly"
 dependencies = [
 	{org = "ballerina", name = "jballerina.java"}
 ]
@@ -59,7 +57,6 @@ dependencies = [
 org = "ballerina"
 name = "log"
 version = "2.9.0"
-scope = "testOnly"
 dependencies = [
 	{org = "ballerina", name = "io"},
 	{org = "ballerina", name = "jballerina.java"},
@@ -73,8 +70,7 @@ modules = [
 [[package]]
 org = "ballerina"
 name = "observe"
-version = "1.2.0"
-scope = "testOnly"
+version = "1.2.2"
 dependencies = [
 	{org = "ballerina", name = "jballerina.java"}
 ]
@@ -103,7 +99,7 @@ dependencies = [
 [[package]]
 org = "ballerinax"
 name = "mongodb"
-version = "5.0.0-SNAPSHOT"
+version = "5.0.0"
 dependencies = [
 	{org = "ballerina", name = "crypto"},
 	{org = "ballerina", name = "jballerina.java"},

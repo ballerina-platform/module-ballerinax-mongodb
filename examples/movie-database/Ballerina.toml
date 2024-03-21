@@ -1,0 +1,4 @@
+[package]
+org = "wso2"
+name = "movie_database"
+version = "1.0.0"

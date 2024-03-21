@@ -2,7 +2,7 @@
 distribution = "2201.7.0"
 org = "ballerinax"
 name = "mongodb"
-version = "5.0.0-SNAPSHOT"
+version = "5.0.0"
 license= ["Apache-2.0"]
 authors = ["Ballerina"]
 keywords = ["IT Operations/Databases", "Cost/Freemium"]
@@ -13,25 +13,25 @@ repository = "https://github.com/ballerina-platform/module-ballerinax-mongodb"
 graalvmCompatible = true
 
 [[platform.java17.dependency]]
-path = "../native/build/libs/mongodb-native-5.0.0-SNAPSHOT.jar"
-groupId = "org.ballerinalang"
+groupId = "io.ballerina.lib"
 artifactId = "mongodb-native"
 version = "5.0.0-SNAPSHOT"
+path = "../native/build/libs/mongodb-native-5.0.0-SNAPSHOT.jar"
 
 [[platform.java17.dependency]]
-groupId = "com.fasterxml.jackson.core"
-artifactId = "jackson-core"
-version = "2.15.2"
-path = "./lib/jackson-core-2.15.2.jar"
+groupId = "org.mongodb"
+artifactId = "mongodb-driver-sync"
+version = "4.11.1"
+path = "./lib/mongodb-driver-sync-4.11.1.jar"
 
-[[platform.java11.dependency]]
-groupId = "com.fasterxml.jackson.core"
-artifactId = "jackson-annotations"
-version = "2.15.2"
-path = "./lib/jackson-annotations-2.15.2.jar"
+[[platform.java17.dependency]]
+groupId = "org.mongodb"
+artifactId = "mongodb-driver-core"
+version = "4.11.1"
+path = "./lib/mongodb-driver-core-4.11.1.jar"
 
-[[platform.java11.dependency]]
-groupId = "com.fasterxml.jackson.core"
-artifactId = "jackson-databind"
-version = "2.15.2"
-path = "./lib/jackson-databind-2.15.2.jar"
+[[platform.java17.dependency]]
+groupId = "org.mongodb"
+artifactId = "bson"
+version = "4.11.1"
+path = "./lib/bson-4.11.1.jar"

@@ -14,12 +14,30 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import ballerina/jballerina.java;
+import ballerina/test;
 
-function init() {
-    setModule();
+@test:Mock {
+    moduleName: "ballerina/log",
+    functionName: "printWarn"
 }
+test:MockFunction logWarn = new();
 
-function setModule() = @java:Method {
-    'class: "io.ballerina.lib.mongodb.ModuleUtils"
-} external;
+string message = "";
+
+public type Value anydata|Valuer;
+
+public type Valuer isolated function () returns anydata;
+
+public type KeyValues record {|
+    never msg?;
+    never 'error?;
+    never stackTrace?;
+    Value...;
+|};
+
+function mockLogWarn(
+    string msg, error? 'error = (), error:StackFrame[]? stackTrace = (), *KeyValues keyValues) {
+    lock {
+        message = msg;
+    }
+}
