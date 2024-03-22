@@ -41,7 +41,7 @@ To use the MongoDB connector, you need to have a MongoDB server running and acce
 
 4. Select "Database" from the left navigation pane under the "Deployment" section and click "connect" button to open connection instructions.
 
-    ![MongoDB Atlas Connect](https://raw.githubusercontent.com/ballerina-platform/module-ballerinax-mongodb/master/docs/setup/resources/mongodb-atlas-connect.png)
+    ![MongoDB Atlas Connect](https://raw.githubusercontent.com/ballerina-platform/module-ballerinax-mongodb/master/docs/setup/resources/mongodb-atlas-database-page.png)
 
 5. Add your IP address to the IP access list or select "Allow access from anywhere" to allow all IP addresses to access the cluster.
 
@@ -79,8 +79,9 @@ mongodb:Client mongoDb = new ({
         }
     }
 });
+```
 
-#### Initialize the MongoDB client using the connection string.
+#### Initialize the MongoDB client using the connection string
 
 ```ballerina
 mongodb:Client mongoDb = new ({
