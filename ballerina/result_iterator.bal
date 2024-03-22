@@ -17,7 +17,7 @@
 import ballerina/jballerina.java;
 
 # Represents the result iterator object for the MongoDB query result.
-public isolated class ResultIterator {
+isolated class ResultIterator {
     private boolean isClosed = false;
 
     public isolated function next() returns record {|anydata value;|}|Error? {
