@@ -1,10 +1,10 @@
 # Specification: Ballerina MongoDB connector
 
-_Owners_: @ThisaruGuruge \
+_Authors_: @ThisaruGuruge \
 _Reviewers_: @DimuthuMadushan @Nuvindu \
 _Created_: 2024/03/01 \
 _Updated_: 2023/03/01 \
-_Edition_: Swan Lake \
+_Edition_: Swan Lake
 
 ## Introduction
 
@@ -83,13 +83,13 @@ This specification defines the Ballerina MongoDB connector and its components.
 
 To use the Ballerina MongoDB connector, it should first be imported to the Ballerina program.
 
-####### Example: Import the MongoDB Connector
+###### Example: Import the MongoDB Connector
 
 ```ballerina
 import ballerinax/mongodb;
 ```
 
-####### Example: Import the MongoDB Connector with an Alias
+###### Example: Import the MongoDB Connector with an Alias
 
 ```ballerina
 import ballerinax/mongodb as mongo;
@@ -107,6 +107,8 @@ This section describes each of these components in detail.
 
 The `mongodb:Client` object represents a MongoDB client. It is used to create a connection to the MongoDB server.
 
+> **Note:** As a best practice, use a single MongoDB client for the entire life cycle of the application. Creating multiple clients can lead to performance issues.
+
 #### 2.1.1 Create a MongoDB Client
 
 The MongoDB client can be created using the object constructor. The MongoDB connection string or the `mongodb:ConnectionParameters` record can be used to create the client. Additionally, `mongodb:ConnectionProperties` can be passed when creating the client to define the client properties.
@@ -115,7 +117,7 @@ The MongoDB client can be created using the object constructor. The MongoDB conn
 
 The MongoDB connection string which includes the connection details such as the host, port, and database name can be used to create the MongoDB client. It can be obtained from the MongoDB Atlas or the self-hosted MongoDB server.
 
-####### Example: Create a MongoDB Client From the Connection String as a Record Field
+###### Example: Create a MongoDB Client From the Connection String as a Record Field
 
 The connection string can be provided as a field of the `mongodb:ConnectionParameters` record.
 
@@ -125,7 +127,7 @@ import ballerinax/mongodb;
 final mongodb:Client mongodb = new ({connection: "<mongodb.connection.string>"});
 ```
 
-####### Example: Create a MongoDB Client From the Connection String as a Named Parameter
+###### Example: Create a MongoDB Client From the Connection String as a Named Parameter
 
 The connection string can be provided as a named parameter to the Client constructor.
 
@@ -225,7 +227,7 @@ public type GssApiCredential record {|
 |};
 ```
 
-####### Example: Create a MongoDB Client From the Connection Parameters
+###### Example: Create a MongoDB Client From the Connection Parameters
 
 ```ballerina
 import ballerinax/mongodb;
@@ -250,7 +252,7 @@ final mongodb:Client mongodb = check new (connection = {
 });
 ```
 
-####### Example: Create a MongoDB Client From the Connection Parameters Inline with Multiple Server Addresses
+###### Example: Create a MongoDB Client From the Connection Parameters Inline with Multiple Server Addresses
 
 ```ballerina
 import ballerinax/mongodb;
@@ -325,7 +327,7 @@ This `mongodb:ConnectionProperties` record can be used to define various client 
 
 The `mongodb:ConnectionProperties` record can be used to define the SSL connection properties when creating the MongoDB client. To enable secure communication with SSL, the `sslEnabled` field of the `mongodb:ConnectionProperties` record should be set to `true`. Additionally, the `secureSocket` field of the `mongodb:ConnectionProperties` record can be used to define the secure socket configurations.
 
-####### Example: Create a MongoDB Client with SSL
+###### Example: Create a MongoDB Client with SSL
 
 ```ballerina
 import ballerinax/mongodb;
@@ -363,7 +365,7 @@ final mongodb:Client mongodb = check new (
 );
 ```
 
-####### Example: Create a MongoDB Client with SSL From the Connection String Without Secure Socket Configurations
+###### Example: Create a MongoDB Client with SSL From the Connection String Without Secure Socket Configurations
 
 ```ballerina
 import ballerinax/mongodb;
@@ -384,17 +386,20 @@ Following are the operations that can be performed using the MongoDB client.
 
 The `listDatabaseNames` remote method can be used to list the databases in the MongoDB server. This will return an array of `string`s containing the database names or an error if the operation fails.
 
-####### Example: List Database Names
+###### Example: List Database Names
 
 ```ballerina
 import ballerinax/mongodb;
 
-// Create the MongoDB client
-final mongodb:Client mongodb = check new (connection = "<mongodb.connection.string>");
-
-// List the database names
 public function main() returns error? {
+    // Create the MongoDB client
+    final mongodb:Client mongodb = check new (connection = "<mongodb.connection.string>");
+
+    // List the database names
     string[] databases = check mongodb->listDatabaseNames();
+
+    // Close the client
+    check mongodb->close();
 }
 ```
 
@@ -406,17 +411,22 @@ The `getDatabase` remote method can be used to get a database from the MongoDB s
 
 - `databaseName`: The name of the database to get. This should be of type `string`.
 
-####### Example: Get a Database
+###### Example: Get a Database
 
 ```ballerina
 import ballerinax/mongodb;
 
-// Create the MongoDB client
-final mongodb:Client mongodb = check new (connection = "<mongodb.connection.string>");
-
-// Get a database
 public function main() returns error? {
+    // Create the MongoDB client
+    final mongodb:Client mongodb = check new (connection = "<mongodb.connection.string>");
+
+    // Get a database
     mongodb:Database moviesDb = check mongodb->getDatabase("moviesDB");
+
+    // ...
+
+    // Close the client
+    check mongodb->close();
 }
 ```
 
@@ -424,16 +434,16 @@ public function main() returns error? {
 
 The `close` remote method can be used to close the connection to the MongoDB server. This will return an error if the operation fails.
 
-####### Example: Close the Client
+###### Example: Close the Client
 
 ```ballerina
 import ballerinax/mongodb;
 
-// Create the MongoDB client
-final mongodb:Client mongodb = check new (connection = "<mongodb.connection.string>");
-
-// Close the client
 public function main() returns error? {
+    // Create the MongoDB client
+    final mongodb:Client mongodb = check new (connection = "<mongodb.connection.string>");
+
+    // Close the client
     check mongodb->close();
 }
 ```
@@ -446,17 +456,22 @@ The `mongodb:Database` object represents a MongoDB database. It is used to perfo
 
 The `createDatabase` remote method of the [`mongodb:Client`](#21-client) object can be used to create a database. The database name should be passed as a parameter to it. An error will be returned from this method if the operation fails, otherwise, a `mongodb:Database` object will be returned.
 
-####### Example: Create a Database
+###### Example: Create a Database
 
 ```ballerina
 import ballerinax/mongodb;
 
-// Create the MongoDB client
-final mongodb:Client mongodb = check new (connection = "<mongodb.connection.string>");
-
-// Create a database
 public function main() returns error? {
+    // Create the MongoDB client
+    final mongodb:Client mongodb = check new (connection = "<mongodb.connection.string>");
+
+    // Create a database
     mongodb:Database moviesDb = check mongodb->getDatabase("moviesDB");
+
+    // ...
+
+    // Close the client
+    check mongodb->close();
 }
 ```
 
@@ -472,20 +487,23 @@ Following are the operations that can be performed using the MongoDB database.
 
 The `listCollectionNames` remote method can be used to list the collection names in the database. This will return an array of `string`s containing the collection names or an error if the operation fails.
 
-####### Example: List Collections
+###### Example: List Collections
 
 ```ballerina
 import ballerinax/mongodb;
 
-// Create the MongoDB client
-final mongodb:Client mongodb = check new (connection = "<mongodb.connection.string>");
-
 public function main() returns error? {
+    // Create the MongoDB client
+    final mongodb:Client mongodb = check new (connection = "<mongodb.connection.string>");
+
     // Get a database
     mongodb:Database moviesDb = check mongodb->getDatabase("moviesDB");
 
     // List the collections
     string[] collections = check moviesDb->listCollectionNames();
+
+    // Close the client
+    check mongodb->close();
 }
 ```
 
@@ -497,20 +515,23 @@ The `createCollection` remote method can be used to create a collection in the d
 
 - `collectionName`: The name of the collection to create. This should be of type `string`.
 
-####### Example: Create a Collection
+###### Example: Create a Collection
 
 ```ballerina
 import ballerinax/mongodb;
 
-// Create the MongoDB client
-final mongodb:Client mongodb = check new (connection = "<mongodb.connection.string>");
-
 public function main() returns error? {
+    // Create the MongoDB client
+    final mongodb:Client mongodb = check new (connection = "<mongodb.connection.string>");
+
     // Get a database
     mongodb:Database moviesDb = check mongodb->getDatabase("moviesDB");
 
     // Create a collection
     mongodb:Collection moviesCollection = check moviesDb->createCollection("movies");
+
+    // Close the client
+    check mongodb->close();
 }
 ```
 
@@ -522,20 +543,23 @@ The `getCollection` remote method can be used to get a collection from the datab
 
 - `collectionName`: The name of the collection to get. This should be of type `string`. If the collection does not exist in the database, it will be created.
 
-####### Example: Get a Collection
+###### Example: Get a Collection
 
 ```ballerina
 import ballerinax/mongodb;
 
-// Create the MongoDB client
-final mongodb:Client mongodb = check new (connection = "<mongodb.connection.string>");
-
 public function main() returns error? {
+    // Create the MongoDB client
+    final mongodb:Client mongodb = check new (connection = "<mongodb.connection.string>");
+
     // Get a database
     mongodb:Database moviesDb = check mongodb->getDatabase("moviesDB");
 
     // Get a collection
     mongodb:Collection movies = check movies->getCollection("movies");
+
+    // Close the client
+    check mongodb->close();
 }
 ```
 
@@ -545,20 +569,23 @@ public function main() returns error? {
 
 The `drop` remote method can be used to drop the database. This will return an error if the operation fails.
 
-####### Example: Drop the Database
+###### Example: Drop the Database
 
 ```ballerina
 import ballerinax/mongodb;
 
-// Create the MongoDB client
-final mongodb:Client mongodb = check new (connection = "<mongodb.connection.string>");
-
 public function main() returns error? {
+    // Create the MongoDB client
+    final mongodb:Client mongodb = check new (connection = "<mongodb.connection.string>");
+
     // Get a database
     mongodb:Database moviesDb = check mongodb->getDatabase("moviesDB");
 
     // Drop the database
     check moviesDb->drop();
+
+    // Close the client
+    check mongodb->close();
 }
 ```
 
@@ -570,20 +597,23 @@ The `mongodb:Collection` object represents a MongoDB collection. It is used to p
 
 The `createCollection` remote method of the [`mongodb:Database`](#22-database) object can be used to create a collection in the database. The name of the collection should be passed as a parameter to it.
 
-####### Example: Create a Collection
+###### Example: Create a Collection
 
 ```ballerina
 import ballerinax/mongodb;
 
-// Create the MongoDB client
-final mongodb:Client mongodb = check new (connection = "<mongodb.connection.string>");
-
 public function main() returns error? {
+    // Create the MongoDB client
+    final mongodb:Client mongodb = check new (connection = "<mongodb.connection.string>");
+
     // Get a database
     mongodb:Database moviesDb = check mongodb->getDatabase("moviesDB");
 
     // Create a collection
     check moviesDb->createCollection("movies");
+
+    // Close the client
+    check mongodb->close();
 }
 ```
 
@@ -597,15 +627,16 @@ Following are the operations that can be performed using the MongoDB collection.
 
 The `name` method can be used to retrieve the name of the collection. This will return the name of the collection as a `string`.
 
-####### Example: Retrieve the Collection Name
+###### Example: Retrieve the Collection Name
 
 ```ballerina
 import ballerinax/mongodb;
 
-// Create the MongoDB client
-final mongodb:Client mongodb = check new (connection = "<mongodb.connection.string>");
 
 public function main() returns error? {
+    // Create the MongoDB client
+    final mongodb:Client mongodb = check new (connection = "<mongodb.connection.string>");
+
     // Get a database
     mongodb:Database moviesDb = check mongodb->getDatabase("moviesDB");
 
@@ -614,6 +645,9 @@ public function main() returns error? {
 
     // Retrieve the collection name
     string collectionName = movies.name();
+
+    // Close the client
+    check mongodb->close();
 }
 ```
 
@@ -630,15 +664,15 @@ Ballerina record types can be used to insert documents into the collection. The 
 - `document`: The document to insert. This should be of type `map<json>`. A Ballerina record value can be used to insert document, if the record is of `anydata` type.
 - `options`: The options to apply to the insert operation. This should be of type `mongodb:InsertOneOptions` record. This parameter is optional.
 
-####### Example: Insert a Single Document
+###### Example: Insert a Single Document
 
 ```ballerina
 import ballerinax/mongodb;
 
-// Create the MongoDB client
-final mongodb:Client mongodb = check new (connection = "<mongodb.connection.string>");
-
 public function main() returns error? {
+    // Create the MongoDB client
+    final mongodb:Client mongodb = check new (connection = "<mongodb.connection.string>");
+
     // Get a database
     mongodb:Database moviesDb = check mongodb->getDatabase("moviesDB");
 
@@ -651,10 +685,13 @@ public function main() returns error? {
         year: 2014,
         rating: 10
     });
+
+    // Close the client
+    check mongodb->close();
 }
 ```
 
-####### Example: Insert a Single Document Using a Ballerina Record Value
+###### Example: Insert a Single Document Using a Ballerina Record Value
 
 ```ballerina
 import ballerinax/mongodb;
@@ -666,10 +703,10 @@ public type Movie record {|
     int rating;
 |};
 
-// Create the MongoDB client
-final mongodb:Client mongodb = check new (connection = "<mongodb.connection.string>");
-
 public function main() returns error? {
+    // Create the MongoDB client
+    final mongodb:Client mongodb = check new (connection = "<mongodb.connection.string>");
+
     // Get a database
     mongodb:Database moviesDb = check mongodb->getDatabase("moviesDB");
 
@@ -689,15 +726,15 @@ public function main() returns error? {
 }
 ```
 
-####### Example: Insert a Single Document with Insert Options
+###### Example: Insert a Single Document with Insert Options
 
 ```ballerina
 import ballerinax/mongodb;
 
-// Create the MongoDB client
-final mongodb:Client mongodb = check new (connection = "<mongodb.connection.string>");
-
 public function main() returns error? {
+    // Create the MongoDB client
+    final mongodb:Client mongodb = check new (connection = "<mongodb.connection.string>");
+
     // Get a database
     mongodb:Database moviesDb = check mongodb->getDatabase("moviesDB");
 
@@ -728,15 +765,15 @@ The `insertMany` remote method can be used to insert multiple documents into the
 - `documents`: The documents to insert. This should be an array of Ballerina record values.
 - `options`: The options to apply to the insert operation. This should be of type `mongodb:InsertManyOptions` record. This parameter is optional.
 
-####### Example: Insert Multiple Documents
+###### Example: Insert Multiple Documents
 
 ```ballerina
 import ballerinax/mongodb;
 
-// Create the MongoDB client
-final mongodb:Client mongodb = check new (connection = "<mongodb.connection.string>");
-
 public function main() returns error? {
+    // Create the MongoDB client
+    final mongodb:Client mongodb = check new (connection = "<mongodb.connection.string>");
+
     // Get a database
     mongodb:Database moviesDb = check mongodb->getDatabase("moviesDB");
 
@@ -762,7 +799,7 @@ public function main() returns error? {
 }
 ```
 
-####### Example: Insert Multiple Documents Using an Array of Ballerina Record Values
+###### Example: Insert Multiple Documents Using an Array of Ballerina Record Values
 
 ```ballerina
 import ballerinax/mongodb;
@@ -774,10 +811,10 @@ public type Movie record {|
     int rating;
 |};
 
-// Create the MongoDB client
-final mongodb:Client mongodb = check new (connection = "<mongodb.connection.string>");
-
 public function main() returns error? {
+    // Create the MongoDB client
+    final mongodb:Client mongodb = check new (connection = "<mongodb.connection.string>");
+
     // Get a database
     mongodb:Database moviesDb = check mongodb->getDatabase("moviesDB");
 
@@ -804,15 +841,15 @@ public function main() returns error? {
 }
 ```
 
-####### Example: Insert Multiple Documents with Insert Options
+###### Example: Insert Multiple Documents with Insert Options
 
 ```ballerina
 import ballerinax/mongodb;
 
-// Create the MongoDB client
-final mongodb:Client mongodb = check new (connection = "<mongodb.connection.string>");
-
 public function main() returns error? {
+    // Create the MongoDB client
+    final mongodb:Client mongodb = check new (connection = "<mongodb.connection.string>");
+
     // Get a database
     mongodb:Database moviesDb = check mongodb->getDatabase("moviesDB");
 
@@ -862,7 +899,7 @@ MongoDB has projection feature which helps to define the fields to return in the
 
 > **Note:** Manual projection might cause runtime errors since it ignores the target type when returning the stream. If the LHS expression does not match the projection, a `ConversionError` will occur at the runtime.
 
-####### Example: Find Documents
+###### Example: Find Documents
 
 ```ballerina
 import ballerinax/mongodb;
@@ -874,10 +911,10 @@ public type Movie record {|
     int rating;
 |};
 
-// Create the MongoDB client
-final mongodb:Client mongodb = check new (connection = "<mongodb.connection.string>");
-
 public function main() returns error? {
+    // Create the MongoDB client
+    final mongodb:Client mongodb = check new (connection = "<mongodb.connection.string>");
+
     // Get a database
     mongodb:Database moviesDb = check mongodb->getDatabase("moviesDB");
 
@@ -894,7 +931,7 @@ public function main() returns error? {
 }
 ```
 
-####### Example: Find Documents with Inferred Projection
+###### Example: Find Documents with Inferred Projection
 
 ```ballerina
 import ballerina/io;
@@ -907,11 +944,11 @@ public type Movie record {|
     int rating;
 |};
 
-// Create the MongoDB client
-final mongodb:Client mongodb = check new (connection = "<mongodb.connection.string>");
-
 public function main() returns error? {
-        // Get a database
+    // Create the MongoDB client
+    final mongodb:Client mongodb = check new (connection = "<mongodb.connection.string>");
+
+    // Get a database
     mongodb:Database moviesDb = check mongodb->getDatabase("moviesDB");
 
     // Get a collection
@@ -946,9 +983,13 @@ public function main() returns error? {
         rating: 10
     });
 
-    // Print the result
+    // Filter the stream and add the results to a record array
     record {|string title;|}[] result = check from record {|string title;|} m in movieStream
         select m;
+
+    // Close the stream
+    check movieStream.close();
+
     io:println(result); // Prints "[{"title":"Inception"},{"title":"Interstellar"}]"
 
     // Close the client
@@ -956,7 +997,7 @@ public function main() returns error? {
 }
 ```
 
-####### Example: Find Documents with Manual Projection
+###### Example: Find Documents with Manual Projection
 
 ```ballerina
 import ballerina/io;
@@ -969,10 +1010,10 @@ public type Movie record {|
     int rating;
 |};
 
-// Create the MongoDB client
-final mongodb:Client mongodb = check new (connection = "<mongodb.connection.string>");
-
 public function main() returns error? {
+    // Create the MongoDB client
+    final mongodb:Client mongodb = check new (connection = "<mongodb.connection.string>");
+
     // Get a database
     mongodb:Database moviesDb = check mongodb->getDatabase("moviesDB");
 
@@ -1010,9 +1051,13 @@ public function main() returns error? {
         title: 1 // Includes the `title` field in the query result
     });
 
-    // Print the result
+    // Filter the stream and add the results to a record array
     record {}[] result = check from record {} m in movieStream
         select m;
+
+    // Close the stream
+    check movieStream.close();
+
     io:println(result); // Prints "[{"title":"Inception"},{"title":"Interstellar"}]"
 
     // Close the client
@@ -1029,15 +1074,15 @@ The `countDocuments` remote method can be used to count the number of documents 
 - `filter`: The filter to apply to the query. This should be of type `map<json>`, where the keys are the field names and the values are the field values. This is an optional parameter and if not provided, an empty filter will be used and the count of all the documents in the collection will be returned.
 - `options`: The options to apply to the query. This should be of type `mongodb:CountOptions` record. This is an optional parameter.
 
-####### Example: Count Documents
+###### Example: Count Documents
 
 ```ballerina
 import ballerinax/mongodb;
 
-// Create the MongoDB client
-final mongodb:Client mongodb = check new (connection = "<mongodb.connection.string>");
-
 public function main() returns error? {
+    // Create the MongoDB client
+    final mongodb:Client mongodb = check new (connection = "<mongodb.connection.string>");
+
     // Get a database
     mongodb:Database moviesDb = check mongodb->getDatabase("moviesDB");
 
@@ -1063,15 +1108,15 @@ Indexes are used to improve the performance of queries. The `createIndex` remote
 - `keys`: The keys of the index. This should be of type `map<json>`, where the keys are the field names and the values are the index types. The index types can be `1` for ascending order, `-1` for descending order. This is a required parameter. Learn more about MongoDB indexes on [MongoDB Documentation](https://www.mongodb.com/docs/manual/core/indexes/index-types/#std-label-index-types)
 - `options`: The options to apply to the index. This should be of type `mongodb:IndexOptions` record. This is an optional parameter with the default index options.
 
-####### Example: Create Index
+###### Example: Create Index
 
 ```ballerina
 import ballerinax/mongodb;
 
-// Create the MongoDB client
-final mongodb:Client mongodb = check new (connection = "<mongodb.connection.string>");
-
 public function main() returns error? {
+    // Create the MongoDB client
+    final mongodb:Client mongodb = check new (connection = "<mongodb.connection.string>");
+
     // Get a database
     mongodb:Database moviesDb = check mongodb->getDatabase("moviesDB");
 
@@ -1088,15 +1133,15 @@ public function main() returns error? {
 }
 ```
 
-####### Example: Create Index with Options
+###### Example: Create Index with Options
 
 ```ballerina
 import ballerinax/mongodb;
 
-// Create the MongoDB client
-final mongodb:Client mongodb = check new (connection = "<mongodb.connection.string>");
-
 public function main() returns error? {
+    // Create the MongoDB client
+    final mongodb:Client mongodb = check new (connection = "<mongodb.connection.string>");
+
     // Get a database
     mongodb:Database moviesDb = check mongodb->getDatabase("moviesDB");
 
@@ -1128,15 +1173,15 @@ public function main() returns error? {
 
 The `listIndexes` remote method can be used to list the indexes in the collection. This will return a `stream<mongodb:Index, error?>`.
 
-####### Example: List Indexes
+###### Example: List Indexes
 
 ```ballerina
 import ballerinax/mongodb;
 
-// Create the MongoDB client
-final mongodb:Client mongodb = check new (connection = "<mongodb.connection.string>");
-
 public function main() returns error? {
+    // Create the MongoDB client
+    final mongodb:Client mongodb = check new (connection = "<mongodb.connection.string>");
+
     // Get a database
     mongodb:Database moviesDb = check mongodb->getDatabase("moviesDB");
 
@@ -1145,6 +1190,9 @@ public function main() returns error? {
 
     // List indexes
     stream<mongodb:Index, error?> indexStream = check movies->listIndexes();
+
+    // Close the stream
+    check indexStream.close();
 
     // Close the client
     check mongodb->close();
@@ -1159,15 +1207,15 @@ The `dropIndex` remote method can be used to drop an index from the collection. 
 
 - `indexName`: The name of the index to drop. This should be of type `string`.
 
-####### Example: Drop Index
+###### Example: Drop Index
 
 ```ballerina
 import ballerinax/mongodb;
 
-// Create the MongoDB client
-final mongodb:Client mongodb = check new (connection = "<mongodb.connection.string>");
-
 public function main() returns error? {
+    // Create the MongoDB client
+    final mongodb:Client mongodb = check new (connection = "<mongodb.connection.string>");
+
     // Get a database
     mongodb:Database moviesDb = check mongodb->getDatabase("moviesDB");
 
@@ -1186,15 +1234,15 @@ public function main() returns error? {
 
 The `dropIndexes` remote method can be used to drop all the indexes from the collection. This will return an error if the operation fails.
 
-####### Example: Drop All Indexes
+###### Example: Drop All Indexes
 
 ```ballerina
 import ballerinax/mongodb;
 
-// Create the MongoDB client
-final mongodb:Client mongodb = check new (connection = "<mongodb.connection.string>");
-
 public function main() returns error? {
+    // Create the MongoDB client
+    final mongodb:Client mongodb = check new (connection = "<mongodb.connection.string>");
+
     // Get a database
     mongodb:Database moviesDb = check mongodb->getDatabase("moviesDB");
 
@@ -1213,15 +1261,15 @@ public function main() returns error? {
 
 The `drop` remote method can be used to drop the collection. This will return an error if the operation fails.
 
-####### Example: Drop Collection
+###### Example: Drop Collection
 
 ```ballerina
 import ballerinax/mongodb;
 
-// Create the MongoDB client
-final mongodb:Client mongodb = check new (connection = "<mongodb.connection.string>");
-
 public function main() returns error? {
+    // Create the MongoDB client
+    final mongodb:Client mongodb = check new (connection = "<mongodb.connection.string>");
+
     // Get a database
     mongodb:Database moviesDb = check mongodb->getDatabase("moviesDB");
 
@@ -1243,7 +1291,7 @@ The `updateOne` remote method can be used to update a single document in the col
 - `update`: The update to apply to the query. This should be of type `mongodb:Update`. This is a required parameter.
 - `options`: The options to apply to the update operation. This should be of type `mongodb:UpdateOptions` record. This is an optional parameter.
 
-####### Example: Update Single Document
+###### Example: Update Single Document
 
 ```ballerina
 import ballerinax/mongodb;
@@ -1255,10 +1303,10 @@ public type Movie record {|
     int rating;
 |};
 
-// Create the MongoDB client
-final mongodb:Client mongodb = check new (connection = "<mongodb.connection.string>");
-
 public function main() returns error? {
+    // Create the MongoDB client
+    final mongodb:Client mongodb = check new (connection = "<mongodb.connection.string>");
+
     // Get a database
     mongodb:Database moviesDb = check mongodb->getDatabase("moviesDB");
 
@@ -1299,7 +1347,7 @@ public function main() returns error? {
 }
 ```
 
-####### Example: Update Single Document with Update Options
+###### Example: Update Single Document with Update Options
 
 ```ballerina
 import ballerinax/mongodb;
@@ -1311,10 +1359,10 @@ public type Movie record {|
     int rating;
 |};
 
-// Create the MongoDB client
-final mongodb:Client mongodb = check new (connection = "<mongodb.connection.string>");
-
 public function main() returns error? {
+    // Create the MongoDB client
+    final mongodb:Client mongodb = check new (connection = "<mongodb.connection.string>");
+
     // Get a database
     mongodb:Database moviesDb = check mongodb->getDatabase("moviesDB");
 
@@ -1368,7 +1416,7 @@ The `updateMany` remote method can be used to update multiple documents in the c
 - `update`: The update to apply to the query. This should be of type `mongodb:Update`. This is a required parameter.
 - `options`: The options to apply to the update operation. This should be of type `mongodb:UpdateOptions` record. This is an optional parameter.
 
-####### Example: Update Multiple Documents
+###### Example: Update Multiple Documents
 
 ```ballerina
 import ballerinax/mongodb;
@@ -1380,10 +1428,10 @@ public type Movie record {|
     int rating;
 |};
 
-// Create the MongoDB client
-final mongodb:Client mongodb = check new (connection = "<mongodb.connection.string>");
-
 public function main() returns error? {
+    // Create the MongoDB client
+    final mongodb:Client mongodb = check new (connection = "<mongodb.connection.string>");
+
     // Get a database
     mongodb:Database moviesDb = check mongodb->getDatabase("moviesDB");
 
@@ -1426,7 +1474,7 @@ public function main() returns error? {
 }
 ```
 
-####### Example: Update Multiple Documents with Update Options
+###### Example: Update Multiple Documents with Update Options
 
 ```ballerina
 import ballerinax/mongodb;
@@ -1438,10 +1486,10 @@ public type Movie record {|
     int rating;
 |};
 
-// Create the MongoDB client
-final mongodb:Client mongodb = check new (connection = "<mongodb.connection.string>");
-
 public function main() returns error? {
+    // Create the MongoDB client
+    final mongodb:Client mongodb = check new (connection = "<mongodb.connection.string>");
+
     // Get a database
     mongodb:Database moviesDb = check mongodb->getDatabase("moviesDB");
 
@@ -1498,15 +1546,15 @@ The `distinct` remote method can be used to retrieve distinct values for a field
 - `filter`: The filter to apply to the query. This should be of type `map<json>`, where the keys are the field names and the values are the field values. This is an optional parameter.
 - `targetType`: The return type of the stream. This is an optional parameter and if not provided, it will be inferred from the LHS of the expression.
 
-####### Example: Retrieve Distinct Values
+###### Example: Retrieve Distinct Values
 
 ```ballerina
 import ballerinax/mongodb;
 
-// Create the MongoDB client
-final mongodb:Client mongodb = check new (connection = "<mongodb.connection.string>");
-
 public function main() returns error? {
+    // Create the MongoDB client
+    final mongodb:Client mongodb = check new (connection = "<mongodb.connection.string>");
+
     // Get a database
     mongodb:Database moviesDb = check mongodb->getDatabase("moviesDB");
 
@@ -1516,20 +1564,25 @@ public function main() returns error? {
     // Retrieve distinct values for the "year" field without a filter
     stream<int, error?> distinctYears = movies->'distinct("year");
 
+    // ...
+
+    // Close the stream
+    check distinctYears.close();
+
     // Close the client
     check mongodb->close();
 }
 ```
 
-####### Example: Retrieve Distinct Values with a Filter
+###### Example: Retrieve Distinct Values with a Filter
 
 ```ballerina
 import ballerinax/mongodb;
 
-// Create the MongoDB client
-final mongodb:Client mongodb = check new (connection = "<mongodb.connection.string>");
-
 public function main() returns error? {
+    // Create the MongoDB client
+    final mongodb:Client mongodb = check new (connection = "<mongodb.connection.string>");
+
     // Get a database
     mongodb:Database moviesDb = check mongodb->getDatabase("moviesDB");
 
@@ -1542,6 +1595,11 @@ public function main() returns error? {
             $gte: 8
         }
     });
+
+    // ...
+
+    // Close the stream
+    check distinctYears.close();
 
     // Close the client
     check mongodb->close();
@@ -1556,7 +1614,7 @@ The `deleteOne` remote method can be used to delete a single document from the c
 
 - `filter`: The filter to apply to the query. This should be of type `map<json>`, where the keys are the field names and the values are the field values. This is a required parameter.
 
-####### Example: Delete Single Document
+###### Example: Delete Single Document
 
 ```ballerina
 import ballerinax/mongodb;
@@ -1568,10 +1626,10 @@ public type Movie record {|
     int rating;
 |};
 
-// Create the MongoDB client
-final mongodb:Client mongodb = check new (connection = "<mongodb.connection.string>");
-
 public function main() returns error? {
+    // Create the MongoDB client
+    final mongodb:Client mongodb = check new (connection = "<mongodb.connection.string>");
+
     // Get a database
     mongodb:Database moviesDb = check mongodb->getDatabase("moviesDB");
 
@@ -1613,7 +1671,7 @@ The `deleteMany` remote method can be used to delete multiple documents from the
 
 - `filter`: The filter to apply to the query. This should be of type `map<json>`, where the keys are the field names and the values are the field values. This is a required parameter.
 
-####### Example: Delete Multiple Documents
+###### Example: Delete Multiple Documents
 
 ```ballerina
 import ballerinax/mongodb;
@@ -1625,10 +1683,10 @@ public type Movie record {|
     int rating;
 |};
 
-// Create the MongoDB client
-final mongodb:Client mongodb = check new (connection = "<mongodb.connection.string>");
-
 public function main() returns error? {
+    // Create the MongoDB client
+    final mongodb:Client mongodb = check new (connection = "<mongodb.connection.string>");
+
     // Get a database
     mongodb:Database moviesDb = check mongodb->getDatabase("moviesDB");
 
@@ -1682,7 +1740,7 @@ MongoDB has aggregation feature which helps to perform operations on the collect
 
 > **Note:** Manual projection might cause runtime errors since it ignores the target type when returning the stream. If the LHS expression does not match the projection, a `ConversionError` will occur at the runtime.
 
-####### Example: Aggregate Documents
+###### Example: Aggregate Documents
 
 ```ballerina
 import ballerinax/mongodb;
@@ -1694,10 +1752,10 @@ public type Movies record {|
     int rating;
 |};
 
-// Create the MongoDB client
-final mongodb:Client mongodb = check new (connection = "<mongodb.connection.string>");
-
 public function main() returns error? {
+    // Create the MongoDB client
+    final mongodb:Client mongodb = check new (connection = "<mongodb.connection.string>");
+
     // Get a database
     mongodb:Database moviesDb = check mongodb->getDatabase("moviesDB");
 
@@ -1720,20 +1778,25 @@ public function main() returns error? {
         }
     ]);
 
+    // ...
+
+    // Close the stream
+    check resultStream.close();
+
     // Close the client
     check mongodb->close();
 }
 ```
 
-####### Example: Aggregate Documents with Inferred Projection
+###### Example: Aggregate Documents with Inferred Projection
 
 ```ballerina
 import ballerinax/mongodb;
 
-// Create the MongoDB client
-final mongodb:Client mongodb = check new (connection = "<mongodb.connection.string>");
-
 public function main() returns error? {
+    // Create the MongoDB client
+    final mongodb:Client mongodb = check new (connection = "<mongodb.connection.string>");
+
     // Get a database
     mongodb:Database moviesDb = check mongodb->getDatabase("moviesDB");
 
@@ -1758,20 +1821,25 @@ public function main() returns error? {
         }
     ]);
 
+    // ...
+
+    // Close the stream
+    check resultStream.close();
+
     // Close the client
     check mongodb->close();
 }
 ```
 
-####### Example: Aggregate Documents with Manual Projection
+###### Example: Aggregate Documents with Manual Projection
 
 ```ballerina
 import ballerinax/mongodb;
 
-// Create the MongoDB client
-final mongodb:Client mongodb = check new (connection = "<mongodb.connection.string>");
-
 public function main() returns error? {
+    // Create the MongoDB client
+    final mongodb:Client mongodb = check new (connection = "<mongodb.connection.string>");
+
     // Get a database
     mongodb:Database moviesDb = check mongodb->getDatabase("moviesDB");
 
@@ -1801,6 +1869,11 @@ public function main() returns error? {
             }
         }
     });
+
+    // ...
+
+    // Close the stream
+    check resultStream.close();
 
     // Close the client
     check mongodb->close();

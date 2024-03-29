@@ -61,6 +61,8 @@ public isolated client class Client {
 
     # Closes the client.
     #
+    # > **Note:** Use a single client instance for the lifetime of the application and close it when the application is done.
+    #
     # + return - A `mongodb:Error` if the client is already closed or failed to close the client. `()` otherwise.
     @display {label: "Close the Client"}
     remote isolated function close() returns Error? = @java:Method {
