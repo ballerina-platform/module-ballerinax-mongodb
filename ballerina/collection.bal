@@ -58,6 +58,8 @@ public isolated client class Collection {
 
     # Finds documents from the collection.
     #
+    # > **Note:** Close the resulted stream once the operation is completed.
+    #
     # + filter - The query filter to apply when retrieving documents
     # + findOptions - The additional options to apply to the find operation
     # + projection - The projection to apply to the find operation. If not provided, the projection will be generated
@@ -65,7 +67,7 @@ public isolated client class Collection {
     # + targetType - The type of the returned documents
     # + return - A stream of documents which match the provided filter, or an error if the operation failed
     isolated remote function find(map<json> filter = {}, FindOptions findOptions = {}, map<json>? projection = (),
-    typedesc<anydata> targetType = <>) returns stream<targetType, error?>|Error = @java:Method {
+    typedesc<record {|anydata...;|}> targetType = <>) returns stream<targetType, error?>|Error = @java:Method {
         'class: "io.ballerina.lib.mongodb.Collection"
     } external;
 
@@ -78,7 +80,7 @@ public isolated client class Collection {
     # + targetType - The type of the returned document
     # + return - The document which matches the provided filter, or an error if the operation failed
     isolated remote function findOne(map<json> filter = {}, FindOptions findOptions = {}, map<json>? projection = (),
-    typedesc<anydata> targetType = <>) returns targetType|Error = @java:Method {
+    typedesc<record {|anydata...;|}> targetType = <>) returns targetType|Error? = @java:Method {
         'class: "io.ballerina.lib.mongodb.Collection"
     } external;
 
@@ -103,6 +105,8 @@ public isolated client class Collection {
     } external;
 
     # Lists the indexes of the collection.
+    #
+    # > **Note:** Close the resulted stream once the operation is completed.
     #
     # + return - A stream of indexes, or an error if the operation failed
     isolated remote function listIndexes() returns stream<Index, error?>|Error =
@@ -156,6 +160,8 @@ public isolated client class Collection {
 
     # Retrieves the distinct values for a specified field across a collection.
     #
+    # > **Note:** Close the resulted stream once the operation is completed.
+    #
     # + fieldName - The field for which to return distinct values
     # + filter - The query filter to apply when retrieving distinct values
     # + targetType - The type of the returned distinct values
@@ -184,6 +190,8 @@ public isolated client class Collection {
     } external;
 
     # Aggregates documents according to the specified aggregation pipeline.
+    #
+    # > **Note:** Close the resulted stream once the operation is completed.
     #
     # + pipeline - The aggregation pipeline
     # + targetType - The type of the returned documents

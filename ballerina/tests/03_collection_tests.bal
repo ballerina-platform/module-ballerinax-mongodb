@@ -52,9 +52,11 @@ isolated function testInsertAndFind() returns error? {
 isolated function testFindOne() returns error? {
     Database database = check mongoClient->getDatabase("testFindOneDB");
     Collection collection = check database->getCollection("Movies");
+    Movie? actualResult = check collection->findOne();
+    test:assertEquals(actualResult, (), "Expected an empty result");
     Movie movie = {name: "Interstellar", year: 2014, rating: 9};
     check collection->insertOne(movie);
-    Movie? actualResult = check collection->findOne();
+    actualResult = check collection->findOne();
     test:assertEquals(actualResult, movie);
     check collection->drop();
     check database->drop();

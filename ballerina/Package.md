@@ -12,8 +12,6 @@ To use the MongoDB connector, you need to have a MongoDB server running and acce
 
 ### Setup a MongoDB server locally
 
-#### Step 1: Install and run the MongoDB server
-
 1. Download and install the MongoDB server from the [MongoDB download center](https://www.mongodb.com/try/download/community).
 
 2. Follow the installation instructions provided in the download center.
