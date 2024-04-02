@@ -129,3 +129,6 @@ build.finalizedBy stopMongodbServer
 test.dependsOn ":${packageName}-native:build"
 test.dependsOn startMongodbServer
 test.finalizedBy stopMongodbServer
+
+publish.dependsOn build
+publishToMavenLocal.dependsOn build
