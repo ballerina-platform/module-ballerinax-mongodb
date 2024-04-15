@@ -47,7 +47,7 @@ isolated function testInsertAndFind() returns error? {
 }
 
 @test:Config {
-    groups: ["collection", "insert", "insertOne", "find", "projection", "test"]
+    groups: ["collection", "insert", "insertOne", "find", "projection"]
 }
 isolated function testFindOne() returns error? {
     Database database = check mongoClient->getDatabase("testFindOneDB");
@@ -361,20 +361,21 @@ isolated function testUpdateUnset() returns error? {
     updateResult = check collection->updateOne({name: "Walter White"}, {"unset": {"address.country": ""}});
     test:assertEquals(updateResult.matchedCount, 1);
     test:assertEquals(updateResult.modifiedCount, 1);
-    result = check collection->find({name: "Walter White"});
+    stream<record {|anydata...;|}, error?> findResult = check collection->find({name: "Walter White"});
 
-    // Trapping the type conversion error and checking for the relevant error message.
-    // This is to confirm the field is removed from the document.
-    record {Person value;}|error? movieResult = trap result.next();
-    if movieResult !is error {
-        test:assertFail("Expected an error");
+    record {|anydata...;|}? movieResult = check findResult.next();
+    if movieResult is () {
+        test:assertFail("Expected a record value from the stream");
     }
-    var detail = movieResult.detail();
-    if detail !is anydata {
-        test:assertFail("Expected anydata type for error detail");
+    if movieResult.hasKey("address") {
+        var address = movieResult["address"];
+        if address !is map<anydata> {
+            test:assertFail("Expected a map value for the `address` field");
+        }
+        if address.hasKey("country") {
+            test:assertFail("Expected the `country` field to be removed from the `address` field");
+        }
     }
-    string message = detail["message"].toString();
-    test:assertTrue(message.includes("missing required field 'address.country' of type 'string'"));
     check result.close();
     check collection->drop();
     check database->drop();
