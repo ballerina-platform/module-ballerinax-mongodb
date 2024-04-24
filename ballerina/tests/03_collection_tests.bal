@@ -47,7 +47,7 @@ isolated function testInsertAndFind() returns error? {
 }
 
 @test:Config {
-    groups: ["collection", "insert", "insertOne", "find", "projection", "test"]
+    groups: ["collection", "insert", "insertOne", "find", "projection"]
 }
 isolated function testFindOne() returns error? {
     Database database = check mongoClient->getDatabase("testFindOneDB");
@@ -361,20 +361,21 @@ isolated function testUpdateUnset() returns error? {
     updateResult = check collection->updateOne({name: "Walter White"}, {"unset": {"address.country": ""}});
     test:assertEquals(updateResult.matchedCount, 1);
     test:assertEquals(updateResult.modifiedCount, 1);
-    result = check collection->find({name: "Walter White"});
+    stream<record {|anydata...;|}, error?> findResult = check collection->find({name: "Walter White"});
 
-    // Trapping the type conversion error and checking for the relevant error message.
-    // This is to confirm the field is removed from the document.
-    record {Person value;}|error? movieResult = trap result.next();
-    if movieResult !is error {
-        test:assertFail("Expected an error");
+    record {|anydata...;|}? movieResult = check findResult.next();
+    if movieResult is () {
+        test:assertFail("Expected a record value from the stream");
     }
-    var detail = movieResult.detail();
-    if detail !is anydata {
-        test:assertFail("Expected anydata type for error detail");
+    if movieResult.hasKey("address") {
+        var address = movieResult["address"];
+        if address !is map<anydata> {
+            test:assertFail("Expected a map value for the `address` field");
+        }
+        if address.hasKey("country") {
+            test:assertFail("Expected the `country` field to be removed from the `address` field");
+        }
     }
-    string message = detail["message"].toString();
-    test:assertTrue(message.includes("missing required field 'address.country' of type 'string'"));
     check result.close();
     check collection->drop();
     check database->drop();
@@ -617,6 +618,58 @@ isolated function testComplexFind() returns error? {
     check result.close();
     check collection->drop();
     check database->drop();
+}
+
+@test:Config {
+    groups: ["collection", "aggregate", "sort"]
+}
+isolated function testFindReturningArray() returns error? {
+    Database database = check mongoClient->getDatabase("testFindReturningArrayDB");
+    Collection tvShowsCollection = check database->getCollection("TvShows");
+    Collection directorsCollection = check database->getCollection("Directors");
+
+    TvShow tvShow1 = {title: "Breaking Bad", year: 2008, directorId: "1"};
+    TvShow tvShow2 = {title: "Game of Thrones", year: 2011, directorId: "2"};
+    TvShow tvShow3 = {title: "The Walking Dead", year: 2010, directorId: "3"};
+    TvShow tvShow4 = {title: "Better Call Saul", year: 2015, directorId: "1"};
+    check tvShowsCollection->insertMany([tvShow1, tvShow2, tvShow3, tvShow4]);
+
+    Director director1 = {id: "1", name: "Vince Gilligan"};
+    Director director2 = {id: "2", name: "David Benioff"};
+    Director director3 = {id: "3", name: "Frank Darabont"};
+    check directorsCollection->insertMany([director1, director2, director3]);
+
+    stream<record {
+        TvShow[] tvShows;
+    }, error?> result = check tvShowsCollection->aggregate([
+        {
+            \$group: {
+                _id: {directorId: "$directorId"},
+                tvShows: {
+                    \$push: {
+                        title: "$title",
+                        year: "$year",
+                        directorId: "$directorId"
+                    }
+                }
+            }
+        },
+        {
+            \$sort: {
+                "tvShows.directorId": 1
+            }
+        }
+    ]);
+    TvShow[][] actualResult = check from record {
+        TvShow[] tvShows;
+    } item in result
+        select item.tvShows;
+    TvShow[][] expectedResult = [[tvShow1, tvShow4], [tvShow2], [tvShow3]];
+    check result.close();
+    check tvShowsCollection->drop();
+    check directorsCollection->drop();
+    check database->drop();
+    test:assertEquals(actualResult, expectedResult);
 }
 
 @test:Config {

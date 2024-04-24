@@ -51,7 +51,8 @@ public isolated client class Collection {
     # + documents - The documents to insert
     # + options - The options to apply to the operation
     # + return - An error if the operation failed, otherwise nil
-    isolated remote function insertMany(record {|anydata...;|}[] documents, InsertManyOptions options = {}) returns Error? {
+    isolated remote function insertMany(record {|anydata...;|}[] documents, InsertManyOptions options = {})
+    returns Error? {
         string[] documentString = documents.'map((doc) => doc.toJsonString());
         return check insertMany(self, documentString, options);
     }
@@ -67,7 +68,8 @@ public isolated client class Collection {
     # + targetType - The type of the returned documents
     # + return - A stream of documents which match the provided filter, or an error if the operation failed
     isolated remote function find(map<json> filter = {}, FindOptions findOptions = {}, map<json>? projection = (),
-    typedesc<record {|anydata...;|}> targetType = <>) returns stream<targetType, error?>|Error = @java:Method {
+            typedesc<record {|anydata...;|}|record {|anydata...;|}[]> targetType = <>)
+            returns stream<targetType, error?>|Error = @java:Method {
         'class: "io.ballerina.lib.mongodb.Collection"
     } external;
 
@@ -80,7 +82,7 @@ public isolated client class Collection {
     # + targetType - The type of the returned document
     # + return - The document which matches the provided filter, or an error if the operation failed
     isolated remote function findOne(map<json> filter = {}, FindOptions findOptions = {}, map<json>? projection = (),
-    typedesc<record {|anydata...;|}> targetType = <>) returns targetType|Error? = @java:Method {
+            typedesc<record {|anydata...;|}> targetType = <>) returns targetType|Error? = @java:Method {
         'class: "io.ballerina.lib.mongodb.Collection"
     } external;
 
@@ -196,7 +198,7 @@ public isolated client class Collection {
     # + pipeline - The aggregation pipeline
     # + targetType - The type of the returned documents
     # + return - A stream of documents which match the provided pipeline, or an error if the operation failed
-    isolated remote function aggregate(map<json>[] pipeline, typedesc<anydata> targetType = <>)
+    isolated remote function aggregate(map<json>[] pipeline, typedesc<anydata|anydata[]> targetType = <>)
             returns stream<targetType, error?>|Error = @java:Method {
         'class: "io.ballerina.lib.mongodb.Collection"
     } external;

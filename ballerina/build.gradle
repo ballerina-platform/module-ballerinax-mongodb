@@ -91,13 +91,15 @@ task commitTomlFiles {
 }
 
 task startMongodbServer() {
-    doLast {
-        println("Starting mongodb server...")
-        exec {
-            if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-                commandLine 'cmd', '/c', "docker-compose -f tests/resources/docker/docker-compose.yml up && exit %%ERRORLEVEL%%"
-            } else {
-                commandLine 'sh', '-c', "docker-compose -f tests/resources/docker/docker-compose.yml up -d"
+    gradle.taskGraph.whenReady { graph ->
+        if (graph.hasTask(":${packageName}-ballerina:test")) {
+            println("Starting mongodb server...")
+            exec {
+                if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+                    commandLine 'cmd', '/c', "docker-compose -f tests/resources/docker/docker-compose.yml up && exit %%ERRORLEVEL%%"
+                } else {
+                    commandLine 'sh', '-c', "docker-compose -f tests/resources/docker/docker-compose.yml up -d"
+                }
             }
         }
     }
@@ -105,12 +107,16 @@ task startMongodbServer() {
 
 task stopMongodbServer() {
     doLast {
-        println("Stopping mongodb server...")
-        exec {
-            if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-                commandLine 'cmd', '/c', "docker-compose -f tests/resources/docker/docker-compose.yml down && exit %%ERRORLEVEL%%"
-            } else {
-                commandLine 'sh', '-c', "docker-compose -f tests/resources/docker/docker-compose.yml down"
+        gradle.taskGraph.whenReady { graph ->
+            if (graph.hasTask(":${packageName}-ballerina:test")) {
+                println("Stopping mongodb server...")
+                exec {
+                    if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+                        commandLine 'cmd', '/c', "docker-compose -f tests/resources/docker/docker-compose.yml down && exit %%ERRORLEVEL%%"
+                    } else {
+                        commandLine 'sh', '-c', "docker-compose -f tests/resources/docker/docker-compose.yml down"
+                    }
+                }
             }
         }
     }
