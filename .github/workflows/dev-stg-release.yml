@@ -15,7 +15,7 @@ jobs:
   call_workflow:
     name: Run Dev\Stage Central Publish Workflow
     if: ${{ github.repository_owner == 'ballerina-platform' }}
-    uses: ballerina-platform/ballerina-standard-library/.github/workflows/dev-stage-central-publish-connector-template.yml@main
+    uses: ballerina-platform/ballerina-library/.github/workflows/dev-stage-central-publish-connector-template.yml@main
     secrets: inherit
     with:
       environment: ${{ github.event.inputs.environment }}
