@@ -8,7 +8,7 @@ jobs:
   call_workflow:
     name: Run Daily Build Workflow
     if: ${{ github.repository_owner == 'ballerina-platform' }}
-    uses: ballerina-platform/ballerina-standard-library/.github/workflows/daily-build-connector-template.yml@main
+    uses: ballerina-platform/ballerina-library/.github/workflows/daily-build-connector-template.yml@main
     secrets: inherit
     with:
       repo-name: module-ballerinax-mongodb
