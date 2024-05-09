@@ -49,7 +49,7 @@ task buildExamples {
         if (graph.hasTask(":mongodb-examples:test")) {
             buildExamples.enabled = false
         } else {
-            testExamples.enabled = false
+            testExamples.enabled = true
         }
     }
     doLast {
