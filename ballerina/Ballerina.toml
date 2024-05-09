@@ -2,7 +2,7 @@
 distribution = "2201.7.0"
 org = "ballerinax"
 name = "mongodb"
-version = "5.0.0"
+version = "5.0.1"
 license= ["Apache-2.0"]
 authors = ["Ballerina"]
 keywords = ["IT Operations/Databases", "Cost/Freemium"]
@@ -15,8 +15,8 @@ graalvmCompatible = true
 [[platform.java17.dependency]]
 groupId = "io.ballerina.lib"
 artifactId = "mongodb-native"
-version = "5.0.0"
-path = "../native/build/libs/mongodb-native-5.0.0.jar"
+version = "5.0.1-SNAPSHOT"
+path = "../native/build/libs/mongodb-native-5.0.1-SNAPSHOT.jar"
 
 [[platform.java17.dependency]]
 groupId = "org.mongodb"
