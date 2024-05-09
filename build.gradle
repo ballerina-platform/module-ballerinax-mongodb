@@ -62,6 +62,11 @@ allprojects {
 task build {
     dependsOn(":mongodb-native:build")
     dependsOn(":mongodb-ballerina:build")
+    dependsOn(":mongodb-examples:build")
+}
+task test {
+    dependsOn(":mongodb-ballerina:test")
+    dependsOn(":mongodb-examples:test")
 }
 
 def moduleVersion = project.version.replace("-SNAPSHOT", "")

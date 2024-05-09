@@ -47,3 +47,14 @@ type Author readonly & record {|
     string name;
     Book[] books;
 |};
+
+type TvShow record {|
+    string title;
+    int year;
+    string directorId;
+|};
+
+type Director record {|
+    string id;
+    string name;
+|};

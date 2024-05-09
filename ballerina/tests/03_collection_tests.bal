@@ -621,6 +621,58 @@ isolated function testComplexFind() returns error? {
 }
 
 @test:Config {
+    groups: ["collection", "aggregate", "sort"]
+}
+isolated function testFindReturningArray() returns error? {
+    Database database = check mongoClient->getDatabase("testFindReturningArrayDB");
+    Collection tvShowsCollection = check database->getCollection("TvShows");
+    Collection directorsCollection = check database->getCollection("Directors");
+
+    TvShow tvShow1 = {title: "Breaking Bad", year: 2008, directorId: "1"};
+    TvShow tvShow2 = {title: "Game of Thrones", year: 2011, directorId: "2"};
+    TvShow tvShow3 = {title: "The Walking Dead", year: 2010, directorId: "3"};
+    TvShow tvShow4 = {title: "Better Call Saul", year: 2015, directorId: "1"};
+    check tvShowsCollection->insertMany([tvShow1, tvShow2, tvShow3, tvShow4]);
+
+    Director director1 = {id: "1", name: "Vince Gilligan"};
+    Director director2 = {id: "2", name: "David Benioff"};
+    Director director3 = {id: "3", name: "Frank Darabont"};
+    check directorsCollection->insertMany([director1, director2, director3]);
+
+    stream<record {
+        TvShow[] tvShows;
+    }, error?> result = check tvShowsCollection->aggregate([
+        {
+            \$group: {
+                _id: {directorId: "$directorId"},
+                tvShows: {
+                    \$push: {
+                        title: "$title",
+                        year: "$year",
+                        directorId: "$directorId"
+                    }
+                }
+            }
+        },
+        {
+            \$sort: {
+                "tvShows.directorId": 1
+            }
+        }
+    ]);
+    TvShow[][] actualResult = check from record {
+        TvShow[] tvShows;
+    } item in result
+        select item.tvShows;
+    TvShow[][] expectedResult = [[tvShow1, tvShow4], [tvShow2], [tvShow3]];
+    check result.close();
+    check tvShowsCollection->drop();
+    check directorsCollection->drop();
+    check database->drop();
+    test:assertEquals(actualResult, expectedResult);
+}
+
+@test:Config {
     groups: ["collection", "insert", "aggregate", "projection"]
 }
 isolated function testComplexAggregationProjection() returns error? {
