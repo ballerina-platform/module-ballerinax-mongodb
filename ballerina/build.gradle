@@ -95,9 +95,9 @@ task startMongodbServer() {
         println("Starting mongodb server...")
         exec {
             if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-                commandLine 'cmd', '/c', "docker-compose -f tests/resources/docker/docker-compose.yml up && exit %%ERRORLEVEL%%"
+                commandLine 'cmd', '/c', "docker compose -f tests/resources/docker/docker-compose.yml up && exit %%ERRORLEVEL%%"
             } else {
-                commandLine 'sh', '-c', "docker-compose -f tests/resources/docker/docker-compose.yml up -d"
+                commandLine 'sh', '-c', "docker compose -f tests/resources/docker/docker-compose.yml up -d"
             }
         }
     }
@@ -108,9 +108,9 @@ task stopMongodbServer() {
         println("Stopping mongodb server...")
         exec {
             if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-                commandLine 'cmd', '/c', "docker-compose -f tests/resources/docker/docker-compose.yml down && exit %%ERRORLEVEL%%"
+                commandLine 'cmd', '/c', "docker compose -f tests/resources/docker/docker-compose.yml down && exit %%ERRORLEVEL%%"
             } else {
-                commandLine 'sh', '-c', "docker-compose -f tests/resources/docker/docker-compose.yml down"
+                commandLine 'sh', '-c', "docker compose -f tests/resources/docker/docker-compose.yml down"
             }
         }
     }

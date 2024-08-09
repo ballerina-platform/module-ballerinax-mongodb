@@ -55,7 +55,7 @@ jobs:
       - name: Start MongoDB Server
         run: |
           cd ballerina/tests/resources/docker
-          docker-compose up -d
+          docker compose up -d
 
       - name: Test with GraalVM
         run: |
@@ -65,4 +65,4 @@ jobs:
       - name: Stop MongoDB Server
         run: |
           cd ballerina/tests/resources/docker
-          docker-compose down
+          docker compose down
