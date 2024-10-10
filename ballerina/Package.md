@@ -55,7 +55,7 @@ import ballerinax/mongodb;
 #### Initialize the MongoDB client using the connection parameters
 
 ```ballerina
-mongodb:Client mongoDb = new ({
+mongodb:Client mongoDb = check new ({
     connection: {
         serverAddress: {
             host: "localhost",
@@ -73,8 +73,8 @@ mongodb:Client mongoDb = new ({
 #### Initialize the MongoDB client using the connection string
 
 ```ballerina
-mongodb:Client mongoDb = new ({
-    connectionString: <connection string obtained from the MongoDB server>
+mongodb:Client mongoDb = check new ({
+    connection: <connection string obtained from the MongoDB server>
 });
 ```
 
