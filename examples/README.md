@@ -2,7 +2,7 @@
 
 The `ballerinax/mongodb` connector provides practical examples illustrating usage in various scenarios. Explore these [examples](https://github.com/ballerina-platform/module-ballerinax-mongodb/tree/master/examples), covering use cases like movie database, order management service, and more.
 
-1. [Movie Database](https://github.com/ballerina-platform/module-ballerinax-mongodb/tree/master/examples/mmovie-database) - Implement a movie database using MongoDB.
+1. [Movie Database](https://github.com/ballerina-platform/module-ballerinax-mongodb/tree/master/examples/movie-database) - Implement a movie database using MongoDB.
 
 2. [Order Management System](https://github.com/ballerina-platform/module-ballerinax-mongodb/tree/master/examples/order-management-system) - Use MongoDB to manage orders in an online store.
 
