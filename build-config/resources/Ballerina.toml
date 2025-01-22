@@ -1,5 +1,5 @@
 [package]
-distribution = "2201.7.0"
+distribution = "2201.11.0-20241218-101200-109f6cc7"
 org = "ballerinax"
 name = "mongodb"
 version = "@toml.version@"
@@ -9,28 +9,28 @@ keywords = ["IT Operations/Databases", "Cost/Freemium"]
 icon = "icon.png"
 repository = "https://github.com/ballerina-platform/module-ballerinax-mongodb"
 
-[platform.java17]
+[platform.java21]
 graalvmCompatible = true
 
-[[platform.java17.dependency]]
+[[platform.java21.dependency]]
 groupId = "io.ballerina.lib"
 artifactId = "mongodb-native"
 version = "@project.version@"
 path = "../native/build/libs/mongodb-native-@project.version@.jar"
 
-[[platform.java17.dependency]]
+[[platform.java21.dependency]]
 groupId = "org.mongodb"
 artifactId = "mongodb-driver-sync"
 version = "@mongodb.driver.version@"
 path = "./lib/mongodb-driver-sync-@mongodb.driver.version@.jar"
 
-[[platform.java17.dependency]]
+[[platform.java21.dependency]]
 groupId = "org.mongodb"
 artifactId = "mongodb-driver-core"
 version = "@mongodb.driver.version@"
 path = "./lib/mongodb-driver-core-@mongodb.driver.version@.jar"
 
-[[platform.java17.dependency]]
+[[platform.java21.dependency]]
 groupId = "org.mongodb"
 artifactId = "bson"
 version = "@mongodb.driver.version@"
