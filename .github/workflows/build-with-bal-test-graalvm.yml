@@ -5,64 +5,15 @@ on:
     - cron: "30 18 * * *"
   workflow_dispatch:
   pull_request:
-    types: [opened, synchronize, labeled]
+    types: [ opened, synchronize, labeled ]
 
 concurrency:
-  group: graalvm-check
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.run_id }}
   cancel-in-progress: true
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    if: github.event_name != 'pull_request' || !contains(github.event.pull_request.labels.*.name, 'Skip GraalVM Check')
-
-    steps:
-      - name: Checkout the Repository
-        uses: actions/checkout@v3
-
-      - name: Set Up Ballerina
-        uses: ballerina-platform/setup-ballerina@v1.1.0
-        with:
-          version: latest
-
-      - name: Set up GraalVM
-        uses: graalvm/setup-graalvm@v1
-        with:
-          java-version: "17"
-          distribution: "graalvm-community"
-          set-java-home: true
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Check GraalVM installation
-        run: |
-          echo "GRAALVM_HOME: ${{ env.GRAALVM_HOME }}"
-          echo "JAVA_HOME: ${{ env.JAVA_HOME }}"
-          native-image --version
-
-      - name: Set ENV Variables
-        run: |
-          echo -e '${{ toJson(secrets) }}' | jq -r 'to_entries[] | .key + "=" + .value' >> $GITHUB_ENV
-
-      - name: Build Package
-        run: ./gradlew build
-        env:
-          packageUser: ${{ github.actor }}
-          packagePAT: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Remove Target Directory
-        run: sudo rm -rf ballerina/target
-
-      - name: Start MongoDB Server
-        run: |
-          cd ballerina/tests/resources/docker
-          docker compose up -d
-
-      - name: Test with GraalVM
-        run: |
-          cd ballerina
-          bal test --graalvm
-
-      - name: Stop MongoDB Server
-        run: |
-          cd ballerina/tests/resources/docker
-          docker compose down
+  call_stdlib_workflow:
+    name: Run StdLib Workflow
+    if: ${{ github.event_name != 'schedule' || (github.event_name == 'schedule' && github.repository_owner == 'ballerina-platform') }}
+    uses: ballerina-platform/ballerina-library/.github/workflows/build-with-bal-test-graalvm-connector-template.yml@main
+    secrets: inherit

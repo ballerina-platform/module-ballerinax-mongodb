@@ -1,5 +1,5 @@
 [package]
-distribution = "2201.7.0"
+distribution = "2201.11.0-20241218-101200-109f6cc7"
 org = "ballerinax"
 name = "mongodb"
 version = "5.0.1"
@@ -9,29 +9,29 @@ keywords = ["IT Operations/Databases", "Cost/Freemium"]
 icon = "icon.png"
 repository = "https://github.com/ballerina-platform/module-ballerinax-mongodb"
 
-[platform.java17]
+[platform.java21]
 graalvmCompatible = true
 
-[[platform.java17.dependency]]
+[[platform.java21.dependency]]
 groupId = "io.ballerina.lib"
 artifactId = "mongodb-native"
 version = "5.0.1-SNAPSHOT"
 path = "../native/build/libs/mongodb-native-5.0.1-SNAPSHOT.jar"
 
-[[platform.java17.dependency]]
+[[platform.java21.dependency]]
 groupId = "org.mongodb"
 artifactId = "mongodb-driver-sync"
-version = "4.11.1"
-path = "./lib/mongodb-driver-sync-4.11.1.jar"
+version = "5.1.0"
+path = "./lib/mongodb-driver-sync-5.1.0.jar"
 
-[[platform.java17.dependency]]
+[[platform.java21.dependency]]
 groupId = "org.mongodb"
 artifactId = "mongodb-driver-core"
-version = "4.11.1"
-path = "./lib/mongodb-driver-core-4.11.1.jar"
+version = "5.1.0"
+path = "./lib/mongodb-driver-core-5.1.0.jar"
 
-[[platform.java17.dependency]]
+[[platform.java21.dependency]]
 groupId = "org.mongodb"
 artifactId = "bson"
-version = "4.11.1"
-path = "./lib/bson-4.11.1.jar"
+version = "5.1.0"
+path = "./lib/bson-5.1.0.jar"
