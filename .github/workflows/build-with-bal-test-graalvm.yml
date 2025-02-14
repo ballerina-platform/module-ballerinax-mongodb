@@ -12,8 +12,50 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  call_stdlib_workflow:
-    name: Run StdLib Workflow
-    if: ${{ github.event_name != 'schedule' || (github.event_name == 'schedule' && github.repository_owner == 'ballerina-platform') }}
-    uses: ballerina-platform/ballerina-library/.github/workflows/build-with-bal-test-graalvm-connector-template.yml@main
-    secrets: inherit
+  build:
+    runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request' || !contains(github.event.pull_request.labels.*.name, 'Skip GraalVM Check')
+
+    steps:
+      - name: Checkout the Repository
+        uses: actions/checkout@v3
+
+      - name: Set Up Ballerina
+        uses: ballerina-platform/setup-ballerina@v1.1.3
+        with:
+          version: nightly
+
+      - name: Set up GraalVM
+        uses: graalvm/setup-graalvm@v1
+        with:
+          java-version: "21"
+          distribution: "graalvm-community"
+          set-java-home: true
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check GraalVM installation
+        run: |
+          echo "GRAALVM_HOME: ${{ env.GRAALVM_HOME }}"
+          echo "JAVA_HOME: ${{ env.JAVA_HOME }}"
+          native-image --version
+
+      - name: Set ENV Variables
+        run: |
+          echo -e '${{ toJson(secrets) }}' | jq -r 'to_entries[] | .key + "=" + .value' >> $GITHUB_ENV
+
+      - name: Build Package
+        run: ./gradlew build -x test
+        env:
+          packageUser: ${{ github.actor }}
+          packagePAT: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Remove Target Directory
+        run: sudo rm -rf ballerina/target
+
+      - name: Test with GraalVM
+        run: |
+          ./gradlew :mongodb-ballerina:startMongodbServer
+          cd ballerina
+          bal test --graalvm
+          cd ..
+          ./gradlew :mongodb-ballerina:stopMongodbServer
