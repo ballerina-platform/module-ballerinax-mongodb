@@ -44,7 +44,7 @@ jobs:
           echo -e '${{ toJson(secrets) }}' | jq -r 'to_entries[] | .key + "=" + .value' >> $GITHUB_ENV
 
       - name: Build Package
-        run: ./gradlew build ${{ inputs.additional-build-flags }}
+        run: ./gradlew build -x test
         env:
           packageUser: ${{ github.actor }}
           packagePAT: ${{ secrets.GITHUB_TOKEN }}
@@ -56,5 +56,6 @@ jobs:
         run: |
           ./gradlew :mongodb-ballerina:startMongodbServer
           cd ballerina
-          bal test --graalvm ${{ inputs.additional-test-flags }}
+          bal test --graalvm
+          cd ..
           ./gradlew :mongodb-ballerina:stopMongodbServer
