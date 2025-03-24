@@ -14,6 +14,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
+import ballerina/log;
 import ballerina/test;
 
 @test:Mock {
@@ -36,8 +37,10 @@ public type KeyValues record {|
 |};
 
 function mockLogWarn(
-    string msg, error? 'error = (), error:StackFrame[]? stackTrace = (), *KeyValues keyValues) {
+    string|log:PrintableRawTemplate msg, error? 'error = (), error:StackFrame[]? stackTrace = (), *KeyValues keyValues) {
     lock {
-        message = msg;
+        if msg is string {
+            message = msg;
+        }
     }
 }
