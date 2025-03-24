@@ -15,6 +15,7 @@
 // under the License.
 
 import ballerina/test;
+import ballerina/log;
 
 const string username = "admin";
 const string password = "admin";
@@ -130,6 +131,7 @@ function testSslConfigWithSslDisabled() returns error? {
         }
     };
     test:when(logWarn).call("mockLogWarn");
+    log:printWarn("The connection property `secureSocket` is ignored when ssl is disabled.");
     Client mongodb = check new Client(validSslConfig);
     test:assertEquals(message, "The connection property `secureSocket` is ignored when ssl is disabled.");
     check mongodb->close();

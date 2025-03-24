@@ -15,6 +15,7 @@
 // under the License.
 
 import ballerina/test;
+import ballerina/log;
 
 @test:Mock {
     moduleName: "ballerina/log",
@@ -36,8 +37,10 @@ public type KeyValues record {|
 |};
 
 function mockLogWarn(
-    string msg, error? 'error = (), error:StackFrame[]? stackTrace = (), *KeyValues keyValues) {
+    string|log:PrintableRawTemplate msg, error? 'error = (), error:StackFrame[]? stackTrace = (), *KeyValues keyValues) {
     lock {
-        message = msg;
+        if msg is string {
+            message = msg;
+        }
     }
 }
