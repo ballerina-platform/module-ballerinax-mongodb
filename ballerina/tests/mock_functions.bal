@@ -14,8 +14,8 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import ballerina/test;
 import ballerina/log;
+import ballerina/test;
 
 @test:Mock {
     moduleName: "ballerina/log",
