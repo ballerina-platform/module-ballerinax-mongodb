@@ -41,6 +41,7 @@ type Book readonly & record {|
     string title;
     int year;
     int rating;
+    string[] tags = [];
 |};
 
 type Author readonly & record {|

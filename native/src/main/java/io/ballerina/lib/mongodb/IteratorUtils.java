@@ -49,9 +49,11 @@ public final class IteratorUtils {
         if (cursor.hasNext()) {
             try {
                 Object next = cursor.next();
-                String result = "";
+                String result;
                 if (next instanceof Document) {
                     result = ((Document) next).toJson();
+                } else if (next instanceof String) {
+                    return fromString((String) next);
                 } else {
                     result = next.toString();
                 }
@@ -59,6 +61,8 @@ public final class IteratorUtils {
                         PredefinedTypes.TYPE_NULL);
                 BTypedesc nextValueTypeDesc = ValueCreator.createTypedescValue(nextValueType);
                 return FromJsonStringWithType.fromJsonStringWithType(fromString(result), nextValueTypeDesc);
+            } catch (BError e) {
+                ErrorCreator.createError(fromString("Failed to convert value to record type"), e);
             } catch (Exception e) {
                 return ErrorCreator.createError(fromString("Error while iterating elements"), e);
             }

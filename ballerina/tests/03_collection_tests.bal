@@ -476,6 +476,102 @@ isolated function testDistinct() returns error? {
 }
 
 @test:Config {
+    groups: ["collection", "distinct"]
+}
+isolated function testDistinctWithString() returns error? {
+    Database database = check mongoClient->getDatabase("testDistinctWithStringDB");
+    Collection collection = check database->getCollection("Books");
+    Book book1 = {
+        title: "A Brief History of Time",
+        year: 1988,
+        rating: 5,
+        tags: ["Physics", "History"]
+    };
+    Book book2 = {
+        title: "The Magic of Reality",
+        year: 2010,
+        rating: 5,
+        tags: ["Physics", "History"]
+    };
+    Book book3 = {
+        title: "The Grand Design",
+        year: 2010,
+        rating: 5,
+        tags: ["Physics", "History"]
+    };
+    Book book4 = {
+        title: "iRobot",
+        year: 2004,
+        rating: 5,
+        tags: ["Science Fiction", "Robots"]
+    };
+    check collection->insertMany([book1, book2, book3, book4]);
+    stream<string, error?> distinctTags = check collection->'distinct("tags");
+    string[] expectedResult = ["History", "Physics", "Robots", "Science Fiction"];
+    string[] actualResult = check from string tag in distinctTags
+        select tag;
+    test:assertEquals(actualResult, expectedResult);
+    check distinctTags.close();
+    check collection->drop();
+    check database->drop();
+}
+
+@test:Config {
+    groups: ["collection", "distinct"]
+}
+isolated function testDistinctWithRecords() returns error? {
+    Database database = check mongoClient->getDatabase("testDistinctWithRecordsDB");
+    Collection collection = check database->getCollection("Profile");
+    Person person1 = {
+        name: "John Doe",
+        age: 30,
+        address: {
+            street: "123 Main St",
+            city: "Anytown",
+            country: "USA"
+        }
+    };
+    Person person2 = {
+        name: "Jane Smith",
+        age: 25,
+        address: {
+            street: "456 Main St",
+            city: "Anytown",
+            country: "USA"
+        }
+    };
+    Person person3 = {
+        name: "John Doe",
+        age: 30,
+        address: {
+            street: "123 Main St",
+            city: "Anytown",
+            country: "USA"
+        }
+    };
+    check collection->insertMany([person1, person2, person3]);
+    stream<Address, error?> distinctAddresses = check collection->'distinct("address");
+    Address[] expectedResult = [
+        {
+            street: "123 Main St",
+            city: "Anytown",
+            country: "USA"
+        },
+        {
+            street: "456 Main St",
+            city: "Anytown",
+            country: "USA"
+        }
+    ];
+    Address[] actualResult = check from Address address in distinctAddresses
+        select address;
+    test:assertEquals(actualResult, expectedResult);
+    check distinctAddresses.close();
+    check collection->drop();
+    check database->drop();
+}
+
+@test:Config {
     groups: ["collection", "delete"]
 }
 isolated function testDeleteOne() returns error? {
@@ -725,6 +821,48 @@ isolated function testAggregationWithManualProjection() returns error? {
     record {|string name;|}[] actualResult = check from record {|string name;|} author in result
         select author;
     test:assertEquals(actualResult, expectedResult);
+    check result.close();
+    check collection->drop();
+    check database->drop();
+}
+
+@test:Config {
+    groups: ["collection", "aggregate"]
+}
+isolated function testAggregationWithInvalidManualProjection() returns error? {
+    Database database = check mongoClient->getDatabase("testAggregationWithInvalidManualProjectionDB");
+    Collection collection = check database->getCollection("Movies");
+
+    Book book1 = {title: "The Alchemist", year: 1988, rating: 5};
+    Book book2 = {title: "Veronika Decides to Die", year: 1998, rating: 4};
+    Book book3 = {title: "The Zahir", year: 2005, rating: 3};
+    Book book4 = {title: "Game of Thrones", year: 1996, rating: 4};
+    Book book5 = {title: "A Clash of Kings", year: 1998, rating: 4};
+    Book book6 = {title: "A Storm of Swords", year: 2000, rating: 4};
+    Author author1 = {name: "Paulo Coelho", books: [book1, book2, book3]};
+    Author author2 = {name: "George R. R. Martin", books: [book4, book5, book6]};
+
+    check collection->insertMany([author1, author2]);
+    stream<Author, error?> result = check collection->aggregate([
+        {
+            \$match: {
+                "books.rating": {
+                    \$gte: 4
+                }
+            }
+        },
+        {
+            \$project: {
+                _id: 0,
+                name: 1
+            }
+        }
+    ]);
+    record {Author value;}|error? nextResult = result.next();
+    if nextResult !is error {
+        test:assertFail("Expected error but got " + nextResult.toString());
+    }
+    test:assertEquals(nextResult.message(), "{ballerina/lang.value}ConversionError");
     check result.close();
     check collection->drop();
     check database->drop();

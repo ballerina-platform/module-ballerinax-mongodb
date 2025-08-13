@@ -133,7 +133,7 @@ public final class Utils {
         if (DISTINCT_TYPE_MAP.containsKey(targetType.getDescribingType().getTag())) {
             return DISTINCT_TYPE_MAP.get(targetType.getDescribingType().getTag());
         }
-        return null;
+        return DISTINCT_TYPE_MAP.get(TypeTags.RECORD_TYPE_TAG);
     }
 
     static List<Document> getPipeline(BArray pipeline, Type targetType) {
