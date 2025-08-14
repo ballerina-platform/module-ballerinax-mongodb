@@ -867,3 +867,68 @@ isolated function testAggregationWithInvalidManualProjection() returns error? {
     check collection->drop();
     check database->drop();
 }
+
+@test:Config {
+    groups: ["collection", "aggregate", "union_type"]
+}
+isolated function testAggregateWithUnionType() returns error? {
+    Database database = check mongoClient->getDatabase("testAggregateWithUnionTypeDB");
+    Collection collection = check database->getCollection("Movies");
+
+    Book book1 = {title: "The Alchemist", year: 1988, rating: 9};
+    Book book2 = {title: "Veronika Decides to Die", year: 1998, rating: 8};
+    Book book3 = {title: "The Zahir", year: 2005, rating: 9};
+    Movie movie1 = {name: "Interstellar", year: 2014, rating: 9};
+    Movie movie2 = {name: "Inception", year: 2010, rating: 8};
+    Movie movie3 = {name: "Shutter Island", year: 2010, rating: 9};
+    check collection->insertMany([book1, book2, book3, movie1, movie2, movie3]);
+    stream<BookOrMovie, error?> result = check collection->aggregate([
+        {
+            \$match: {
+                rating: 9
+            }
+        }
+    ]);
+    BookOrMovie[] expectedResult = [book1, book3, movie1, movie3];
+    BookOrMovie[] actualResult = check from BookOrMovie item in result
+        select item;
+    test:assertEquals(actualResult, expectedResult);
+    check result.close();
+    check collection->drop();
+    check database->drop();
+}
+
+@test:Config {
+    groups: ["collection", "aggregate", "union_type"]
+}
+isolated function testAggregateWithUnionTypeSelectedFields() returns error? {
+    Database database = check mongoClient->getDatabase("testAggregateWithUnionTypeSelectedFieldsDB");
+    Collection collection = check database->getCollection("Movies");
+
+    Book book1 = {title: "The Alchemist", year: 1988, rating: 9};
+    Book book2 = {title: "Veronika Decides to Die", year: 1998, rating: 8};
+    Book book3 = {title: "The Zahir", year: 2005, rating: 9};
+    Movie movie1 = {name: "Interstellar", year: 2014, rating: 9};
+    Movie movie2 = {name: "Inception", year: 2010, rating: 8};
+    Movie movie3 = {name: "Shutter Island", year: 2010, rating: 9};
+    check collection->insertMany([book1, book2, book3, movie1, movie2, movie3]);
+    stream<record {|string title?; string name?; int rating;|}, error?> result = check collection->aggregate([
+        {
+            \$match: {
+                rating: 9
+            }
+        }
+    ]);
+    record {|string title?; string name?; int rating;|}[] expectedResult = [
+        {title: "The Alchemist", rating: 9},
+        {title: "The Zahir", rating: 9},
+        {name: "Interstellar", rating: 9},
+        {name: "Shutter Island", rating: 9}
+    ];
+    record {|string title?; string name?; int rating;|}[] actualResult = check from record {|string title?; string name?; int rating;|} item in result
+        select item;
+    test:assertEquals(actualResult, expectedResult);
+    check result.close();
+    check collection->drop();
+    check database->drop();
+}

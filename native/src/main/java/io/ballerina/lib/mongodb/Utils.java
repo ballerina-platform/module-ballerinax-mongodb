@@ -167,24 +167,19 @@ public final class Utils {
     }
 
     static Document getProjectionDocument(Document document, Type type, String key) {
-        Document result = document == null ? new Document() : document;
         Type impliedType = TypeUtils.getImpliedType(type);
         if (TypeUtils.isValueType(impliedType)) {
-            if (!key.equals(MONGO_ID_FIELD)) {
-                // Remove the _id field from the result when not specified by the user
-                result.append(MONGO_ID_FIELD, 0);
-            }
-            result.append(key, 1);
+            document.append(key, 1);
             return document;
         }
         if (impliedType instanceof RecordType recordType) {
-            return getProjectionDocumentForType(result, recordType, key);
+            return getProjectionDocumentForType(document, recordType, key);
         }
         if (impliedType instanceof ArrayType arrayType) {
-            return getProjectionDocumentForType(result, arrayType, key);
+            return getProjectionDocumentForType(document, arrayType, key);
         }
         if (impliedType instanceof UnionType unionType) {
-            return getProjectionDocumentForType(result, unionType, key);
+            return getProjectionDocumentForType(document, unionType, key);
         }
         throw createError(ErrorType.APPLICATION_ERROR, "Unsupported type: " + type.getName());
     }
@@ -225,7 +220,7 @@ public final class Utils {
             if (memberType.getTag() == TypeTags.ERROR_TAG || memberType.getTag() == TypeTags.NULL_TAG) {
                 continue;
             }
-            document.append(memberType.getName(), getProjectionDocument(document, memberType, key));
+            getProjectionDocument(document, memberType, key);
         }
         return document;
     }

@@ -48,3 +48,5 @@ type Author readonly & record {|
     string name;
     Book[] books;
 |};
+
+type BookOrMovie Book|Movie;
