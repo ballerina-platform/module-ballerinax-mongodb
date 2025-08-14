@@ -66,6 +66,7 @@ public final class Utils {
     static final String MONGO_COLLECTION = "mongo.native.collection";
     static final String DATABASE_ERROR_DETAIL = "DatabaseErrorDetail";
     private static final String MONGO_ID_FIELD = "_id";
+    private static final String PROJECT_FIELD = "$project";
 
     static final Map<Integer, Class> DISTINCT_TYPE_MAP = Map.of(
             TypeTags.STRING_TAG, String.class,
@@ -143,7 +144,7 @@ public final class Utils {
             for (int i = 0; i < pipeline.size(); i++) {
                 if (pipeline.get(i) instanceof BMap) {
                     BMap<BString, Object> stage = (BMap<BString, Object>) pipeline.get(i);
-                    if (stage.containsKey(StringUtils.fromString("$project"))) {
+                    if (stage.containsKey(StringUtils.fromString(PROJECT_FIELD))) {
                         projectionPresent = true;
                     }
                 }
@@ -151,78 +152,81 @@ public final class Utils {
             }
         }
         if (!projectionPresent) {
-            Document projection = new Document("$project", Document.parse(getProjectionDocument(targetType)));
+            Document projection = new Document(PROJECT_FIELD, getProjectionDocument(new Document(), targetType, ""));
             documents.add(projection);
         }
         return documents;
     }
 
-    static String getProjection(Object projectionInput, BTypedesc targetType) {
+    static Document getProjection(Object projectionInput, BTypedesc targetType) {
         if (projectionInput == null) {
-            return getProjectionDocument(targetType.getDescribingType());
+            return getProjectionDocument(new Document(), targetType.getDescribingType(), "");
         } else {
-            return projectionInput.toString();
+            return Document.parse(projectionInput.toString());
         }
     }
 
-    static String getProjectionDocument(Type type) {
-        StringBuilder projectionBuilder = new StringBuilder();
-        projectionBuilder.append("{");
-        getProjectionForFieldType(type, projectionBuilder, "");
-        projectionBuilder.append("}");
-        return projectionBuilder.toString();
-    }
-
-    private static void getProjectionForFieldType(Type type, StringBuilder projectionBuilder, String parent) {
+    static Document getProjectionDocument(Document document, Type type, String key) {
+        Document result = document == null ? new Document() : document;
         Type impliedType = TypeUtils.getImpliedType(type);
-        int tag = impliedType.getTag();
-        if (tag == TypeTags.RECORD_TYPE_TAG) {
-            RecordType recordType = (RecordType) TypeUtils.getImpliedType(type);
-            getProjectionForFieldType(recordType, projectionBuilder, parent);
-        } else if (tag == TypeTags.ARRAY_TAG) {
-            ArrayType arrayType = (ArrayType) type;
-            getProjectionForFieldType(arrayType, projectionBuilder, parent);
-        } else if (TypeUtils.isValueType(type)) {
-            projectionBuilder.append(parent).append("\": 1, ");
-        } else if (tag == TypeTags.UNION_TAG) {
-            List<Type> memberTypes = ((UnionType) type).getMemberTypes();
-            for (Type memberType : memberTypes) {
-                if (memberType.getTag() == TypeTags.ERROR_TAG || memberType.getTag() == TypeTags.NULL_TAG) {
-                    continue;
-                }
-                getProjectionForFieldType(memberType, projectionBuilder, parent);
+        if (TypeUtils.isValueType(impliedType)) {
+            if (!key.equals(MONGO_ID_FIELD)) {
+                // Remove the _id field from the result when not specified by the user
+                result.append(MONGO_ID_FIELD, 0);
             }
-        } else {
-            throw createError(ErrorType.APPLICATION_ERROR, "Unsupported type: " + type.getName());
+            result.append(key, 1);
+            return document;
         }
+        if (impliedType instanceof RecordType recordType) {
+            return getProjectionDocumentForType(result, recordType, key);
+        }
+        if (impliedType instanceof ArrayType arrayType) {
+            return getProjectionDocumentForType(result, arrayType, key);
+        }
+        if (impliedType instanceof UnionType unionType) {
+            return getProjectionDocumentForType(result, unionType, key);
+        }
+        throw createError(ErrorType.APPLICATION_ERROR, "Unsupported type: " + type.getName());
     }
 
-    private static void getProjectionForFieldType(RecordType recordType, StringBuilder projectionBuilder,
-                                                  String parent) {
-        Map<String, Field> fields = recordType.getFields();
-        if ("".equals(parent)) {
+    private static Document getProjectionDocumentForType(Document document, RecordType recordType, String key) {
+        Map<String, Field> recordFields = recordType.getFields();
+        if (!recordFields.containsKey(MONGO_ID_FIELD) && key.isEmpty()) {
             // Remove the _id field from the result when not specified by the user
-            if (!fields.containsKey(MONGO_ID_FIELD)) {
-                projectionBuilder.append("_id: 0, ");
-            }
+            document.append(MONGO_ID_FIELD, 0);
         }
-        for (Map.Entry<String, Field> field : fields.entrySet()) {
+        for (Map.Entry<String, Field> field : recordFields.entrySet()) {
             String fieldName = field.getKey();
-            if (parent.isEmpty() && MONGO_ID_FIELD.equals(fieldName)) {
+            if (MONGO_ID_FIELD.equals(fieldName)) {
                 continue;
             }
-            String parentValue = parent.isEmpty() ? "\"" + fieldName : parent + "." + fieldName;
-            getProjectionForFieldType(field.getValue().getFieldType(), projectionBuilder, parentValue);
+            Type fieldType = field.getValue().getFieldType();
+            String parentKey = key.isEmpty() ? fieldName : key + "." + fieldName;
+            if (TypeUtils.isValueType(fieldType)) {
+                document.append(parentKey, 1);
+                continue;
+            }
+            getProjectionDocument(document, fieldType, parentKey);
+        }
+        return document;
+    }
+
+    private static Document getProjectionDocumentForType(Document document, ArrayType arrayType, String key) {
+        Type elementType = TypeUtils.getImpliedType(arrayType.getElementType());
+        if (elementType instanceof RecordType recordType) {
+            return getProjectionDocumentForType(document, recordType, key);
+        } else {
+            return new Document("", 1);
         }
     }
 
-    private static void getProjectionForFieldType(ArrayType arrayType, StringBuilder projectionBuilder, String parent) {
-        Type elementType = TypeUtils.getImpliedType(arrayType.getElementType());
-        if (elementType.getTag() == TypeTags.RECORD_TYPE_TAG) {
-            RecordType recordType = (RecordType) elementType;
-            getProjectionForFieldType(recordType, projectionBuilder, parent);
-        } else {
-            projectionBuilder.append("\": 1, ");
+    private static Document getProjectionDocumentForType(Document document, UnionType unionType, String key) {
+        for (Type memberType : unionType.getMemberTypes()) {
+            if (memberType.getTag() == TypeTags.ERROR_TAG || memberType.getTag() == TypeTags.NULL_TAG) {
+                continue;
+            }
+            document.append(memberType.getName(), getProjectionDocument(document, memberType, key));
         }
+        return document;
     }
 }

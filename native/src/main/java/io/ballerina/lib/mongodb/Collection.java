@@ -150,14 +150,13 @@ public final class Collection {
                               Object projectionInput, BTypedesc targetType) {
         try {
             Integer limit, batchSize, skip;
-            String projection = getProjection(projectionInput, targetType);
             String sort = options.get(SORT) != null ? options.get(SORT).toString() : EMPTY_JSON;
             limit = options.getIntValue(LIMIT) != null ? options.getIntValue(LIMIT).intValue() : null;
             batchSize = options.getIntValue(SKIP) != null ? options.getIntValue(SKIP).intValue() : null;
             skip = options.getIntValue(SKIP) != null ? options.getIntValue(SKIP).intValue() : null;
 
+            Document projectionDocument = getProjection(projectionInput, targetType);
             Document filterDocument = Document.parse(filter.toString());
-            Document projectionDocument = Document.parse(projection);
             Document sortDocument = Document.parse(sort);
 
             MongoCollection<Document> mongoCollection =
@@ -185,11 +184,10 @@ public final class Collection {
     public static Object findOne(BObject collection, BMap<BString, Object> filter, BMap<BString, Object> options,
                                  Object projectionInput, BTypedesc targetType) {
         try {
-            String projection = getProjection(projectionInput, targetType);
             String sort = options.get(SORT) != null ? options.get(SORT).toString() : EMPTY_JSON;
 
             Document filterDocument = Document.parse(filter.toString());
-            Document projectionDocument = Document.parse(projection);
+            Document projectionDocument = getProjection(projectionInput, targetType);
             Document sortDocument = Document.parse(sort);
 
             MongoCollection<Document> mongoCollection =
