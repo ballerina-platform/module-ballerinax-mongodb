@@ -62,7 +62,7 @@ public final class IteratorUtils {
                 BTypedesc nextValueTypeDesc = ValueCreator.createTypedescValue(nextValueType);
                 return FromJsonStringWithType.fromJsonStringWithType(fromString(result), nextValueTypeDesc);
             } catch (BError e) {
-                ErrorCreator.createError(fromString("Failed to convert value to record type"), e);
+                ErrorCreator.createError(fromString("Failed to convert value to the expected type"), e);
             } catch (Exception e) {
                 return ErrorCreator.createError(fromString("Error while iterating elements"), e);
             }
