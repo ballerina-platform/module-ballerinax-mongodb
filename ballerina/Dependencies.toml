@@ -27,9 +27,6 @@ dependencies = [
 	{org = "ballerina", name = "jballerina.java"},
 	{org = "ballerina", name = "lang.value"}
 ]
-modules = [
-	{org = "ballerina", packageName = "io", moduleName = "io"}
-]
 
 [[package]]
 org = "ballerina"
@@ -132,7 +129,6 @@ name = "mongodb"
 version = "5.1.1"
 dependencies = [
 	{org = "ballerina", name = "crypto"},
-	{org = "ballerina", name = "io"},
 	{org = "ballerina", name = "jballerina.java"},
 	{org = "ballerina", name = "log"},
 	{org = "ballerina", name = "test"}
