@@ -152,7 +152,6 @@ isolated function testFindWithManualProjection() returns error? {
 
 @test:Config {
     groups: ["collection", "insert", "find", "projection", "invalid"]
-
 }
 isolated function testInvalidReturnTypeWithManualProjection() returns error? {
     Database database = check mongoClient->getDatabase("testInvalidReturnTypeWithManualProjectionDB");
@@ -669,8 +668,8 @@ isolated function testAggregate() returns error? {
     groups: ["collection", "insert", "find", "projection"]
 }
 isolated function testComplexFind() returns error? {
-    Database database = check mongoClient->getDatabase("testComplexAggregationDB");
-    Collection collection = check database->getCollection("Movies");
+    Database database = check mongoClient->getDatabase("testComplexFindDB");
+    Collection collection = check database->getCollection("Books");
 
     Book book1 = {title: "The Alchemist", year: 1988, rating: 5};
     Book book2 = {title: "Veronika Decides to Die", year: 1998, rating: 4};
@@ -721,7 +720,7 @@ isolated function testComplexFind() returns error? {
 }
 isolated function testComplexAggregationProjection() returns error? {
     Database database = check mongoClient->getDatabase("testComplexAggregationDB");
-    Collection collection = check database->getCollection("Movies");
+    Collection collection = check database->getCollection("Books");
 
     Book book1 = {title: "The Alchemist", year: 1988, rating: 5};
     Book book2 = {title: "Veronika Decides to Die", year: 1998, rating: 4};
@@ -735,12 +734,28 @@ isolated function testComplexAggregationProjection() returns error? {
     check collection->insertMany([author1, author2]);
     stream<record {|
         string name;
-        record {|string title;|}[] books;
+        record {|string title; int rating;|}[] books;
     |}, error?> result = check collection->aggregate([
         {
-            \$match: {
-                "books.rating": {
-                    \$gte: 4
+            \$project: {
+                _id: 0,
+                name: 1,
+                books: {
+                    \$map: {
+                        input: {
+                            \$filter: {
+                                input: "$books",
+                                cond: {
+                                    \$gte: ["$$this.rating", 4]
+                                }
+                            }
+                        },
+                        'as: "book",
+                        'in: {
+                            title: "$$book.title",
+                            rating: "$$book.rating"
+                        }
+                    }
                 }
             }
         },
@@ -752,29 +767,28 @@ isolated function testComplexAggregationProjection() returns error? {
     ]);
     record {|
         string name;
-        record {|string title;|}[] books;
+        record {|string title; int rating;|}[] books;
     |}[] expectedResult = [
         {
             name: "George R. R. Martin",
             books: [
-                {title: "Game of Thrones"},
-                {title: "A Clash of Kings"},
-                {title: "A Storm of Swords"}
+                {title: "Game of Thrones", rating: 4},
+                {title: "A Clash of Kings", rating: 4},
+                {title: "A Storm of Swords", rating: 4}
             ]
         },
         {
             name: "Paulo Coelho",
             books: [
-                {title: "The Alchemist"},
-                {title: "Veronika Decides to Die"},
-                {title: "The Zahir"}
+                {title: "The Alchemist", rating: 5},
+                {title: "Veronika Decides to Die", rating: 4}
             ]
         }
     ];
     record {|
         string name;
-        record {|string title;|}[] books;
-    |}[] actualResult = check from record {|string name; record {|string title;|}[] books;|} author in result
+        record {|string title; int rating;|}[] books;
+    |}[] actualResult = check from record {|string name; record {|string title; int rating;|}[] books;|} author in result
         select author;
     test:assertEquals(actualResult, expectedResult);
     check result.close();
@@ -928,6 +942,253 @@ isolated function testAggregateWithUnionTypeSelectedFields() returns error? {
     record {|string title?; string name?; int rating;|}[] actualResult = check from record {|string title?; string name?; int rating;|} item in result
         select item;
     test:assertEquals(actualResult, expectedResult);
+    check result.close();
+    check collection->drop();
+    check database->drop();
+}
+
+@test:Config {
+    groups: ["collection", "aggregate", "empty_pipeline"]
+}
+isolated function testEmptyPipelineAggregation() returns error? {
+    Database database = check mongoClient->getDatabase("testEmptyPipelineAggregationDB");
+    Collection collection = check database->getCollection("Movies");
+
+    Movie movie1 = {name: "Interstellar", year: 2014, rating: 9};
+    Movie movie2 = {name: "Inception", year: 2010, rating: 8};
+    check collection->insertMany([movie1, movie2]);
+
+    stream<Movie, error?> result = check collection->aggregate([]);
+    Movie[] expectedResult = [movie1, movie2];
+    Movie[] actualResult = check from Movie movie in result
+        select movie;
+    test:assertEquals(actualResult, expectedResult);
+    check result.close();
+    check collection->drop();
+    check database->drop();
+}
+
+@test:Config {
+    groups: ["collection", "aggregate", "nested_array", "projection"]
+}
+isolated function testNestedArrayElementProjection() returns error? {
+    Database database = check mongoClient->getDatabase("testNestedArrayElementProjectionDB");
+    Collection collection = check database->getCollection("Products");
+
+    ProductCatalog catalog1 = {
+        category: "Electronics",
+        products: [
+            {name: "Laptop", price: 999.99, variants: [{size: "13inch", color: "Silver", stock: 10}]},
+            {name: "Phone", price: 699.99, variants: [{size: "6inch", color: "Black", stock: 5}]}
+        ]
+    };
+    check collection->insertOne(catalog1);
+
+    stream<record {|
+        string category;
+        record {|string name; decimal price;|}[] products;
+    |}, error?> result = check collection->aggregate([
+        {\$match: {"products.price": {\$lt: 800}}}
+    ]);
+
+    record {|
+        string category;
+        record {|string name; decimal price;|}[] products;
+    |}[] actualResult = check from record {|string category; record {|string name; decimal price;|}[] products;|} catalog in result
+        select catalog;
+
+    test:assertTrue(actualResult.length() > 0);
+    test:assertEquals(actualResult[0].category, "Electronics");
+    check result.close();
+    check collection->drop();
+    check database->drop();
+}
+
+@test:Config {
+    groups: ["collection", "find", "deep_nesting", "projection"]
+}
+isolated function testDeepNestedProjection() returns error? {
+    Database database = check mongoClient->getDatabase("testDeepNestedProjectionDB");
+    Collection collection = check database->getCollection("Departments");
+
+    Department dept = {
+        name: "Engineering",
+        manager: {
+            name: "John Smith",
+            employees: [
+                {
+                    name: "Alice Johnson",
+                    position: "Senior Developer",
+                    contact: {
+                        email: "alice@company.com",
+                        phone: {country: "US", number: "123-456-7890"}
+                    }
+                }
+            ]
+        }
+    };
+    check collection->insertOne(dept);
+
+    stream<record {|
+        string name;
+        record {|
+            string name;
+            record {|
+                string name;
+                record {|
+                    string email;
+                    record {|string country;|} phone;
+                |} contact;
+            |}[] employees;
+        |} manager;
+    |}, error?> result = check collection->find();
+
+    record {|
+        string name;
+        record {|
+            string name;
+            record {|
+                string name;
+                record {|
+                    string email;
+                    record {|string country;|} phone;
+                |} contact;
+            |}[] employees;
+        |} manager;
+    |}[] actualResult = check from var department in result
+        select department;
+
+    test:assertEquals(actualResult.length(), 1);
+    test:assertEquals(actualResult[0].name, "Engineering");
+    test:assertEquals(actualResult[0].manager.employees[0].contact.phone.country, "US");
+    check result.close();
+    check collection->drop();
+    check database->drop();
+}
+
+@test:Config {
+    groups: ["collection", "find", "null_fields", "projection"]
+}
+isolated function testNullFieldHandling() returns error? {
+    Database database = check mongoClient->getDatabase("testNullFieldHandlingDB");
+    Collection collection = check database->getCollection("Products");
+
+    map<json> product1 = {name: "Basic Product", price: 99.99, tags: ()};
+    map<json> product2 = {name: "Premium Product", price: 199.99, tags: ["premium", "featured"]};
+    check collection->insertMany([product1, product2]);
+
+    stream<record {|string name; string[]? tags;|}, error?> result = check collection->find();
+    record {|string name; string[]? tags;|}[] actualResult = check from record {|string name; string[]? tags;|} product
+        in result
+        select product;
+    test:assertEquals(actualResult.length(), 2);
+    test:assertTrue(actualResult[0].tags is ());
+    test:assertTrue(actualResult[1].tags is string[]);
+    check result.close();
+    check collection->drop();
+    check database->drop();
+}
+
+@test:Config {
+    groups: ["collection", "aggregate", "union_type", "all_optional"]
+}
+isolated function testUnionTypeAllOptionalFieldsMissing() returns error? {
+    Database database = check mongoClient->getDatabase("testUnionTypeAllOptionalMissingDB");
+    Collection collection = check database->getCollection("Items");
+
+    map<json> item1 = {id: "item1", rating: 8};
+    map<json> item2 = {id: "item2", rating: 9};
+    check collection->insertMany([item1, item2]);
+
+    stream<record {|string title?; string name?; int rating;|}, error?> result = check collection->aggregate([
+        {\$match: {rating: {\$gte: 8}}}
+    ]);
+
+    record {|string title?; string name?; int rating;|}[] actualResult = check from record {|string title?; string name?; int rating;|} item in result
+        select item;
+
+    test:assertEquals(actualResult.length(), 2);
+    test:assertTrue(actualResult[0].title is ());
+    test:assertTrue(actualResult[0].name is ());
+    test:assertEquals(actualResult[0].rating, 8);
+    check result.close();
+    check collection->drop();
+    check database->drop();
+}
+
+@test:Config {
+    groups: ["collection", "find", "multi_level", "nested_projection"]
+}
+isolated function testMultiLevelNestedRecordProjection() returns error? {
+    Database database = check mongoClient->getDatabase("testMultiLevelNestedDB");
+    Collection collection = check database->getCollection("Organizations");
+
+    Department dept = {
+        name: "Sales",
+        manager: {
+            name: "Sarah Connor",
+            employees: [
+                {
+                    name: "Tom Wilson",
+                    position: "Sales Rep",
+                    contact: {
+                        email: "tom@company.com",
+                        phone: {country: "CA", number: "555-0123"}
+                    }
+                }
+            ]
+        }
+    };
+    check collection->insertOne(dept);
+
+    stream<record {|
+        string name;
+        record {|
+            record {|
+                record {|string email;|} contact;
+            |}[] employees;
+        |} manager;
+    |}, error?> result = check collection->find();
+
+    record {|
+        string name;
+        record {|
+            record {|
+                record {|string email;|} contact;
+            |}[] employees;
+        |} manager;
+    |}[] actualResult = check from var org in result
+        select org;
+
+    test:assertEquals(actualResult.length(), 1);
+    test:assertEquals(actualResult[0].manager.employees[0].contact.email, "tom@company.com");
+    check result.close();
+    check collection->drop();
+    check database->drop();
+}
+
+@test:Config {
+    groups: ["collection", "find", "type_coercion"]
+}
+isolated function testTypeCoercionEdgeCases() returns error? {
+    Database database = check mongoClient->getDatabase("testTypeCoercionDB");
+    Collection collection = check database->getCollection("MixedTypes");
+
+    map<json> doc1 = {id: 1, value: "string_value", number: 42};
+    map<json> doc2 = {id: 2, value: 123, number: "456"};
+    check collection->insertMany([doc1, doc2]);
+
+    stream<record {|int id; int|string value; int|string number;|}, error?> result = check collection->find();
+    record {|int id; int|string value; int|string number;|}[] actualResult = check
+        from record {|int id; int|string value; int|string number;|} doc
+        in result
+    select doc;
+
+    test:assertEquals(actualResult.length(), 2);
+    test:assertTrue(actualResult[0].value is string);
+    test:assertTrue(actualResult[0].number is int);
+    test:assertTrue(actualResult[1].value is int);
+    test:assertTrue(actualResult[1].number is string);
     check result.close();
     check collection->drop();
     check database->drop();

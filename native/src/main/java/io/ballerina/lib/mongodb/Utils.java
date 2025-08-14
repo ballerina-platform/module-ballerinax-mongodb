@@ -211,7 +211,7 @@ public final class Utils {
         if (elementType instanceof RecordType recordType) {
             return getProjectionDocumentForType(document, recordType, key);
         } else {
-            return new Document("", 1);
+            return getProjectionDocument(document, elementType, key);
         }
     }
 

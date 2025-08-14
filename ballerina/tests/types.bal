@@ -50,3 +50,47 @@ type Author readonly & record {|
 |};
 
 type BookOrMovie Book|Movie;
+
+type Department record {|
+    string name;
+    Manager manager;
+|};
+
+type Manager record {|
+    string name;
+    Employee[] employees;
+|};
+
+type Employee record {|
+    string name;
+    string position;
+    ContactInfo contact;
+|};
+
+type ContactInfo record {|
+    string email;
+    PhoneNumber phone;
+|};
+
+type PhoneNumber record {|
+    string country;
+    string number;
+|};
+
+type ProductCatalog record {|
+    string category;
+    Product[] products;
+|};
+
+type Product record {|
+    string name;
+    decimal price;
+    string[] tags?;
+    Variant[]? variants;
+|};
+
+type Variant record {|
+    string size?;
+    string color?;
+    int stock;
+|};
