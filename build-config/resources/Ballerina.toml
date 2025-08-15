@@ -1,11 +1,11 @@
 [package]
-distribution = "2201.11.0-20241218-101200-109f6cc7"
+distribution = "2201.12.0"
 org = "ballerinax"
 name = "mongodb"
 version = "@toml.version@"
 license= ["Apache-2.0"]
 authors = ["Ballerina"]
-keywords = ["IT Operations/Databases", "Cost/Freemium"]
+keywords = ["MongoDB", "Database", "IT Operations/Databases", "Cost/Freemium", "NoSQL"]
 icon = "icon.png"
 repository = "https://github.com/ballerina-platform/module-ballerinax-mongodb"
 

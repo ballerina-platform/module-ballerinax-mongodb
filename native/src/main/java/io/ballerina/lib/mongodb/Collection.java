@@ -105,7 +105,7 @@ public final class Collection {
     private static final String UPDATE_RESULT_TYPE = "UpdateResult";
     private static final String DELETE_RESULT_TYPE = "DeleteResult";
     private static final String INDEX_TYPE = "Index";
-    static final String RECORD_TYPE = "record.type";
+    static final String STREAM_COMPLETION_TYPE = "stream.completion.type";
 
     public static BError initCollection(BObject collection, BObject database, BString collectionName) {
         try {
@@ -150,14 +150,13 @@ public final class Collection {
                               Object projectionInput, BTypedesc targetType) {
         try {
             Integer limit, batchSize, skip;
-            String projection = getProjection(projectionInput, targetType);
             String sort = options.get(SORT) != null ? options.get(SORT).toString() : EMPTY_JSON;
             limit = options.getIntValue(LIMIT) != null ? options.getIntValue(LIMIT).intValue() : null;
             batchSize = options.getIntValue(SKIP) != null ? options.getIntValue(SKIP).intValue() : null;
             skip = options.getIntValue(SKIP) != null ? options.getIntValue(SKIP).intValue() : null;
 
+            Document projectionDocument = getProjection(projectionInput, targetType);
             Document filterDocument = Document.parse(filter.toString());
-            Document projectionDocument = Document.parse(projection);
             Document sortDocument = Document.parse(sort);
 
             MongoCollection<Document> mongoCollection =
@@ -185,11 +184,10 @@ public final class Collection {
     public static Object findOne(BObject collection, BMap<BString, Object> filter, BMap<BString, Object> options,
                                  Object projectionInput, BTypedesc targetType) {
         try {
-            String projection = getProjection(projectionInput, targetType);
             String sort = options.get(SORT) != null ? options.get(SORT).toString() : EMPTY_JSON;
 
             Document filterDocument = Document.parse(filter.toString());
-            Document projectionDocument = Document.parse(projection);
+            Document projectionDocument = getProjection(projectionInput, targetType);
             Document sortDocument = Document.parse(sort);
 
             MongoCollection<Document> mongoCollection =
@@ -238,7 +236,7 @@ public final class Collection {
             BObject resultIterator = ValueCreator.createObjectValue(getModule(), Utils.RESULT_ITERATOR_OBJECT_NAME);
             resultIterator.addNativeData(Utils.MONGO_CURSOR, cursor);
             Type indexType = ValueCreator.createRecordValue(getModule(), INDEX_TYPE).getType();
-            resultIterator.addNativeData(RECORD_TYPE, indexType);
+            resultIterator.addNativeData(STREAM_COMPLETION_TYPE, indexType);
             Type completionType = TypeCreator.createUnionType(PredefinedTypes.TYPE_ERROR, PredefinedTypes.TYPE_NULL);
             StreamType streamType = TypeCreator.createStreamType(indexType, completionType);
             return ValueCreator.createStreamValue(streamType, resultIterator);
