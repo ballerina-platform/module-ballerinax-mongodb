@@ -48,6 +48,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static io.ballerina.lib.mongodb.Collection.STREAM_COMPLETION_TYPE;
 import static io.ballerina.lib.mongodb.ModuleUtils.getModule;
 
 /**
@@ -60,7 +61,6 @@ public final class Utils {
 
     static final String RESULT_ITERATOR_OBJECT_NAME = "ResultIterator";
     static final String MONGO_CURSOR = "mongo.cursor";
-    static final String RECORD_TYPE = "record.type";
     static final String MONGO_CLIENT = "mongo.native.client";
     static final String MONGO_DATABASE = "mongo.native.database";
     static final String MONGO_COLLECTION = "mongo.native.collection";
@@ -124,7 +124,7 @@ public final class Utils {
     static BStream createStream(BTypedesc targetType, MongoCursor cursor) {
         BObject resultIterator = ValueCreator.createObjectValue(getModule(), RESULT_ITERATOR_OBJECT_NAME);
         resultIterator.addNativeData(MONGO_CURSOR, cursor);
-        resultIterator.addNativeData(RECORD_TYPE, targetType.getDescribingType());
+        resultIterator.addNativeData(STREAM_COMPLETION_TYPE, targetType.getDescribingType());
         Type completionType = TypeCreator.createUnionType(PredefinedTypes.TYPE_ERROR, PredefinedTypes.TYPE_NULL);
         StreamType streamType = TypeCreator.createStreamType(targetType.getDescribingType(), completionType);
         return ValueCreator.createStreamValue(streamType, resultIterator);

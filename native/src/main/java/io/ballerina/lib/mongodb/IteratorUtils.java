@@ -31,7 +31,7 @@ import io.ballerina.runtime.api.values.BTypedesc;
 import org.ballerinalang.langlib.value.FromJsonStringWithType;
 import org.bson.Document;
 
-import static io.ballerina.lib.mongodb.Collection.RECORD_TYPE;
+import static io.ballerina.lib.mongodb.Collection.STREAM_COMPLETION_TYPE;
 import static io.ballerina.runtime.api.utils.StringUtils.fromString;
 
 /**
@@ -45,24 +45,25 @@ public final class IteratorUtils {
 
     public static Object nextResult(BObject iterator) {
         MongoCursor cursor = (MongoCursor) iterator.getNativeData(Utils.MONGO_CURSOR);
-        Type recordType = (Type) iterator.getNativeData(RECORD_TYPE);
+        Type completionType = (Type) iterator.getNativeData(STREAM_COMPLETION_TYPE);
         if (cursor.hasNext()) {
+            Object next = cursor.next();
+            String result;
+            if (next instanceof Document) {
+                result = ((Document) next).toJson();
+            } else if (next instanceof String) {
+                return fromString((String) next);
+            } else {
+                result = next.toString();
+            }
             try {
-                Object next = cursor.next();
-                String result;
-                if (next instanceof Document) {
-                    result = ((Document) next).toJson();
-                } else if (next instanceof String) {
-                    return fromString((String) next);
-                } else {
-                    result = next.toString();
-                }
-                UnionType nextValueType = TypeCreator.createUnionType(recordType, PredefinedTypes.TYPE_ERROR,
+                UnionType nextValueType = TypeCreator.createUnionType(completionType, PredefinedTypes.TYPE_ERROR,
                         PredefinedTypes.TYPE_NULL);
                 BTypedesc nextValueTypeDesc = ValueCreator.createTypedescValue(nextValueType);
                 return FromJsonStringWithType.fromJsonStringWithType(fromString(result), nextValueTypeDesc);
             } catch (BError e) {
-                return ErrorCreator.createError(fromString("Failed to convert value to the expected type"), e);
+                String errorMessage = "Conversion error. Expected type: " + completionType + ", but found: " + result;
+                return ErrorCreator.createError(fromString(errorMessage), e);
             } catch (Exception e) {
                 return ErrorCreator.createError(fromString("Error while iterating elements"), e);
             }

@@ -105,7 +105,7 @@ public final class Collection {
     private static final String UPDATE_RESULT_TYPE = "UpdateResult";
     private static final String DELETE_RESULT_TYPE = "DeleteResult";
     private static final String INDEX_TYPE = "Index";
-    static final String RECORD_TYPE = "record.type";
+    static final String STREAM_COMPLETION_TYPE = "stream.completion.type";
 
     public static BError initCollection(BObject collection, BObject database, BString collectionName) {
         try {
@@ -236,7 +236,7 @@ public final class Collection {
             BObject resultIterator = ValueCreator.createObjectValue(getModule(), Utils.RESULT_ITERATOR_OBJECT_NAME);
             resultIterator.addNativeData(Utils.MONGO_CURSOR, cursor);
             Type indexType = ValueCreator.createRecordValue(getModule(), INDEX_TYPE).getType();
-            resultIterator.addNativeData(RECORD_TYPE, indexType);
+            resultIterator.addNativeData(STREAM_COMPLETION_TYPE, indexType);
             Type completionType = TypeCreator.createUnionType(PredefinedTypes.TYPE_ERROR, PredefinedTypes.TYPE_NULL);
             StreamType streamType = TypeCreator.createStreamType(indexType, completionType);
             return ValueCreator.createStreamValue(streamType, resultIterator);
