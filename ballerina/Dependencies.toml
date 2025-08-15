@@ -5,7 +5,7 @@
 
 [ballerina]
 dependencies-toml-version = "2"
-distribution-version = "2201.12.7"
+distribution-version = "2201.12.0"
 
 [[package]]
 org = "ballerina"
@@ -126,7 +126,7 @@ dependencies = [
 [[package]]
 org = "ballerinax"
 name = "mongodb"
-version = "5.1.1"
+version = "5.2.0"
 dependencies = [
 	{org = "ballerina", name = "crypto"},
 	{org = "ballerina", name = "jballerina.java"},
