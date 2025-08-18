@@ -26,6 +26,7 @@ type MovieWithIdName record {|
 |};
 
 type Person record {|
+    readonly string id;
     string name;
     int age;
     Address address;
@@ -93,4 +94,79 @@ type Variant record {|
     string size?;
     string color?;
     int stock;
+|};
+
+type UserProfile record {|
+    string username;
+    map<string> preferences;
+    map<int> scores;
+    map<json> metadata;
+|};
+
+type UserSettings record {|
+    string userId;
+    map<boolean> featureFlags;
+    map<decimal> limits;
+    map<string[]> categories;
+|};
+
+type ConfigData record {|
+    string name;
+    map<map<string>> nestedConfig;
+    map<json>? optionalMap;
+|};
+
+type ReadonlyUser readonly & record {|
+    string name;
+    int age;
+    string email;
+|};
+
+type ImmutableConfig readonly & record {|
+    string appName;
+    map<string> settings;
+    int version;
+|};
+
+type UserWithAddress readonly & record {|
+    *Person;
+    string phoneNumber;
+    string[] hobbies;
+|};
+
+type RestrictedData record {|
+    string publicField;
+    never secretField?;
+    map<json> data;
+|};
+
+type SystemConfig record {|
+    string name;
+    never deprecatedField?;
+    map<string> settings;
+    never removedProperty?;
+|};
+
+type XmlDocument record {|
+    string name;
+    xml content;
+    map<string> attributes?;
+|};
+
+type XmlLibrary record {|
+    string libraryName;
+    xml[] documents;
+    xml metadata;
+|};
+
+type NumericData record {|
+    string name;
+    float floatValue;
+    decimal decimalValue;
+    byte byteValue;
+|};
+
+type TableData record {|
+    string tableName;
+    table<map<json>> dataTable;
 |};

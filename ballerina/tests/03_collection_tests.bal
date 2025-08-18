@@ -15,6 +15,7 @@
 // under the License.
 
 import ballerina/test;
+import ballerina/lang.regexp;
 
 @test:Config {
     groups: ["collection"]
@@ -165,7 +166,8 @@ isolated function testInvalidReturnTypeWithManualProjection() returns error? {
     Movie[]|error actualResult = from Movie movie in result
         select movie;
     test:assertTrue(actualResult is error);
-    test:assertEquals((<error>actualResult).message(), "{ballerina/lang.value}ConversionError");
+    regexp:RegExp expectedMessage = re `Conversion error\. Expected type: mongodb:Movie, but found: \{"_id": \{"\$oid": "[0-9a-fA-F]*"\}, "name": "Shutter Island"\}`;
+    test:assertTrue(regexp:isFullMatch(expectedMessage, (<error>actualResult).message()));
     check collection->drop();
     check database->drop();
 }
@@ -177,6 +179,7 @@ isolated function testNestedTypes() returns error? {
     Database database = check mongoClient->getDatabase("testNestedTypesDB");
     Collection collection = check database->getCollection("Movies");
     Person person = {
+        id: "1",
         name: "John",
         age: 30,
         address: {
@@ -339,6 +342,7 @@ isolated function testUpdateUnset() returns error? {
     Database database = check mongoClient->getDatabase("testUpdateUnsetDB");
     Collection collection = check database->getCollection("Movies");
     Person walter = {
+        id: "1",
         name: "Walter White",
         age: 50,
         address: {
@@ -522,6 +526,7 @@ isolated function testDistinctWithRecords() returns error? {
     Database database = check mongoClient->getDatabase("testDistinctWithRecordsDB");
     Collection collection = check database->getCollection("Profile");
     Person person1 = {
+        id: "1",
         name: "John Doe",
         age: 30,
         address: {
@@ -531,6 +536,7 @@ isolated function testDistinctWithRecords() returns error? {
         }
     };
     Person person2 = {
+        id: "2",
         name: "Jane Smith",
         age: 25,
         address: {
@@ -540,6 +546,7 @@ isolated function testDistinctWithRecords() returns error? {
         }
     };
     Person person3 = {
+        id: "3",
         name: "John Doe",
         age: 30,
         address: {
@@ -876,7 +883,7 @@ isolated function testAggregationWithInvalidManualProjection() returns error? {
     if nextResult !is error {
         test:assertFail("Expected error but got " + nextResult.toString());
     }
-    test:assertEquals(nextResult.message(), "{ballerina/lang.value}ConversionError");
+    test:assertEquals(nextResult.message(), "Conversion error. Expected type: mongodb:Author, but found: {\"name\": \"Paulo Coelho\"}");
     check result.close();
     check collection->drop();
     check database->drop();
