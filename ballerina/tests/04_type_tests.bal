@@ -1,4 +1,4 @@
-// Copyright (c) 2024 WSO2 LLC. (http://www.wso2.com).
+// Copyright (c) 2025 WSO2 LLC. (http://www.wso2.com).
 //
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -478,7 +478,7 @@ isolated function testRecordWithTableFields() returns error? {
     Database database = check mongoClient->getDatabase("testRecordWithTableFieldsDB");
     Collection collection = check database->getCollection("TableData");
 
-    table<Person> key (id) dataTable = table [
+    table<Person> key(id) dataTable = table [
         {"id": "1", "name": "Alice", "age": 25, address: {street: "123 Main St", city: "New York", country: "USA"}},
         {"id": "2", "name": "Bob", "age": 30, address: {street: "456 Elm St", city: "Los Angeles", country: "USA"}},
         {"id": "3", "name": "Charlie", "age": 35, address: {street: "789 Oak St", city: "Chicago", country: "USA"}}
@@ -577,6 +577,57 @@ isolated function testRecordWithAnyDataFields() returns error? {
             test:assertFail("Expected map<anydata>");
         }
     }
+    check collection->drop();
+    check database->drop();
+}
+
+@test:Config {
+    groups: ["record", "tuple", "insert", "find"]
+}
+isolated function testRecordWithTupleFields() returns error? {
+    Database database = check mongoClient->getDatabase("testRecordWithTupleFieldsDB");
+    Collection collection = check database->getCollection("TupleData");
+
+    TupleData tupleData = {
+        name: "tuple-example",
+        basicTuple: ["hello", 42, true],
+        complexTuple: [
+            "complex",
+            100,
+            3.14,
+            {
+                street: "123 Tuple St",
+                city: "Tuple City",
+                country: "TupleCountry"
+            }
+        ],
+        tupleArray: [
+            ["first", 1],
+            ["second", 2],
+            ["third", 3]
+        ]
+    };
+
+    check collection->insertOne(tupleData);
+
+    TupleData? result = check collection->findOne();
+    test:assertTrue(result is TupleData, "Expected TupleData record");
+    if result is TupleData {
+        test:assertEquals(result.name, "tuple-example");
+        test:assertEquals(result.basicTuple[0], "hello");
+        test:assertEquals(result.basicTuple[1], 42);
+        test:assertEquals(result.basicTuple[2], true);
+        test:assertEquals(result.complexTuple[0], "complex");
+        test:assertEquals(result.complexTuple[1], 100);
+        test:assertEquals(result.complexTuple[2], 3.14);
+        test:assertEquals(result.complexTuple[3].street, "123 Tuple St");
+        test:assertEquals(result.tupleArray.length(), 3);
+        test:assertEquals(result.tupleArray[0][0], "first");
+        test:assertEquals(result.tupleArray[0][1], 1);
+        test:assertEquals(result.tupleArray[2][0], "third");
+        test:assertEquals(result.tupleArray[2][1], 3);
+    }
+
     check collection->drop();
     check database->drop();
 }

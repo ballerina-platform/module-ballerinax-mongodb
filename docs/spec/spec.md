@@ -3,7 +3,7 @@
 _Authors_: @ThisaruGuruge \
 _Reviewers_: @DimuthuMadushan @Nuvindu \
 _Created_: 2024/03/01 \
-_Updated_: 2023/03/01 \
+_Updated_: 2025/08/18 \
 _Edition_: Swan Lake
 
 ## Introduction
@@ -661,7 +661,7 @@ Ballerina record types can be used to insert documents into the collection. The 
 
 ###### 2.3.2.2.1 Parameters of the `insertOne` Remote Method
 
-- `document`: The document to insert. This should be of type `map<json>`. A Ballerina record value can be used to insert document, if the record is of `anydata` type.
+- `document`: The document to insert. This should be of type `record<anydata>`.
 - `options`: The options to apply to the insert operation. This should be of type `mongodb:InsertOneOptions` record. This parameter is optional.
 
 ###### Example: Insert a Single Document
@@ -762,7 +762,7 @@ The `insertMany` remote method can be used to insert multiple documents into the
 
 ###### 2.3.2.3.1 Parameters of the `insertMany` Remote Method
 
-- `documents`: The documents to insert. This should be an array of Ballerina record values.
+- `documents`: The documents to insert. This should be an array of Ballerina `record<anydata>` values.
 - `options`: The options to apply to the insert operation. This should be of type `mongodb:InsertManyOptions` record. This parameter is optional.
 
 ###### Example: Insert Multiple Documents
@@ -881,7 +881,7 @@ public function main() returns error? {
 
 ##### 2.3.2.4 Find Documents
 
-The `find` remote method can be used to find documents in the collection. The return type of this method is `stream`. This method is dependently-typed method, and the return type depends on the left hand side (_LHS_) of the expression. Refer [projection](#23242-projection) section for more information.
+The `find` remote method can be used to find documents in the collection. The return type of this method is `stream`. This method is a dependently-typed method, and the return type depends on the left hand side (_LHS_) of the expression. Refer [projection](#23242-projection) section for more information.
 
 ###### 2.3.2.4.1 Parameters of the `find` Remote Method
 

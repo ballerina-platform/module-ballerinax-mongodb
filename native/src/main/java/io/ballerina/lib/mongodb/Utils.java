@@ -179,10 +179,10 @@ public final class Utils {
             case TypeTags.XML_TAG:
             case TypeTags.MAP_TAG:
             case TypeTags.TABLE_TAG:
+            case TypeTags.TUPLE_TAG:
                 document.append(key, 1);
                 return document;
             case TypeTags.ARRAY_TAG:
-            case TypeTags.TUPLE_TAG:
                 return getProjectionDocumentForType(document, (ArrayType) impliedType, key);
             case TypeTags.RECORD_TYPE_TAG:
                 return getProjectionDocumentForType(document, (RecordType) impliedType, key);

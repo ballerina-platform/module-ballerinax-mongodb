@@ -168,5 +168,12 @@ type NumericData record {|
 
 type TableData record {|
     string tableName;
-    table<map<json>> dataTable;
+    table<Person> key(id) dataTable;
+|};
+
+type TupleData record {|
+    string name;
+    [string, int, boolean] basicTuple;
+    [string, int, float, Address] complexTuple;
+    [string, int][] tupleArray;
 |};
