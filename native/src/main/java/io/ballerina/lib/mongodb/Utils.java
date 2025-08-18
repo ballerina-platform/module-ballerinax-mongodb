@@ -168,20 +168,31 @@ public final class Utils {
 
     static Document getProjectionDocument(Document document, Type type, String key) {
         Type impliedType = TypeUtils.getImpliedType(type);
-        if (TypeUtils.isValueType(impliedType)) {
-            document.append(key, 1);
-            return document;
+        int typeTag = impliedType.getTag();
+        switch (typeTag) {
+            case TypeTags.STRING_TAG:
+            case TypeTags.INT_TAG:
+            case TypeTags.FLOAT_TAG:
+            case TypeTags.BOOLEAN_TAG:
+            case TypeTags.DECIMAL_TAG:
+            case TypeTags.BYTE_TAG:
+            case TypeTags.XML_TAG:
+            case TypeTags.MAP_TAG:
+            case TypeTags.TABLE_TAG:
+            case TypeTags.TUPLE_TAG:
+                document.append(key, 1);
+                return document;
+            case TypeTags.ARRAY_TAG:
+                return getProjectionDocumentForType(document, (ArrayType) impliedType, key);
+            case TypeTags.RECORD_TYPE_TAG:
+                return getProjectionDocumentForType(document, (RecordType) impliedType, key);
+            case TypeTags.UNION_TAG:
+                return getProjectionDocumentForType(document, (UnionType) impliedType, key);
+            case TypeTags.NEVER_TAG:
+                return document;
+            default:
+                throw createError(ErrorType.APPLICATION_ERROR, "Unsupported type: " + type.getName());
         }
-        if (impliedType instanceof RecordType recordType) {
-            return getProjectionDocumentForType(document, recordType, key);
-        }
-        if (impliedType instanceof ArrayType arrayType) {
-            return getProjectionDocumentForType(document, arrayType, key);
-        }
-        if (impliedType instanceof UnionType unionType) {
-            return getProjectionDocumentForType(document, unionType, key);
-        }
-        throw createError(ErrorType.APPLICATION_ERROR, "Unsupported type: " + type.getName());
     }
 
     private static Document getProjectionDocumentForType(Document document, RecordType recordType, String key) {

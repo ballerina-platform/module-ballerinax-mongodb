@@ -21,14 +21,13 @@ package io.ballerina.lib.mongodb;
 import com.mongodb.client.MongoCursor;
 import io.ballerina.runtime.api.creators.ErrorCreator;
 import io.ballerina.runtime.api.creators.TypeCreator;
-import io.ballerina.runtime.api.creators.ValueCreator;
 import io.ballerina.runtime.api.types.PredefinedTypes;
 import io.ballerina.runtime.api.types.Type;
 import io.ballerina.runtime.api.types.UnionType;
+import io.ballerina.runtime.api.utils.JsonUtils;
+import io.ballerina.runtime.api.utils.ValueUtils;
 import io.ballerina.runtime.api.values.BError;
 import io.ballerina.runtime.api.values.BObject;
-import io.ballerina.runtime.api.values.BTypedesc;
-import org.ballerinalang.langlib.value.FromJsonStringWithType;
 import org.bson.Document;
 
 import static io.ballerina.lib.mongodb.Collection.STREAM_COMPLETION_TYPE;
@@ -59,8 +58,7 @@ public final class IteratorUtils {
             try {
                 UnionType nextValueType = TypeCreator.createUnionType(completionType, PredefinedTypes.TYPE_ERROR,
                         PredefinedTypes.TYPE_NULL);
-                BTypedesc nextValueTypeDesc = ValueCreator.createTypedescValue(nextValueType);
-                return FromJsonStringWithType.fromJsonStringWithType(fromString(result), nextValueTypeDesc);
+                return ValueUtils.convert(JsonUtils.parse(result), nextValueType);
             } catch (BError e) {
                 String errorMessage = "Conversion error. Expected type: " + completionType + ", but found: " + result;
                 return ErrorCreator.createError(fromString(errorMessage), e);
