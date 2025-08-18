@@ -15,8 +15,8 @@ graalvmCompatible = true
 [[platform.java21.dependency]]
 groupId = "io.ballerina.lib"
 artifactId = "mongodb-native"
-version = "5.2.1-SNAPSHOT"
-path = "../native/build/libs/mongodb-native-5.2.1-SNAPSHOT.jar"
+version = "5.2.1"
+path = "../native/build/libs/mongodb-native-5.2.1.jar"
 
 [[platform.java21.dependency]]
 groupId = "org.mongodb"
