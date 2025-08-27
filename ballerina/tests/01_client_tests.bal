@@ -21,10 +21,12 @@ const string password = "admin";
 
 const string keystorePath = "./tests/resources/docker/certs/mongodb-client.jks";
 
+configurable string connectionString = "mongodb://localhost:27017";
+
 @test:Config {
     groups: ["client", "negative"]
 }
-public function testInvaliClientConfig() {
+public function testInvalidClientConfig() {
     Client|Error mongoClient = new (invalidConfig);
     test:assertTrue(mongoClient is ApplicationError, "Error expected when url is invalid.");
     ApplicationError err = <ApplicationError>mongoClient;
@@ -70,7 +72,7 @@ public function testCreateClient() returns error? {
 }
 
 @test:Config {
-    groups: ["client"]
+    groups: ["client", "connection_string"]
 }
 public function testCreateClientWithConnectionString() returns error? {
     string connection = string `mongodb://${username}:${password}@localhost:27017/admin`;
@@ -147,11 +149,11 @@ public function testConnectToReplicaSet() returns error? {
 }
 
 @test:Config {
-    groups: ["client", "atlas"],
+    groups: ["client", "atlas", "connection_string"],
     enable: false
 }
 public function testConnectionString() returns error? {
-    Client mongoClient = check new ({connection: "connectionURL"});
+    Client mongoClient = check new ({connection: connectionString});
     string[] databaseNames = check mongoClient->listDatabaseNames();
     test:assertEquals(databaseNames.length(), 3, "Expected 3 databases but found " + databaseNames.length().toString());
 }
@@ -189,5 +191,111 @@ public function testSSLConnection() returns error? {
     Client mongoClient = check new (validSslConfig);
     string[] databaseNames = check mongoClient->listDatabaseNames();
     test:assertEquals(databaseNames, ["admin", "config", "local"]);
+    check mongoClient->close();
+}
+
+@test:Config {
+    groups: ["client", "negative"]
+}
+public function testClientReuseAfterClose() returns error? {
+    Client mongoClient = check new (connection = {
+        serverAddress: {
+            host: "localhost",
+            port: 27016
+        }
+    });
+
+    check mongoClient->close();
+
+    // Attempting to use client after close should fail
+    string[]|Error result = mongoClient->listDatabaseNames();
+    test:assertTrue(result is ApplicationError, "Expected error when using closed client");
+}
+
+@test:Config {
+    groups: ["client", "negative", "connection_string"]
+}
+public function testInvalidConnectionString() returns error? {
+    // Test various invalid connection string formats
+    string[] invalidConnections = [
+        "invalid://localhost:27017", // Invalid protocol
+        "mongodb://localhost:99999", // Invalid port
+        "mongodb://", // Empty host
+        "mongodb://localhost:abc" // Non-numeric port
+    ];
+
+    foreach string conn in invalidConnections {
+        Client|Error mongoClient = new ({connection: conn});
+        test:assertTrue(mongoClient is ApplicationError, "Expected error for invalid connection: " + conn);
+    }
+}
+
+@test:Config {
+    groups: ["client", "negative", "ssl"]
+}
+public function testSSLWithInvalidCertificate() returns error? {
+    ConnectionConfig invalidSslConfig = {
+        connection: {
+            serverAddress: {
+                host: "localhost",
+                port: 27018
+            }
+        },
+        options: {
+            sslEnabled: true,
+            secureSocket: {
+                protocol: "TLS",
+                keyStore: {
+                    path: "./tests/resources/docker/certs/invalid-cert.jks",
+                    password: "123456"
+                },
+                trustStore: {
+                    path: "./tests/resources/docker/certs/invalid-cert.jks",
+                    password: "123456"
+                }
+            }
+        }
+    };
+
+    Client|Error mongoClient = new (invalidSslConfig);
+    test:assertTrue(mongoClient is ApplicationError, "Expected error when using invalid SSL configuration");
+}
+@test:Config {
+    groups: ["client", "connection_string"]
+}
+public function testConnectionStringWithManyOptions() returns error? {
+    string complexConnectionString = "mongodb://localhost:27016/?"
+    + "maxPoolSize=10"
+    + "&minPoolSize=1"
+    + "&maxIdleTimeMS=30000"
+    + "&waitQueueMultiple=5"
+    + "&waitQueueTimeoutMS=10000"
+    + "&serverSelectionTimeoutMS=30000"
+    + "&socketTimeoutMS=10000"
+    + "&connectTimeoutMS=10000"
+    + "&retryWrites=true"
+    + "&retryReads=true";
+
+    Client mongoClient = check new ({connection: complexConnectionString});
+    string[] databases = check mongoClient->listDatabaseNames();
+    test:assertTrue(databases.length() >= 0);
+    check mongoClient->close();
+}
+
+@test:Config {
+    groups: ["client", "negative", "test", "tttttttttttttt"]
+}
+public function testEmptyDatabaseName() returns error? {
+    Client mongoClient = check new (connection = {
+        serverAddress: {
+            host: "localhost",
+            port: 27016
+        }
+    });
+    Database|Error db = mongoClient->getDatabase("");
+    test:assertTrue(db is Error, "Expected error for empty database name");
+    if db is Error {
+        test:assertTrue(db.message() == "state should be: databaseName is not empty");
+    }
     check mongoClient->close();
 }

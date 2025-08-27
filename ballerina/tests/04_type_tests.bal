@@ -502,7 +502,7 @@ isolated function testRecordWithTableFields() returns error? {
 }
 
 @test:Config {
-    groups: ["record", "xml", "numeric", "batch", "insertMany", "find", "test"]
+    groups: ["record", "xml", "numeric", "batch", "insertMany", "find"]
 }
 isolated function testBatchOperationsWithXmlAndNumericFields() returns error? {
     Database database = check mongoClient->getDatabase("testBatchOperationsWithXmlAndNumericFieldsDB");
@@ -627,6 +627,366 @@ isolated function testRecordWithTupleFields() returns error? {
         test:assertEquals(result.tupleArray[2][0], "third");
         test:assertEquals(result.tupleArray[2][1], 3);
     }
+
+    check collection->drop();
+    check database->drop();
+}
+
+@test:Config {
+    groups: ["record", "enum", "insert", "find"]
+}
+isolated function testRecordWithEnumFields() returns error? {
+    Database database = check mongoClient->getDatabase("testRecordWithEnumFieldsDB");
+    Collection collection = check database->getCollection("ColorData");
+
+    ColorData[] colorData = [
+        {
+            color: RED,
+            hexCode: "#FF0000",
+            rgb: [255, 0, 0]
+        },
+        {
+            color: GREEN,
+            hexCode: "#00FF00",
+            rgb: [0, 255, 0]
+        },
+        {
+            color: BLUE,
+            hexCode: "#0000FF",
+            rgb: [0, 0, 255]
+        }
+    ];
+
+    check collection->insertMany(colorData);
+
+    stream<ColorData, error?> results = check collection->find();
+    ColorData[] actualResults = check from ColorData data in results
+        select data;
+
+    test:assertEquals(actualResults.length(), 3);
+    test:assertEquals(actualResults[0].color, RED);
+    test:assertEquals(actualResults[1].color, GREEN);
+    test:assertEquals(actualResults[2].color, BLUE);
+
+    check results.close();
+    check collection->drop();
+    check database->drop();
+}
+
+@test:Config {
+    groups: ["type_system", "union"]
+}
+public function testComplexUnionTypes() returns error? {
+    Database database = check mongoClient->getDatabase("complexUnionTest");
+    Collection collection = check database->getCollection("unionDocs");
+
+    // Insert documents with different union type values
+    map<json>[] unionDocs = [
+        {id: "1", value: 42},
+        {id: "2", value: 99.99},
+        {id: "3", value: "string_value"},
+        {id: "4", value: true},
+        {id: "5", value: ()}
+    ];
+
+    check collection->insertMany(unionDocs);
+
+    // Query and verify type handling
+    stream<record {|string id; ComplexUnion? value;|}, error?> results =
+        check collection->find();
+
+    record {|string id; ComplexUnion? value;|}[] docs =
+        check from record {|string id; ComplexUnion? value;|} doc in results
+        select doc;
+    check results.close();
+
+    test:assertEquals(docs.length(), 5);
+
+    // Verify different union member types are handled correctly
+    foreach var doc in docs {
+        match doc.id {
+            "1" => {
+                test:assertTrue(doc.value is int, "Should be int");
+            }
+            "2" => {
+                test:assertTrue(doc.value is decimal, "Should be decimal");
+            }
+            "3" => {
+                test:assertTrue(doc.value is string, "Should be string");
+            }
+            "4" => {
+                test:assertTrue(doc.value is boolean, "Should be boolean");
+            }
+            "5" => {
+                test:assertTrue(doc.value is (), "Should be null");
+            }
+        }
+    }
+
+    check collection->drop();
+    check database->drop();
+}
+
+@test:Config {
+    groups: ["type_system", "optional"]
+}
+public function testNestedOptionalFields() returns error? {
+    Database database = check mongoClient->getDatabase("nestedOptionalTest");
+    Collection collection = check database->getCollection("optionalDocs");
+
+    // Insert documents with varying optional field patterns
+    NestedOptional[] optionalDocs = [
+        {
+            name: "Complete",
+            age: 30,
+            address: {street: "123 St", city: "City", country: "Country"},
+            hobbies: ["reading", "coding"]
+        },
+        {
+            name: "Partial",
+            age: 25
+        },
+        {
+            name: "OnlyName"
+        }
+    ];
+
+    check collection->insertMany(optionalDocs);
+
+    stream<NestedOptional, error?> results = check collection->find();
+    NestedOptional[] docs = check from NestedOptional doc in results
+        select doc;
+    check results.close();
+
+    test:assertEquals(docs.length(), 3);
+
+    test:assertTrue(docs[0].age is int);
+    test:assertTrue(docs[0].address is Address);
+    test:assertTrue(docs[0].hobbies is string[]);
+
+    test:assertTrue(docs[1].age is int);
+    test:assertTrue(docs[1].address is ());
+    test:assertTrue(docs[1].hobbies is ());
+
+    test:assertTrue(docs[2].age is ());
+    test:assertTrue(docs[2].address is ());
+    test:assertTrue(docs[2].hobbies is ());
+
+    check collection->drop();
+    check database->drop();
+}
+
+@test:Config {
+    groups: ["type_system", "array"]
+}
+public function testHeterogeneousArrays() returns error? {
+    Database database = check mongoClient->getDatabase("heterogeneousArrayTest");
+    Collection collection = check database->getCollection("arrayDocs");
+
+    MixedArray mixedDoc = {
+        mixedData: [1, "string", true, 3.14, (), {nested: "object"}],
+        unionArray: ["text", 42, "more text", 100],
+        tupleArray: [
+            ["first", 1, true, 1.1],
+            ["second", 2, false, 2.2],
+            ["third", 3, true, 3.3]
+        ]
+    };
+
+    check collection->insertOne(mixedDoc);
+
+    MixedArray? result = check collection->findOne();
+    test:assertTrue(result is MixedArray, "Should retrieve MixedArray");
+
+    if result is MixedArray {
+        test:assertEquals(result.mixedData.length(), 6);
+        test:assertEquals(result.unionArray.length(), 4);
+        test:assertEquals(result.tupleArray.length(), 3);
+
+        // Verify array element types
+        test:assertTrue(result.mixedData[0] is int);
+        test:assertTrue(result.mixedData[1] is string);
+        test:assertTrue(result.mixedData[2] is boolean);
+        test:assertTrue(result.mixedData[3] is decimal);
+        test:assertTrue(result.mixedData[4] is ());
+
+        // Verify union array types
+        test:assertTrue(result.unionArray[0] is string);
+        test:assertTrue(result.unionArray[1] is int);
+
+        // Verify tuple structure
+        test:assertEquals(result.tupleArray[0][0], "first");
+        test:assertEquals(result.tupleArray[0][1], 1);
+        test:assertEquals(result.tupleArray[0][2], true);
+    }
+
+    check collection->drop();
+    check database->drop();
+}
+
+@test:Config {
+    groups: ["type_system", "circular"]
+}
+public function testCircularReferenceHandling() returns error? {
+    Database database = check mongoClient->getDatabase("circularRefTest");
+    Collection collection = check database->getCollection("circularDocs");
+
+    CircularReference parentDoc = {
+        name: "Parent",
+        parent: (),
+        children: [
+            {name: "Child1", parent: (), children: []},
+            {name: "Child2", parent: (), children: []}
+        ]
+    };
+
+    check collection->insertOne(parentDoc);
+
+    CircularReference? result = check collection->findOne();
+    test:assertTrue(result is CircularReference, "Should handle complex nested structure");
+
+    if result is CircularReference {
+        test:assertEquals(result.name, "Parent");
+        test:assertTrue(result.parent is ());
+        test:assertEquals(result.children.length(), 2);
+        test:assertEquals(result.children[0].name, "Child1");
+        test:assertEquals(result.children[1].name, "Child2");
+    }
+
+    check collection->drop();
+    check database->drop();
+}
+
+@test:Config {
+    groups: ["type_system", "schema_evolution"]
+}
+public function testSchemaEvolution() returns error? {
+    Database database = check mongoClient->getDatabase("schemaEvolutionTest");
+    Collection collection = check database->getCollection("evolutionDocs");
+
+    map<json> oldSchemaDoc = {
+        name: "Old Schema",
+        version: 1,
+        data: "simple_string"
+    };
+    check collection->insertOne(oldSchemaDoc);
+
+    map<json> newSchemaDoc = {
+        name: "New Schema",
+        version: 2,
+        data: {
+            content: "complex_object",
+            metadata: {
+                created: "2024-01-01",
+                updated: "2024-01-02"
+            }
+        },
+        newField: "additional_data"
+    };
+    check collection->insertOne(newSchemaDoc);
+
+    stream<record {string name; int version; anydata data;}, error?> results = check collection->find();
+
+    record {string name; int version; anydata data;}[] docs = check
+        from record {string name; int version; anydata data;} doc
+        in results
+    select doc;
+    check results.close();
+
+    test:assertEquals(docs.length(), 2);
+    test:assertTrue(docs[0].data is string);
+    test:assertTrue(docs[1].data is map<anydata>);
+
+    check collection->drop();
+    check database->drop();
+}
+
+@test:Config {
+    groups: ["type_system", "null_handling"]
+}
+public function testNullVsMissingFields() returns error? {
+    Database database = check mongoClient->getDatabase("nullVsMissingTest");
+    Collection collection = check database->getCollection("nullDocs");
+
+    map<json>[] nullDocs = [
+        {name: "Explicit Null", value: (), description: "has_null"},
+        {name: "Missing Field", description: "no_value"},
+        {name: "Empty String", value: "", description: "empty_string"}
+    ];
+
+    check collection->insertMany(nullDocs);
+
+    stream<record {|string name; anydata value?; string description?;|}, error?> results =
+        check collection->find();
+
+    record {|string name; anydata value?; string description?;|}[] docs =
+        check from record {|string name; anydata value?; string description?;|} doc in results
+        select doc;
+    check results.close();
+
+    test:assertEquals(docs.length(), 3);
+
+    foreach var doc in docs {
+        match doc.description {
+            "has_null" => {
+                test:assertTrue(doc?.value is (), "Should be explicit null");
+            }
+            "no_value" => {
+                test:assertTrue(doc?.value is (), "Missing field should be null");
+            }
+            "empty_string" => {
+                test:assertTrue(doc?.value is string, "Should be empty string, not null");
+                test:assertEquals(doc?.value, "");
+            }
+        }
+    }
+
+    check collection->drop();
+    check database->drop();
+}
+
+@test:Config {
+    groups: ["type_system", "binary"]
+}
+public function testBinaryDataHandling() returns error? {
+    Database database = check mongoClient->getDatabase("binaryDataTest");
+    Collection collection = check database->getCollection("binaryDocs");
+
+    // Create binary data using byte arrays
+    byte[] smallBinary = [1, 2, 3, 4, 5];
+    byte[] largeBinary = [];
+
+    // Create larger binary data
+    foreach int i in 0 ... 999 {
+        largeBinary.push(<byte>(i % 256));
+    }
+
+    record {|string name; byte[] smallData; byte[] largeData;|} binaryDoc = {
+        name: "Binary Document",
+        smallData: smallBinary,
+        largeData: largeBinary
+    };
+
+    check collection->insertOne(binaryDoc);
+
+    stream<record {|string name; byte[] smallData; byte[] largeData;|}, error?> results =
+        check collection->find();
+
+    record {|
+        record {|
+            string name;
+            byte[] smallData;
+            byte[] largeData;
+        |} value;
+    |}? doc = check results.next();
+    check results.close();
+
+    if doc is () {
+        test:assertFail("No results returned");
+    }
+    test:assertEquals(doc.value.name, "Binary Document");
+    test:assertEquals(doc.value.smallData, smallBinary);
+    test:assertEquals(doc.value.largeData, largeBinary);
 
     check collection->drop();
     check database->drop();

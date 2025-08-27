@@ -45,8 +45,10 @@ import io.ballerina.runtime.api.values.BTypedesc;
 import org.bson.Document;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static io.ballerina.lib.mongodb.Collection.STREAM_COMPLETION_TYPE;
 import static io.ballerina.lib.mongodb.ModuleUtils.getModule;
@@ -112,6 +114,11 @@ public final class Utils {
         return createError(errorType, message, null, null);
     }
 
+    static BError createError(ErrorType errorType, String message, Throwable e) {
+        BError cause = ErrorCreator.createError(StringUtils.fromString(e.getMessage()), e);
+        return createError(errorType, message, createError(cause));
+    }
+
     static BError createError(ErrorType errorType, String message, BError cause) {
         return createError(errorType, message, cause, null);
     }
@@ -152,7 +159,8 @@ public final class Utils {
             }
         }
         if (!projectionPresent) {
-            Document projection = new Document(PROJECT_FIELD, getProjectionDocument(new Document(), targetType, ""));
+            Document projection = new Document(PROJECT_FIELD, getProjectionDocument(new Document(), targetType, "",
+                    null));
             documents.add(projection);
         }
         return documents;
@@ -160,42 +168,46 @@ public final class Utils {
 
     static Document getProjection(Object projectionInput, BTypedesc targetType) {
         if (projectionInput == null) {
-            return getProjectionDocument(new Document(), targetType.getDescribingType(), "");
+            return getProjectionDocument(new Document(), targetType.getDescribingType(), "", null);
         } else {
             return Document.parse(projectionInput.toString());
         }
     }
 
-    static Document getProjectionDocument(Document document, Type type, String key) {
+    static Document getProjectionDocument(Document document, Type type, String key, Set<Type> visitedTypes) {
         Type impliedType = TypeUtils.getImpliedType(type);
-        int typeTag = impliedType.getTag();
-        switch (typeTag) {
-            case TypeTags.STRING_TAG:
-            case TypeTags.INT_TAG:
-            case TypeTags.FLOAT_TAG:
-            case TypeTags.BOOLEAN_TAG:
-            case TypeTags.DECIMAL_TAG:
-            case TypeTags.BYTE_TAG:
-            case TypeTags.XML_TAG:
-            case TypeTags.MAP_TAG:
-            case TypeTags.TABLE_TAG:
-            case TypeTags.TUPLE_TAG:
-                document.append(key, 1);
-                return document;
-            case TypeTags.ARRAY_TAG:
-                return getProjectionDocumentForType(document, (ArrayType) impliedType, key);
-            case TypeTags.RECORD_TYPE_TAG:
-                return getProjectionDocumentForType(document, (RecordType) impliedType, key);
-            case TypeTags.UNION_TAG:
-                return getProjectionDocumentForType(document, (UnionType) impliedType, key);
-            case TypeTags.NEVER_TAG:
-                return document;
-            default:
-                throw createError(ErrorType.APPLICATION_ERROR, "Unsupported type: " + type.getName());
+        if (visitedTypes == null) {
+            visitedTypes = new HashSet<>();
         }
+        if (visitedTypes.contains(impliedType)) {
+            document.append(key, 1);
+            return document;
+        }
+        visitedTypes.add(impliedType);
+        int typeTag = impliedType.getTag();
+        return switch (typeTag) {
+            case TypeTags.INT_TAG, TypeTags.BYTE_TAG, TypeTags.FLOAT_TAG, TypeTags.DECIMAL_TAG, TypeTags.STRING_TAG,
+                 TypeTags.BOOLEAN_TAG, TypeTags.SIGNED8_INT_TAG, TypeTags.UNSIGNED8_INT_TAG, TypeTags.SIGNED16_INT_TAG,
+                 TypeTags.UNSIGNED16_INT_TAG, TypeTags.SIGNED32_INT_TAG, TypeTags.UNSIGNED32_INT_TAG,
+                 TypeTags.CHAR_STRING_TAG, TypeTags.NULL_TAG, TypeTags.JSON_TAG, TypeTags.XML_TAG, TypeTags.TABLE_TAG,
+                 TypeTags.XML_ELEMENT_TAG, TypeTags.XML_PI_TAG, TypeTags.XML_COMMENT_TAG, TypeTags.XML_TEXT_TAG,
+                 TypeTags.ANYDATA_TAG, TypeTags.MAP_TAG, TypeTags.TUPLE_TAG, TypeTags.FINITE_TYPE_TAG -> {
+                document.append(key, 1);
+                yield document;
+            }
+            case TypeTags.RECORD_TYPE_TAG -> getProjectionDocumentForType(document, (RecordType) impliedType, key,
+                    visitedTypes);
+            case TypeTags.ARRAY_TAG -> getProjectionDocumentForType(document, (ArrayType) impliedType, key,
+                    visitedTypes);
+            case TypeTags.UNION_TAG -> getProjectionDocumentForType(document, (UnionType) impliedType, key,
+                    visitedTypes);
+            case TypeTags.NEVER_TAG -> document;
+            default -> throw createError(ErrorType.APPLICATION_ERROR, "Unsupported type: " + type.getName());
+        };
     }
 
-    private static Document getProjectionDocumentForType(Document document, RecordType recordType, String key) {
+    private static Document getProjectionDocumentForType(Document document, RecordType recordType, String key,
+                                                         Set<Type> visitedTypes) {
         Map<String, Field> recordFields = recordType.getFields();
         if (!recordFields.containsKey(MONGO_ID_FIELD) && key.isEmpty()) {
             // Remove the _id field from the result when not specified by the user
@@ -212,26 +224,28 @@ public final class Utils {
                 document.append(parentKey, 1);
                 continue;
             }
-            getProjectionDocument(document, fieldType, parentKey);
+            getProjectionDocument(document, fieldType, parentKey, visitedTypes);
         }
         return document;
     }
 
-    private static Document getProjectionDocumentForType(Document document, ArrayType arrayType, String key) {
+    private static Document getProjectionDocumentForType(Document document, ArrayType arrayType, String key,
+                                                         Set<Type> visitedTypes) {
         Type elementType = TypeUtils.getImpliedType(arrayType.getElementType());
         if (elementType instanceof RecordType recordType) {
-            return getProjectionDocumentForType(document, recordType, key);
+            return getProjectionDocumentForType(document, recordType, key, visitedTypes);
         } else {
-            return getProjectionDocument(document, elementType, key);
+            return getProjectionDocument(document, elementType, key, visitedTypes);
         }
     }
 
-    private static Document getProjectionDocumentForType(Document document, UnionType unionType, String key) {
+    private static Document getProjectionDocumentForType(Document document, UnionType unionType, String key,
+                                                         Set<Type> visitedTypes) {
         for (Type memberType : unionType.getMemberTypes()) {
             if (memberType.getTag() == TypeTags.ERROR_TAG || memberType.getTag() == TypeTags.NULL_TAG) {
                 continue;
             }
-            getProjectionDocument(document, memberType, key);
+            getProjectionDocument(document, memberType, key, visitedTypes);
         }
         return document;
     }

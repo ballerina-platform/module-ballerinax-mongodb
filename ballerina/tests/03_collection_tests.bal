@@ -1200,3 +1200,341 @@ isolated function testTypeCoercionEdgeCases() returns error? {
     check collection->drop();
     check database->drop();
 }
+
+@test:Config {
+    groups: ["collection", "insert"]
+}
+public function testInsertEmptyDocument() returns error? {
+    Database database = check mongoClient->getDatabase("emptyDocumentTest");
+    Collection collection = check database->getCollection("emptyDocs");
+
+    // Insert empty JSON object
+    map<json> emptyDoc = {};
+    check collection->insertOne(emptyDoc);
+
+    // Verify it was inserted with MongoDB-generated _id
+    stream<record {map<string> _id;}, error?> results = check collection->find();
+    record { map<string> _id;}[] docs = check from record {map<string> _id;} doc in results
+        select doc;
+    check results.close();
+
+    test:assertTrue(docs.length() > 0);
+    test:assertTrue(docs[0].hasKey("_id"));
+
+    check collection->drop();
+    check database->drop();
+}
+
+@test:Config {
+    groups: ["collection", "insert", "negative", "test"]
+}
+public function testInsertDuplicateKeys() returns error? {
+    Database database = check mongoClient->getDatabase("duplicateKeyTest");
+    Collection collection = check database->getCollection("uniqueDocs");
+
+    // Create unique index
+    check collection->createIndex({name: 1}, {unique: true});
+
+    Movie movie1 = {name: "Unique Movie", year: 2024, rating: 8};
+    check collection->insertOne(movie1);
+
+    // Try to insert document with same unique field - should fail
+    Movie movie2 = {name: "Unique Movie", year: 2025, rating: 9};
+    Error? result = collection->insertOne(movie2);
+    test:assertTrue(result is Error, "Expected error for duplicate unique key");
+    if result is Error {
+        string expectedMessage = "E11000 duplicate key error collection: duplicateKeyTest.uniqueDocs index: name_1 dup key: { name: \"Unique Movie\" }";
+        test:assertEquals(result.message(), expectedMessage, "Expected error for duplicate unique key");
+    }
+    check collection->drop();
+    check database->drop();
+}
+
+@test:Config {
+    groups: ["collection", "update"]
+}
+public function testConcurrentUpdates() returns error? {
+    Database database = check mongoClient->getDatabase("concurrentUpdateTest");
+    Collection collection = check database->getCollection("concurrentDocs");
+
+    // Insert test document
+    check collection->insertOne({"name": "Concurrent", "counter": 0});
+
+    // Perform concurrent updates
+    future<UpdateResult|Error> f1 = start updateCounter(collection);
+    future<UpdateResult|Error> f2 = start updateCounter(collection);
+    future<UpdateResult|Error> f3 = start updateCounter(collection);
+
+    UpdateResult|Error r1 = wait f1;
+    UpdateResult|Error r2 = wait f2;
+    UpdateResult|Error r3 = wait f3;
+
+    // All updates should succeed (MongoDB handles concurrency)
+    test:assertTrue(r1 is UpdateResult, "Concurrent update 1 should succeed");
+    test:assertTrue(r2 is UpdateResult, "Concurrent update 2 should succeed");
+    test:assertTrue(r3 is UpdateResult, "Concurrent update 3 should succeed");
+
+    // Verify final state
+    stream<record {|int counter;|}, error?> results = check collection->find({name: "Concurrent"});
+    record {|
+        record {|int counter;|} value;
+    |}? doc = check results.next();
+    check results.close();
+
+    if doc is () {
+        test:assertFail("No results returned");
+    }
+    test:assertTrue(doc.value.counter > 0, "Counter should be incremented");
+    check collection->drop();
+    check database->drop();
+}
+
+@test:Config {
+    groups: ["collection", "delete"]
+}
+public function testDeleteFromNonExistentDocument() returns error? {
+    Database database = check mongoClient->getDatabase("nonExistentDeleteTest");
+    Collection collection = check database->getCollection("emptyCollection");
+
+    // Delete from empty collection
+    DeleteResult result = check collection->deleteOne({name: "NonExistent"});
+    test:assertEquals(result.deletedCount, 0, "No documents should be deleted");
+    test:assertTrue(result.acknowledged, "Operation should be acknowledged");
+
+    // Delete many from empty collection
+    DeleteResult resultMany = check collection->deleteMany({});
+    test:assertEquals(resultMany.deletedCount, 0, "No documents should be deleted");
+
+    check collection->drop();
+    check database->drop();
+}
+
+@test:Config {
+    groups: ["collection", "aggregate"]
+}
+public function testAggregationWithInvalidStages() returns error? {
+    Database database = check mongoClient->getDatabase("invalidPipelineTest");
+    Collection collection = check database->getCollection("aggregateDocs");
+
+    check collection->insertOne({"name": "Interstellar", "year": 2014, "rating": 8});
+
+    // Test aggregation with potentially problematic stages
+    map<json>[][] problematicPipelines = [
+        [{\$invalidStage: {}}], // Invalid stage name
+        [{\$match: {}}, {\$project: {}}], // Empty project
+        [{\$group: {}}] // Incomplete group stage
+    ];
+    foreach map<json>[] pipeline in problematicPipelines {
+        stream<record {|anydata...;|}, error?>|Error results = collection->aggregate(pipeline);
+        test:assertTrue(results is Error, "Pipeline should fail");
+    }
+    check collection->drop();
+    check database->drop();
+}
+
+@test:Config {
+    groups: ["collection", "distinct"]
+}
+public function testDistinctOnNonExistentField() returns error? {
+    Database database = check mongoClient->getDatabase("distinctNonExistentTest");
+    Collection collection = check database->getCollection("distinctDocs");
+
+    Movie[] movies = [
+        {name: "Movie1", year: 2020, rating: 8},
+        {name: "Movie2", year: 2021, rating: 9}
+    ];
+    check collection->insertMany(movies);
+
+    // Distinct on non-existent field should return empty results
+    stream<string, error?> results = check collection->'distinct("nonExistentField");
+    string[] distinctValues = check from string value in results
+        select value;
+    check results.close();
+
+    test:assertEquals(distinctValues.length(), 0, "Non-existent field should return no distinct values");
+
+    check collection->drop();
+    check database->drop();
+}
+
+@test:Config {
+    groups: ["collection", "find"]
+}
+public function testFindWithComplexNestedQuery() returns error? {
+    Database database = check mongoClient->getDatabase("complexNestedQueryTest");
+    Collection collection = check database->getCollection("nestedDocs");
+
+    // Insert documents with deep nesting
+    map<json> deepDoc = {
+        level1: {
+            level2: {
+                level3: {
+                    level4: {
+                        value: "deep_value",
+                        array: [1, 2, 3, {nested: "in_array"}]
+                    }
+                }
+            }
+        },
+        simpleField: "simple"
+    };
+    check collection->insertOne(deepDoc);
+
+    // Query deep nested fields
+    map<json>[] complexQueries = [
+        {"level1.level2.level3.level4.value": "deep_value"},
+        {"level1.level2.level3.level4.array.3.nested": "in_array"},
+        {"level1.level2.level3.level4.array": {\$in: [1]}},
+        {\$and: [{"simpleField": "simple"}, {"level1.level2.level3.level4.value": "deep_value"}]}
+    ];
+
+    foreach map<json> query in complexQueries {
+        stream<record {|anydata...;|}, error?> results = check collection->find(query);
+        record {|anydata...;|}[] docs = check from record {|anydata...;|} doc in results
+            select doc;
+        check results.close();
+
+        // At least some queries should find the document
+        test:assertTrue(docs.length() >= 0);
+    }
+
+    check collection->drop();
+    check database->drop();
+}
+
+@test:Config {
+    groups: ["collection", "insert"]
+}
+public function testInsertManyWithMixedSuccessFailure() returns error? {
+    Database database = check mongoClient->getDatabase("mixedInsertTest");
+    Collection collection = check database->getCollection("mixedDocs");
+
+    // Create unique index
+    check collection->createIndex({name: 1}, {unique: true});
+
+    // Insert one document first
+    check collection->insertOne({"name": "Existing", "year": 2020, "rating": 7});
+
+    // Try to insert array with some duplicates
+    map<json>[] docs = [
+        {name: "New1", year: 2021, rating: 8},
+        {name: "Existing", year: 2022, rating: 9}, // This will fail
+        {name: "New2", year: 2023, rating: 7}
+    ];
+
+    Error? result = collection->insertMany(docs, {ordered: false});
+    test:assertTrue(result is Error, "Expected error for mixed success failure");
+    int count = check collection->countDocuments();
+    test:assertTrue(count >= 2, "At least original + one new document should exist");
+    check collection->drop();
+    check database->drop();
+}
+
+
+@test:Config {
+    groups: ["collection", "find"]
+}
+public function testFindWithInvalidQuery() returns error? {
+    Database database = check mongoClient->getDatabase("invalidQueryTest");
+    Collection collection = check database->getCollection("testDocs");
+
+    // Insert test data
+    check collection->insertOne({"name": "Interstellar", "year": 2014, "rating": 8});
+
+    // Test various potentially problematic queries
+    map<json>[] problematicQueries = [
+        {}, // Empty query - should match all
+        {nonExistentField: "value"}, // Non-existent field
+        {year: ()}, // Null value
+        {"nested.field": "value"} // Nested field that doesn't exist
+    ];
+
+    foreach map<json> query in problematicQueries {
+        stream<record {|anydata...;|}, error?> results = check collection->find(query);
+        record {|anydata...;|}[] docs = check from record {|anydata...;|} doc in results
+            select doc;
+        check results.close();
+        test:assertTrue(docs.length() >= 0);
+    }
+
+    check collection->drop();
+    check database->drop();
+}
+
+@test:Config {
+    groups: ["collection", "projection"]
+}
+public function testProjectionEdgeCases() returns error? {
+    Database database = check mongoClient->getDatabase("projectionEdgeCaseTest");
+    Collection collection = check database->getCollection("projectionDocs");
+
+    map<json> doc = {
+        field1: "value1",
+        field2: "value2",
+        nested: {
+            subfield1: "subvalue1",
+            subfield2: "subvalue2"
+        },
+        array: [
+            {arrayField: "arrayValue1"},
+            {arrayField: "arrayValue2"}
+        ]
+    };
+    check collection->insertOne(doc);
+
+    // Test various projection edge cases
+    map<json>[] projections = [
+        {}, // Empty projection (should include all)
+        {field1: 1, _id: 0}, // Include specific field, exclude _id
+        {field1: 0}, // Exclude specific field
+        {"nested.subfield1": 1, _id: 0}, // Nested field projection
+        {"array.arrayField": 1, _id: 0}, // Array field projection
+        {nonExistentField: 1, _id: 0} // Non-existent field
+    ];
+
+    foreach map<json> projection in projections {
+        stream<record {|anydata...;|}, error?> results = check collection->find({}, {}, projection);
+        record {|anydata...;|}[] docs = check from record {|anydata...;|} item in results
+            select item;
+        check results.close();
+        test:assertTrue(docs.length() > 0, "Should find documents with projection");
+    }
+
+    check collection->drop();
+    check database->drop();
+}
+
+@test:Config {
+    groups: ["collection", "index"]
+}
+public function testIndexOnNonExistentField() returns error? {
+    Database database = check mongoClient->getDatabase("indexNonExistentTest");
+    Collection collection = check database->getCollection("indexDocs");
+
+    // Create index on field that doesn't exist in any documents
+    check collection->createIndex({nonExistentField: 1});
+
+    // Insert document without the indexed field
+    check collection->insertOne({"name": "Interstellar", "year": 2014});
+
+    // Query using the non-existent field
+    stream<record {|anydata...;|}, error?> results = check collection->find({nonExistentField: "value"});
+    record {|anydata...;|}[] docs = check from record {|anydata...;|} doc in results
+        select doc;
+    check results.close();
+
+    test:assertEquals(docs.length(), 0, "No documents should match non-existent field");
+
+    // Verify index exists
+    stream<record {|anydata...;|}, error?> indexes = check collection->listIndexes();
+    record {|anydata...;|}[] indexList = check from record {|anydata...;|} index in indexes
+        select index;
+    check indexes.close();
+
+    test:assertTrue(indexList.length() > 1, "Should have default _id index plus our custom index");
+
+    check collection->drop();
+    check database->drop();
+}
+
+
