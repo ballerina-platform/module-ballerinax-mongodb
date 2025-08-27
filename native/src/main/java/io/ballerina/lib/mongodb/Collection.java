@@ -18,6 +18,8 @@
 
 package io.ballerina.lib.mongodb;
 
+import com.mongodb.MongoQueryException;
+import com.mongodb.MongoWriteException;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
@@ -124,6 +126,8 @@ public final class Collection {
                     (MongoCollection<Document>) collection.getNativeData(Utils.MONGO_COLLECTION);
             InsertOneOptions insertOneOptions = getInsertOneOptions(options);
             mongoCollection.insertOne(Document.parse(entry.getValue()), insertOneOptions);
+        } catch (MongoWriteException e) {
+            return createError(ErrorType.DATABASE_ERROR, e.getError().getMessage());
         } catch (Exception e) {
             return createError(ErrorType.DATABASE_ERROR, e.getMessage());
         }
@@ -140,6 +144,8 @@ public final class Collection {
                 entryList.add(Document.parse(entry));
             }
             mongoCollection.insertMany(entryList, insertManyOptions);
+        } catch (MongoWriteException e) {
+            return createError(ErrorType.DATABASE_ERROR, e.getError().getMessage());
         } catch (Exception e) {
             return createError(ErrorType.DATABASE_ERROR, e.getMessage());
         }
@@ -176,6 +182,8 @@ public final class Collection {
             return createStream(targetType, cursor);
         } catch (BError e) {
             return e;
+        } catch (MongoQueryException e) {
+            return createError(ErrorType.APPLICATION_ERROR, e.getErrorMessage(), e);
         } catch (Exception e) {
             return createError(ErrorType.DATABASE_ERROR, e.getMessage());
         }

@@ -177,3 +177,42 @@ type TupleData record {|
     [string, int, float, Address] complexTuple;
     [string, int][] tupleArray;
 |};
+
+type ColorData record {|
+    Color color;
+    string hexCode;
+    [int, int, int] rgb;
+|};
+
+enum Color {
+    RED,
+    GREEN,
+    BLUE
+}
+
+type ComplexUnion int|decimal|string|boolean;
+
+type NestedOptional record {|
+    string name;
+    int age?;
+    Address address?;
+    string[] hobbies?;
+|};
+
+type MixedArray record {|
+    anydata[] mixedData;
+    (string|int)[] unionArray;
+    [string, int, boolean, float][] tupleArray;
+|};
+
+type LargeNumericType record {|
+    int largeInt;
+    float largeFloat;
+    decimal largeDecimal;
+|};
+
+type CircularReference record {|
+    string name;
+    CircularReference? parent;
+    CircularReference[] children;
+|};

@@ -53,3 +53,38 @@ isolated function testDropDatabase() returns error? {
     databaseNames = check mongoClient->listDatabaseNames();
     test:assertTrue(databaseNames.indexOf("sampleDB") !is int);
 }
+
+@test:Config {
+    groups: ["database"]
+}
+public function testConcurrentDatabaseOperations() returns error? {
+    string dbName = "concurrentTestDB";
+
+    // Create database in multiple concurrent operations
+    future<error?> f1 = start createAndDropDatabase(dbName + "1");
+    future<error?> f2 = start createAndDropDatabase(dbName + "2");
+    future<error?> f3 = start createAndDropDatabase(dbName + "3");
+
+    error? r1 = wait f1;
+    error? r2 = wait f2;
+    error? r3 = wait f3;
+
+    test:assertFalse(r1 is error, "Concurrent operation 1 should succeed");
+    test:assertFalse(r2 is error, "Concurrent operation 2 should succeed");
+    test:assertFalse(r3 is error, "Concurrent operation 3 should succeed");
+}
+
+@test:Config {
+    groups: ["database"]
+}
+public function testEmptyCollectionName() returns error? {
+    Database database = check mongoClient->getDatabase("emptyCollectionNameTest");
+
+    // Empty collection name should fail
+    Collection|Error collection = database->getCollection("");
+    test:assertTrue(collection is DatabaseError, "Empty collection name should cause error");
+    if collection is DatabaseError {
+        test:assertEquals(collection.message(), "state should be: collectionName is not empty");
+    }
+    check database->drop();
+}
