@@ -16,7 +16,7 @@
 
 import ballerina/jballerina.java;
 
-# Represents the result iterator object for the MongoDB query result.
+# The result iterator object for the MongoDB query result.
 isolated class ResultIterator {
     private boolean isClosed = false;
 

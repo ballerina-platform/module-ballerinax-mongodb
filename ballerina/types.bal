@@ -1,4 +1,4 @@
-// Copyright (c) 2024 WSO2 LLC. (http://www.wso2.com).
+  dvEREC    33// Copyright (c) 2024 WSO2 LLC. (http://www.wso2.com).
 //
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -16,7 +16,7 @@
 
 import ballerina/crypto;
 
-# Represents the Client configurations for MongoDB.
+# The Client configurations for MongoDB.
 @display {label: "Connection Config"}
 public type ConnectionConfig record {|
     # connection - Connection string or the connection parameters for the MongoDB connection
@@ -27,7 +27,7 @@ public type ConnectionConfig record {|
     ConnectionProperties options?;
 |};
 
-# Represents the MongoDB server address.
+# The MongoDB server address.
 @display {label: "Server Address"}
 public type ServerAddress record {|
     # The host address of the MongoDB server
@@ -38,7 +38,7 @@ public type ServerAddress record {|
     int port = 27017;
 |};
 
-# Represents the MongoDB connection parameters.
+# The MongoDB connection parameters.
 @display {label: "Connection Parameters"}
 public type ConnectionParameters record {|
     # Server address (or the list of server addresses for replica sets) of the MongoDB server
@@ -49,7 +49,7 @@ public type ConnectionParameters record {|
     BasicAuthCredential|ScramSha1AuthCredential|ScramSha256AuthCredential|X509Credential|GssApiCredential auth?;
 |};
 
-# Represents the Basic Authentication configurations for MongoDB.
+# The Basic Authentication configurations for MongoDB.
 @display {label: "Basic Auth Credential"}
 public type BasicAuthCredential record {|
     # The authentication mechanism to use
@@ -66,7 +66,7 @@ public type BasicAuthCredential record {|
     string database;
 |};
 
-# Represents the SCRAM-SHA-1 authentication configurations for MongoDB.
+# The SCRAM-SHA-1 authentication configurations for MongoDB.
 @display {label: "SCRAM-SHA-1 Credential"}
 public type ScramSha1AuthCredential record {|
     # The authentication mechanism to use
@@ -83,7 +83,7 @@ public type ScramSha1AuthCredential record {|
     string database;
 |};
 
-# Represents the SCRAM-SHA-256 authentication configurations for MongoDB.
+# The SCRAM-SHA-256 authentication configurations for MongoDB.
 @display {label: "SCRAM-SHA-256 Credential"}
 public type ScramSha256AuthCredential record {|
     # The authentication mechanism to use
@@ -100,7 +100,7 @@ public type ScramSha256AuthCredential record {|
     string database;
 |};
 
-# Represents the X509 authentication configurations for MongoDB.
+# The X509 authentication configurations for MongoDB.
 @display {label: "X509 Credential"}
 public type X509Credential record {|
     # The authentication mechanism to use
@@ -111,7 +111,7 @@ public type X509Credential record {|
     string username?;
 |};
 
-# Represents the GSSAPI authentication configurations for MongoDB.
+# The GSSAPI authentication configurations for MongoDB.
 @display {label: "GSSAPI Credential"}
 public type GssApiCredential record {|
     # The authentication mechanism to use
@@ -125,7 +125,7 @@ public type GssApiCredential record {|
     string serviceName?;
 |};
 
-# Represents the MongoDB connection pool properties.
+# The MongoDB connection pool properties.
 @display {label: "Connection Properties"}
 public type ConnectionProperties record {|
     # The read concern level to use
@@ -179,7 +179,7 @@ public type ConnectionProperties record {|
     int heartbeatFrequency?;
 |};
 
-# Represents the configurations related to facilitating secure connection.
+# The configurations related to facilitating secure connection.
 @display {label: "Secure Socket"}
 public type SecureSocket record {|
     # Configurations associated with the TrustStore
@@ -217,7 +217,7 @@ public enum ReadConcern {
     SNAPSHOT = "snapshot"
 };
 
-# Represents the options for the `Collection.insertOne()` operation.
+# The options for the `Collection.insertOne()` operation.
 public type InsertOneOptions record {|
     # The comment to send with the operation
     @display {label: "Comment"}
@@ -227,7 +227,7 @@ public type InsertOneOptions record {|
     boolean bypassDocumentValidation = false;
 |};
 
-# Represents the options for the `Collection.insertMany()` operation.
+# The options for the `Collection.insertMany()` operation.
 public type InsertManyOptions record {|
     # The comment to send with the operation
     @display {label: "Comment"}
@@ -240,7 +240,7 @@ public type InsertManyOptions record {|
     boolean ordered = true;
 |};
 
-# Represents the options for the `Collection.find()` operation.
+# The options for the `Collection.find()` operation.
 public type FindOptions record {|
     # The sort options for the query
     map<json> sort = {};
@@ -252,7 +252,7 @@ public type FindOptions record {|
     int skip?;
 |};
 
-# Represents the options for the `Collection.countDocuments()` operation.
+# The options for the `Collection.countDocuments()` operation.
 public type CountOptions record {|
     # The maximum limit of the number of documents to count
     int 'limit?;
@@ -264,7 +264,7 @@ public type CountOptions record {|
     string hint?;
 |};
 
-# Represents the options for the `Collection.createIndex()` operation.
+# The options for the `Collection.createIndex()` operation.
 public type CreateIndexOptions record {|
     # Whether to create the index in the background
     @display {label: "Background"}
@@ -316,7 +316,7 @@ public type CreateIndexOptions record {|
     boolean hidden?;
 |};
 
-# Represents the options for the `Collection.updateOne()` operation.
+# The options for the `Collection.updateOne()` operation.
 public type UpdateOptions record {|
     # Whether to upsert if the document does not exist
     @display {label: "Upsert"}
@@ -335,7 +335,7 @@ public type UpdateOptions record {|
     string hintString?;
 |};
 
-# Represents the options for the `Collection.deleteOne()` operation.
+# The options for the `Collection.deleteOne()` operation.
 public type DeleteOptions record {|
     # The comment to send with the operation
     @display {label: "Comment"}
@@ -348,7 +348,7 @@ public type DeleteOptions record {|
     string hintString?;
 |};
 
-# Represents a MongoDB collection index.
+# The MongoDB collection index.
 public type Index record {
     # The name space of the index
     @display {label: "Name Space"}
@@ -364,7 +364,7 @@ public type Index record {
     map<json> key;
 };
 
-# Represents an update operation for single entry.
+# An update operation for single entry.
 public type Update record {|
     # Sets the value of a field to the current date, either as a Date or a Timestamp
     map<json> currentDate?;
@@ -388,7 +388,7 @@ public type Update record {|
     map<json>...;
 |};
 
-# Repsents the return type of the Update operation.
+# The return type of the Update operation.
 public type UpdateResult record {|
     # The number of documents matched by the update operation
     @display {label: "Matched Count"}
@@ -401,7 +401,7 @@ public type UpdateResult record {|
     string upsertedId?;
 |};
 
-# Represents the return type of the Delete operation.
+# The return type of the Delete operation.
 public type DeleteResult record {|
     # The number of documents deleted by the delete operation
     @display {label: "Deleted Count"}
