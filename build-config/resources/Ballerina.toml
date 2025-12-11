@@ -5,7 +5,7 @@ name = "mongodb"
 version = "@toml.version@"
 license= ["Apache-2.0"]
 authors = ["Ballerina"]
-keywords = ["MongoDB", "Database", "IT Operations/Databases", "Cost/Freemium", "NoSQL"]
+keywords = ["IT Operations/Databases", "Cost/Freemium", "NoSQL", "Vendor/MongoDB", "Area/Database", "Type/Connector"]
 icon = "icon.png"
 repository = "https://github.com/ballerina-platform/module-ballerinax-mongodb"
 
