@@ -1,10 +1,16 @@
 ## Overview
 
-[MongoDB](https://docs.mongodb.com/v4.2/) is a general purpose, document-based, distributed database built for modern application developers and for the cloud era. MongoDB offers both a Community and an Enterprise version of the database.
+[MongoDB](https://docs.mongodb.com/v4.2/) is a document-oriented, NoSQL database designed for high volume data storage. It offers a flexible schema, high availability, and horizontal scalability, making it ideal for modern application development.
 
-The `ballerinax/mongodb` package offers APIs to connect to MongoDB servers and to perform various operations including CRUD operations, indexing, and aggregation.
+The MongoDB connector offers APIs to connect to MongoDB servers and perform various operations including CRUD operations, indexing, and aggregation.
 
-The Ballerina MongoDB connector is compatible with MongoDB 3.6 and later versions.
+### Key Features
+
+- Support for MongoDB v3.6 and later versions
+- Comprehensive CRUD operations for collections and documents
+- Support for indexing and aggregation pipelines
+- Connection management via connection string or parameters
+- GraalVM compatible for native image builds
 
 ## Setup guide
 
