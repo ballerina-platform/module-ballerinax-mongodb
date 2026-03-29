@@ -14,19 +14,19 @@
 // specific language governing permissions and limitations
 // under the License.
 
-# Holds the properties of a database error.
+# Properties of a database error.
 #
 # + mongoDBExceptionType - Type of the returned MongoDB exception
 public type DatabaseErrorDetail record {
     string mongoDBExceptionType;
 };
 
-# Represents an error caused by an issue related to database accessibility, erroneous queries, constraint violations,
-# database resource clean-up, and other similar scenarios.
+# An error caused by issues related to database accessibility, erroneous queries, constraint violations,
+# database resource clean-up, and similar scenarios.
 public type DatabaseError distinct error<DatabaseErrorDetail>;
 
-# Represents an error originating from application-level causes.
+# An error originating from application-level causes.
 public type ApplicationError distinct error;
 
-# Represents a database or application level error returned from the MongoDB client remote functions.
+# A database or application-level error returned from the MongoDB client remote functions.
 public type Error DatabaseError|ApplicationError|error;

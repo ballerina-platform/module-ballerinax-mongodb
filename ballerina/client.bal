@@ -17,13 +17,13 @@
 import ballerina/jballerina.java;
 import ballerina/log;
 
-# Represents a MongoDB client that can be used to interact with a MongoDB server.
+# MongoDB client that can be used to interact with a MongoDB server.
 @display {label: "MongoDB Client", iconPath: "icon.png"}
 public isolated client class Client {
 
-    # Initialises the `Client` object with the provided `ConnectionConfig` properties.
+    # Initialises the MongoDB client object with the provided configurations.
     #
-    # + config - The connection configurations for connecting to a MongoDB server
+    # + config - The connection configurations of type `mongodb:ConnectionConfig` used to connect to a MongoDB server
     # + return - A `mongodb:Error` if the provided configurations are invalid. `()` otherwise.
     public isolated function init(*ConnectionConfig config) returns Error? {
         ConnectionProperties? options = config.options;
@@ -60,8 +60,7 @@ public isolated client class Client {
     }
 
     # Closes the client.
-    #
-    # > **Note:** Use a single client instance for the lifetime of the application and close it when the application is done.
+    # The client should be closed only at the end of the application lifetime, or when performing graceful stops in a service.
     #
     # + return - A `mongodb:Error` if the client is already closed or failed to close the client. `()` otherwise.
     @display {label: "Close the Client"}

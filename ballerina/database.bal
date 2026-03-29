@@ -16,7 +16,7 @@
 
 import ballerina/jballerina.java;
 
-# Represents a MongoDB database.
+# MongoDB database that can be used to perform operations on the database.
 @display {
     label: "MongoDB Database"
 }
@@ -41,7 +41,7 @@ public isolated client class Database {
         'class: "io.ballerina.lib.mongodb.Database"
     } external;
 
-    # Get a collection from the database.
+    # Retrieves a collection from the database.
     #
     # + collectionName - The name of the collection to be retrieved
     # + return - The `mogodb:Collection` on success or else an error
