@@ -19,7 +19,7 @@ import org.apache.tools.ant.taskdefs.condition.Os
 
 plugins {
     id "com.github.spotbugs-base"
-    id "com.github.johnrengelman.shadow"
+    id "com.gradleup.shadow"
     id "de.undercouch.download"
     id "net.researchgate.release"
 }
@@ -31,6 +31,9 @@ allprojects {
     version = project.version
 
     apply plugin: 'jacoco'
+    jacoco {
+        toolVersion = jacocoVersion
+    }
     apply plugin: 'maven-publish'
 
     repositories {
@@ -59,9 +62,16 @@ allprojects {
     }
 }
 
-task build {
-    dependsOn(":mongodb-native:build")
-    dependsOn(":mongodb-ballerina:build")
+if (tasks.names.contains('build')) {
+    tasks.named('build') {
+        dependsOn(":mongodb-native:build")
+        dependsOn(":mongodb-ballerina:build")
+    }
+} else {
+    tasks.register('build') {
+        dependsOn(":mongodb-native:build")
+        dependsOn(":mongodb-ballerina:build")
+    }
 }
 
 def moduleVersion = project.version.replace("-SNAPSHOT", "")
