@@ -17,6 +17,13 @@
  */
 
 import org.apache.tools.ant.taskdefs.condition.Os
+import org.gradle.process.ExecOperations
+
+import javax.inject.Inject
+
+abstract class BallerinaExecHelper {
+    @Inject abstract ExecOperations getExecOperations()
+}
 
 plugins {
     id 'io.ballerina.plugin'
@@ -48,7 +55,7 @@ ballerina {
     packageOrganization = packageOrg
     module = packageName
     testCoverageParam = "--code-coverage --coverage-format=xml"
-    isConnector = true
+    connector = true
     platform = "java21"
 }
 
@@ -78,8 +85,9 @@ task updateTomlFiles {
 }
 
 task commitTomlFiles {
+    def execHelper = project.objects.newInstance(BallerinaExecHelper)
     doLast {
-        project.exec {
+        execHelper.execOperations.exec {
             ignoreExitValue true
             if (Os.isFamily(Os.FAMILY_WINDOWS)) {
                 commandLine 'cmd', '/c', "git commit -m \"[Automated] Update the toml files\" Ballerina.toml Dependencies.toml"
@@ -91,9 +99,10 @@ task commitTomlFiles {
 }
 
 task startMongodbServer() {
+    def execHelper = project.objects.newInstance(BallerinaExecHelper)
     doLast {
         println("Starting mongodb server...")
-        exec {
+        execHelper.execOperations.exec {
             if (Os.isFamily(Os.FAMILY_WINDOWS)) {
                 commandLine 'cmd', '/c', "docker compose -f tests/resources/docker/docker-compose.yml up && exit %%ERRORLEVEL%%"
             } else {
@@ -104,9 +113,10 @@ task startMongodbServer() {
 }
 
 task stopMongodbServer() {
+    def execHelper = project.objects.newInstance(BallerinaExecHelper)
     doLast {
         println("Stopping mongodb server...")
-        exec {
+        execHelper.execOperations.exec {
             if (Os.isFamily(Os.FAMILY_WINDOWS)) {
                 commandLine 'cmd', '/c', "docker compose -f tests/resources/docker/docker-compose.yml down && exit %%ERRORLEVEL%%"
             } else {
