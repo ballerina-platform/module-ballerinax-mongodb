@@ -1,0 +1,9 @@
+# ballerina:13 is a false positive. It matches the identifier names of the public constants AUTH_PLAIN,
+# AUTH_SCRAM_SHA_1, AUTH_SCRAM_SHA_256, AUTH_MONGODB_X509 and AUTH_GSSAPI (the names of MongoDB authentication
+# mechanisms, e.g. "PLAIN") and the `authMechanism` record field defaults built from them. None of these is a
+# credential, and renaming them would change the public API.
+# TODO: replace this rule exclusion with a targeted scan suppression (with a reason) once `bal scan` supports it
+# (planned for v0.13.0), and fix the false positives on the scan tool side: a secret-named identifier should only be
+# reported when it is assigned a fixed value.
+[rule]
+exclude = ["ballerina:13"]
